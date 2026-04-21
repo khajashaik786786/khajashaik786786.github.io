@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KHAJAMOHIDDEEN | Design Verification Engineer</title>
+
+<title>The DV Hub | Shaik Khaja Mohiddeen</title>
 
 <style>
 
@@ -28,7 +29,7 @@ body::before {
   width: 100%;
   height: 100%;
   background:
-    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
     url("IMG_20260422_001226.jpg");
   background-size: cover;
   background-position: center;
@@ -42,7 +43,7 @@ nav {
   padding: 12px 0;
   display: flex;
   justify-content: center;
-  gap: 25px;
+  gap: 20px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -52,7 +53,7 @@ nav a {
   color: black;
   font-weight: bold;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 /* HERO */
@@ -62,11 +63,12 @@ nav a {
 }
 
 .hero h1 {
-  font-size: 2.5rem;
-  text-shadow: 0 0 20px lime;
+  font-size: 2.2rem;
+  text-shadow: 0 0 15px lime;
 }
 
 .hero h2 {
+  font-size: 1.4rem;
   color: orange;
   margin-top: 10px;
 }
@@ -74,14 +76,27 @@ nav a {
 .tagline {
   color: lightgreen;
   margin-top: 10px;
+  font-size: 1rem;
 }
 
-/* SECTIONS */
+/* SECTION */
 section {
   max-width: 1100px;
   margin: auto;
-  padding: 60px 20px;
+  padding: 70px 20px;
   text-align: center;
+}
+
+/* ANIMATION */
+.fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: 1s;
+}
+
+.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* CARDS */
@@ -121,10 +136,22 @@ section {
 .fill {
   background: green;
   height: 10px;
-  border-radius: 10px;
 }
 
-/* INPUTS */
+/* BUTTON */
+button {
+  padding: 10px 20px;
+  background: green;
+  border: none;
+  color: white;
+  border-radius: 6px;
+}
+
+button:hover {
+  background: orange;
+}
+
+/* INPUT */
 input, textarea {
   width: 90%;
   max-width: 400px;
@@ -135,25 +162,10 @@ input, textarea {
   border: none;
 }
 
-/* BUTTON */
-button {
-  padding: 10px 20px;
-  background: green;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: orange;
-}
-
 /* FOOTER */
 footer {
   text-align: center;
   padding: 20px;
-  margin-top: 40px;
 }
 
 </style>
@@ -161,94 +173,101 @@ footer {
 
 <body>
 
-<!-- NAV -->
 <nav>
 <a href="#home">Home</a>
+<a href="#about">About</a>
 <a href="#projects">Projects</a>
-<a href="#docs">Documents</a>
+<a href="#skills">Skills</a>
+<a href="#docs">Docs</a>
 <a href="#contact">Contact</a>
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="home">
-<h1>KHAJAMOHIDDEEN</h1>
-<h2>A DESIGN VERIFICATION ENGINEER</h2>
+<section class="hero fade" id="home">
+<h1>THE DV HUB</h1>
+<h2>Shaik Khaja Mohiddeen</h2>
 <p class="tagline">🚀 From Coding to Silicon</p>
-<hr style="width:60px;margin:15px auto;border:2px solid green;">
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="fade">
+<h2>About Me</h2>
+<p>
+Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI DSI.
+Skilled in SystemVerilog, UVM, and protocol verification including AXI, AHB, APB.
+Focused on building robust testbenches and debugging complex SoC designs.
+</p>
 </section>
 
 <!-- PROJECTS -->
-<section id="projects">
+<section id="projects" class="fade">
 <h2>Projects</h2>
 
 <div class="cards">
 
 <div class="card">
-<h3>MIPI DSI Verification</h3>
-<p>Verified pixel routing to display VIP ensuring correct transmission and protocol behavior.</p>
+<h3>MIPI DSI</h3>
+<p>Verified pixel routing to display VIP ensuring protocol correctness.</p>
 </div>
 
 <div class="card">
-<h3>QSPI Verification</h3>
-<p>Verified boot flow and DMA transfers from flash to SRAM.</p>
+<h3>QSPI</h3>
+<p>Validated boot flow and DMA transfers from flash to SRAM.</p>
 </div>
 
 <div class="card">
-<h3>GDMA Verification</h3>
-<p>Validated memory transfers using SystemVerilog and developed C test cases.</p>
+<h3>GDMA</h3>
+<p>Developed C test cases for memory transfers without CPU.</p>
 </div>
 
 <div class="card">
-<h3>GPIO Verification</h3>
-<p>Verified pad-level connectivity and IO functionality.</p>
+<h3>GPIO</h3>
+<p>Verified IO functionality and pad configuration.</p>
 </div>
 
 <div class="card">
-<h3>PLL Verification</h3>
-<p>Validated clock generation and frequency configurations.</p>
+<h3>PLL</h3>
+<p>Validated clock generation and stability.</p>
 </div>
 
 </div>
 </section>
 
-<!-- DOCUMENTS -->
-<section id="docs">
-<h2>Reference Documents</h2>
+<!-- SKILLS -->
+<section id="skills" class="fade">
+<h2>Skills</h2>
 
-<button onclick="upload()">Upload Document</button>
+<div class="skill">SystemVerilog / UVM
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
-<br><br>
+<div class="skill">Protocols (AXI, AHB, APB, MIPI)
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+
+<div class="skill">C Testcase Development
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+
+</section>
+
+<!-- DOCS -->
+<section id="docs" class="fade">
+<h2>Reference Materials</h2>
+
+<button onclick="upload()">Upload Document</button><br><br>
 
 <a href="notes.pdf" download>
 <button>Download Document</button>
 </a>
 
-<p>(Upload protected | Download free)</p>
-</section>
-
-<!-- SKILLS -->
-<section>
-<h2>Expertise</h2>
-
-<div class="skill">SystemVerilog / UVM
-<div class="bar"><div class="fill" style="width:90%"></div></div></div>
-
-<div class="skill">Protocols (AHB, AXI, APB, MIPI)
-<div class="bar"><div class="fill" style="width:85%"></div></div></div>
-
-<div class="skill">C Test Case Development
-<div class="bar"><div class="fill" style="width:90%"></div></div></div>
-
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
+<section id="contact" class="fade">
 <h2>Contact</h2>
 
 <form action="https://formspree.io/f/yourformid" method="POST">
-<input type="text" name="name" placeholder="Name" required>
-<input type="email" name="email" placeholder="Email" required>
-<textarea name="message" placeholder="Query"></textarea>
+<input type="text" placeholder="Name" required>
+<input type="email" placeholder="Email" required>
+<textarea placeholder="Message"></textarea>
 <button type="submit">Send</button>
 </form>
 
@@ -257,26 +276,32 @@ footer {
 
 </section>
 
-<!-- DISCLAIMER -->
-<section>
-<h2>Disclaimer</h2>
-<p>Here you are there for reference purpose only please don't touch or modify anything.</p>
-</section>
-
 <!-- FOOTER -->
 <footer>
-<p>© Khajamohiddeen | VLSI World</p>
+<p>© The DV Hub | Khaja Mohiddeen</p>
 </footer>
 
 <script>
 function upload() {
-  let pass = prompt("Enter upload password:");
+  let pass = prompt("Enter password:");
   if(pass === "6303") {
-    alert("Access granted. Upload file to GitHub manually.");
+    alert("Upload allowed via GitHub");
   } else {
-    alert("Wrong password!");
+    alert("Wrong password");
   }
 }
+
+/* SCROLL ANIMATION */
+const elements = document.querySelectorAll('.fade');
+
+window.addEventListener('scroll', () => {
+  elements.forEach(el => {
+    const pos = el.getBoundingClientRect().top;
+    if(pos < window.innerHeight - 100){
+      el.classList.add('show');
+    }
+  });
+});
 </script>
 
 </body>
