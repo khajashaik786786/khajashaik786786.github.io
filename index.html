@@ -3,18 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Khaja's VLSI World</title>
+<title>KHAJAMOHIDDEEN | Design Verification Engineer</title>
 
 <style>
-* {
+body {
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
+  background: black;
+  color: white;
+  overflow-x: hidden;
 }
 
-body {
-  scroll-behavior: smooth;
+/* Animated Circuit Background */
+body::before {
+  content: "";
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0,255,0,0.05),
+    rgba(0,255,0,0.05) 2px,
+    transparent 2px,
+    transparent 40px
+  );
+  animation: move 12s linear infinite;
+  z-index: -1;
+}
+
+@keyframes move {
+  0% {transform: translate(0,0);}
+  100% {transform: translate(-200px,-200px);}
 }
 
 /* Navbar */
@@ -22,44 +41,39 @@ nav {
   background: linear-gradient(90deg, orange, white, green);
   padding: 15px;
   text-align: center;
-  position: fixed;
-  width: 100%;
+  position: sticky;
   top: 0;
 }
 
 nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  font-weight: bold;
+  margin: 15px;
   color: black;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 /* Hero */
 .hero {
-  height: 100vh;
-  background: linear-gradient(135deg, orange, white, green);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
+  padding: 100px 20px;
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 2.8rem;
 }
 
-.hero button {
-  padding: 12px 25px;
-  margin-top: 20px;
-  border: none;
-  background: black;
-  color: white;
-  cursor: pointer;
+.hero h2 {
+  color: orange;
+}
+
+.tagline {
+  color: lightgreen;
+  font-size: 1.3rem;
 }
 
 /* Sections */
 section {
-  padding: 80px 20px;
+  padding: 60px 20px;
   text-align: center;
 }
 
@@ -71,37 +85,60 @@ section {
 }
 
 .card {
-  background: #fff;
-  margin: 15px;
+  background: #111;
+  border: 1px solid green;
+  box-shadow: 0 0 10px green;
   padding: 20px;
-  width: 250px;
-  border: 2px solid green;
+  margin: 15px;
+  width: 280px;
   transition: 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.1);
-  background: #f0fff0;
+  transform: scale(1.05);
+  box-shadow: 0 0 25px orange;
+}
+
+/* Document Section */
+.doc-box {
+  border: 1px solid white;
+  padding: 20px;
+  margin: 20px auto;
+  width: 80%;
+}
+
+/* Skills */
+.skill {
+  margin: 15px;
+}
+
+.bar {
+  background: #333;
+  height: 10px;
+}
+
+.fill {
+  background: green;
+  height: 10px;
 }
 
 /* Contact */
 input, textarea {
-  width: 90%;
-  padding: 10px;
+  width: 80%;
   margin: 10px;
+  padding: 10px;
 }
 
 button {
   padding: 10px 20px;
   background: green;
-  color: white;
   border: none;
+  color: white;
 }
 
 /* Footer */
 footer {
-  background: black;
-  color: white;
+  text-align: center;
   padding: 20px;
 }
 </style>
@@ -111,80 +148,113 @@ footer {
 
 <nav>
   <a href="#home">Home</a>
-  <a href="#about">About</a>
   <a href="#projects">Projects</a>
+  <a href="#docs">Documents</a>
+  <a href="#skills">Skills</a>
   <a href="#contact">Contact</a>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <h1>Khaja's VLSI World 🚀</h1>
-  <p>Designing the Future with Silicon</p>
-  <button onclick="scrollToSection('contact')">Contact Me</button>
-</section>
-
-<!-- ABOUT -->
-<section id="about">
-  <h2>About Me</h2>
-  <p>
-    Experienced VLSI Engineer working on real-time projects including QSPI, GDMA, GPIO, PLL.
-    Passionate about chip design, embedded systems and high-performance architectures.
-  </p>
+  <h1>KHAJAMOHIDDEEN</h1>
+  <h2>A DESIGN VERIFICATION ENGINEER</h2>
+  <p class="tagline">🚀 From Coding to Silicon</p>
 </section>
 
 <!-- PROJECTS -->
 <section id="projects">
-  <h2>My Expertise</h2>
-  <div class="cards">
-    <div class="card">QSPI Controller Design</div>
-    <div class="card">GDMA Architecture</div>
-    <div class="card">GPIO Interface</div>
-    <div class="card">PLL Design</div>
-  </div>
+<h2>Projects (Real Work)</h2>
+<div class="cards">
+
+<div class="card">
+<h3>QSPI IP Verification</h3>
+<p>Automotive SoC level verification including Cortex-A32 boot flow. Integrated flash model and verified DMA transfers from flash to SRAM.</p>
+</div>
+
+<div class="card">
+<h3>GDMA Verification</h3>
+<p>Verified high-speed memory transfers without CPU. Developed scoreboard and testcases using SystemVerilog and C.</p>
+</div>
+
+<div class="card">
+<h3>GPIO Verification</h3>
+<p>Verified pad-level connectivity and signal correctness. Implemented C-based validation tests.</p>
+</div>
+
+<div class="card">
+<h3>PLL & Clock Verification</h3>
+<p>Validated clock tree, PLL configurations, and frequency switching. Added assertions for sequence correctness.</p>
+</div>
+
+</div>
 </section>
 
-<!-- FILE UPLOAD -->
-<section>
-  <h2>Upload & View Documents</h2>
-  <input type="file">
-  <p>(Users can upload files but cannot modify existing documents)</p>
+<!-- DOCUMENTS -->
+<section id="docs">
+<h2>Reference Documents</h2>
+
+<div class="doc-box">
+<p>📄 Upload your documents to GitHub and link them here</p>
+
+<a href="#" target="_blank">
+<button>View Document 1</button>
+</a>
+
+<a href="#" target="_blank">
+<button>View Document 2</button>
+</a>
+
+<p>(Users can view/download only — no modification allowed)</p>
+</div>
+
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+<h2>Skills</h2>
+
+<div class="skill">SystemVerilog / UVM
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+
+<div class="skill">Verilog
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+
+<div class="skill">Protocols (AHB, AXI, APB)
+<div class="bar"><div class="fill" style="width:80%"></div></div></div>
+
+<div class="skill">VCS / Questasim
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <h2>Contact Me</h2>
-  <form action="https://formspree.io/f/yourformid" method="POST">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <textarea name="message" placeholder="Your Query" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+<h2>Contact / Queries</h2>
 
-  <p>Email: khajamohiddeen63@gmail.com</p>
-  <p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
+<form action="https://formspree.io/f/yourformid" method="POST">
+<input type="text" name="name" placeholder="Name" required>
+<input type="email" name="email" placeholder="Email" required>
+<textarea name="message" placeholder="Ask your query"></textarea>
+<button type="submit">Send Query</button>
+</form>
+
+<p>Email: khajamohiddeen63@gmail.com</p>
+<p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
+
 </section>
 
 <!-- TERMS -->
 <section>
-  <h2>Terms & Conditions</h2>
-  <p>Users are strictly prohibited from modifying any content on this website.</p>
+<h2>Terms & Conditions</h2>
+<p>No one is allowed to modify or misuse any content of this website.</p>
 
-  <h2>Disclaimer</h2>
-  <p>
-    Here you are there for reference purpose only please don't touch or modify anything.
-  </p>
+<h2>Disclaimer</h2>
+<p>Here you are there for reference purpose only please don't touch or modify anything.</p>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <p>© 2026 Khaja's VLSI World</p>
+<p>© Khajamohiddeen | VLSI World</p>
 </footer>
-
-<script>
-function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-}
-</script>
 
 </body>
 </html>
