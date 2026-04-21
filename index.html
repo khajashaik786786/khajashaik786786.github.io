@@ -287,7 +287,7 @@ Focused on building robust testbenches and debugging complex SoC designs.
 
 <!-- FOOTER -->
 <footer>
-<p>© The DV Hub | Khaja Mohiddeen</p>
+<p>© <span id="year"></span> The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
 </footer>
 
 <script>
@@ -311,6 +311,9 @@ window.addEventListener('scroll', () => {
     }
   });
 });
+
+/* AUTO YEAR */
+document.getElementById("year").innerText = new Date().getFullYear();
 </script>
 
 </body>
