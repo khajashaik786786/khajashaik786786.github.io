@@ -9,24 +9,20 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: black;
   color: white;
   overflow-x: hidden;
 }
 
-/* Animated Circuit Background */
+/* VLSI SoC Background + Indian Flag Overlay */
 body::before {
   content: "";
   position: fixed;
   width: 200%;
   height: 200%;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(0,255,0,0.05),
-    rgba(0,255,0,0.05) 2px,
-    transparent 2px,
-    transparent 40px
-  );
+  background:
+    linear-gradient(rgba(255,153,51,0.3), rgba(255,255,255,0.2), rgba(19,136,8,0.3)),
+    repeating-linear-gradient(0deg, rgba(0,255,100,0.08) 0px, rgba(0,255,100,0.08) 2px, transparent 2px, transparent 40px),
+    repeating-linear-gradient(90deg, rgba(0,255,100,0.08) 0px, rgba(0,255,100,0.08) 2px, transparent 2px, transparent 40px);
   animation: move 12s linear infinite;
   z-index: -1;
 }
@@ -67,7 +63,7 @@ nav a {
 }
 
 .tagline {
-  color: lightgreen;
+  color: green;
   font-size: 1.3rem;
 }
 
@@ -85,7 +81,7 @@ section {
 }
 
 .card {
-  background: #111;
+  background: rgba(0,0,0,0.7);
   border: 1px solid green;
   box-shadow: 0 0 10px green;
   padding: 20px;
@@ -97,14 +93,6 @@ section {
 .card:hover {
   transform: scale(1.05);
   box-shadow: 0 0 25px orange;
-}
-
-/* Document Section */
-.doc-box {
-  border: 1px solid white;
-  padding: 20px;
-  margin: 20px auto;
-  width: 80%;
 }
 
 /* Skills */
@@ -149,7 +137,6 @@ footer {
 <nav>
   <a href="#home">Home</a>
   <a href="#projects">Projects</a>
-  <a href="#docs">Documents</a>
   <a href="#skills">Skills</a>
   <a href="#contact">Contact</a>
 </nav>
@@ -163,55 +150,40 @@ footer {
 
 <!-- PROJECTS -->
 <section id="projects">
-<h2>Projects (Real Work)</h2>
+<h2>Projects</h2>
 <div class="cards">
 
 <div class="card">
-<h3>QSPI IP Verification</h3>
-<p>Automotive SoC level verification including Cortex-A32 boot flow. Integrated flash model and verified DMA transfers from flash to SRAM.</p>
+<h3>QSPI Verification</h3>
+<p>Verified QSPI IP including Cortex-A32 boot flow and DMA transfers from flash to SRAM.</p>
 </div>
 
 <div class="card">
 <h3>GDMA Verification</h3>
-<p>Verified high-speed memory transfers without CPU. Developed scoreboard and testcases using SystemVerilog and C.</p>
+<p>Validated memory-to-memory transfers with scoreboard and SystemVerilog + C testcases.</p>
 </div>
 
 <div class="card">
 <h3>GPIO Verification</h3>
-<p>Verified pad-level connectivity and signal correctness. Implemented C-based validation tests.</p>
+<p>Verified pad-level connectivity and IO functionality using C testcases.</p>
 </div>
 
 <div class="card">
 <h3>PLL & Clock Verification</h3>
-<p>Validated clock tree, PLL configurations, and frequency switching. Added assertions for sequence correctness.</p>
+<p>Validated PLL frequencies, clock routing and added assertions for sequence correctness.</p>
+</div>
+
+<div class="card">
+<h3>MIPI DSI Verification</h3>
+<p>Verified pixel data routing to display VIP ensuring correct transmission and protocol behavior.</p>
 </div>
 
 </div>
-</section>
-
-<!-- DOCUMENTS -->
-<section id="docs">
-<h2>Reference Documents</h2>
-
-<div class="doc-box">
-<p>📄 Upload your documents to GitHub and link them here</p>
-
-<a href="#" target="_blank">
-<button>View Document 1</button>
-</a>
-
-<a href="#" target="_blank">
-<button>View Document 2</button>
-</a>
-
-<p>(Users can view/download only — no modification allowed)</p>
-</div>
-
 </section>
 
 <!-- SKILLS -->
 <section id="skills">
-<h2>Skills</h2>
+<h2>Expertise</h2>
 
 <div class="skill">SystemVerilog / UVM
 <div class="bar"><div class="fill" style="width:90%"></div></div></div>
@@ -219,8 +191,11 @@ footer {
 <div class="skill">Verilog
 <div class="bar"><div class="fill" style="width:85%"></div></div></div>
 
-<div class="skill">Protocols (AHB, AXI, APB)
-<div class="bar"><div class="fill" style="width:80%"></div></div></div>
+<div class="skill">Protocols (AHB, AXI, APB, MIPI)
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+
+<div class="skill">C Test Case Development
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
 <div class="skill">VCS / Questasim
 <div class="bar"><div class="fill" style="width:85%"></div></div></div>
@@ -229,27 +204,18 @@ footer {
 
 <!-- CONTACT -->
 <section id="contact">
-<h2>Contact / Queries</h2>
+<h2>Contact</h2>
 
 <form action="https://formspree.io/f/yourformid" method="POST">
 <input type="text" name="name" placeholder="Name" required>
 <input type="email" name="email" placeholder="Email" required>
-<textarea name="message" placeholder="Ask your query"></textarea>
-<button type="submit">Send Query</button>
+<textarea name="message" placeholder="Query"></textarea>
+<button type="submit">Send</button>
 </form>
 
 <p>Email: khajamohiddeen63@gmail.com</p>
 <p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
 
-</section>
-
-<!-- TERMS -->
-<section>
-<h2>Terms & Conditions</h2>
-<p>No one is allowed to modify or misuse any content of this website.</p>
-
-<h2>Disclaimer</h2>
-<p>Here you are there for reference purpose only please don't touch or modify anything.</p>
 </section>
 
 <footer>
