@@ -12,7 +12,7 @@ body {
   color: white;
 }
 
-/* Background */
+/* Background Image + Dark Overlay */
 body::before {
   content: "";
   position: fixed;
@@ -20,27 +20,49 @@ body::before {
   height: 100%;
   background:
     linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
-    url("https://images.unsplash.com/photo-1581092918056-0c4c3acd3789");
+    url("chip.png"); /* Upload your image with this name */
   background-size: cover;
+  background-position: center;
   z-index: -1;
 }
 
-/* Navbar */
+/* Navbar (Indian Flag Theme) */
 nav {
   background: linear-gradient(90deg, orange, white, green);
   padding: 15px;
   text-align: center;
 }
+
 nav a {
   margin: 15px;
   color: black;
   font-weight: bold;
+  text-decoration: none;
 }
 
 /* Hero */
 .hero {
   text-align: center;
-  padding: 80px;
+  padding: 100px 20px;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  text-shadow: 0 0 15px lime;
+}
+
+.hero h2 {
+  color: orange;
+}
+
+.tagline {
+  color: lightgreen;
+}
+
+/* Sections */
+section {
+  padding: 60px 20px;
+  text-align: center;
 }
 
 /* Cards */
@@ -49,58 +71,57 @@ nav a {
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .card {
-  background: rgba(0,0,0,0.8);
-  padding: 20px;
-  margin: 10px;
-  width: 260px;
+  background: rgba(0,0,0,0.85);
   border: 1px solid green;
   box-shadow: 0 0 10px green;
+  padding: 20px;
+  margin: 15px;
+  width: 280px;
+  transition: 0.3s;
 }
 
-/* Waveform */
-.wave-container {
-  width: 90%;
-  margin: auto;
-  background: black;
-  border: 2px solid green;
-  padding: 20px;
-}
-.signal {
-  height: 30px;
-  margin: 10px;
-  position: relative;
-}
-.signal::before {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    90deg,
-    lime 0px,
-    lime 20px,
-    transparent 20px,
-    transparent 40px
-  );
-  animation: moveWave 2s linear infinite;
-}
-@keyframes moveWave {
-  from {transform: translateX(0);}
-  to {transform: translateX(-200px);}
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px orange;
 }
 
-/* Document */
-.doc-box {
-  text-align: center;
-  padding: 20px;
+/* Skills */
+.skill {
+  margin: 15px;
 }
+
+.bar {
+  background: #333;
+  height: 10px;
+}
+
+.fill {
+  background: green;
+  height: 10px;
+}
+
+/* Buttons */
 button {
   padding: 10px 20px;
-  margin: 10px;
   background: green;
   border: none;
   color: white;
+  margin: 10px;
+}
+
+/* Inputs */
+input, textarea {
+  width: 80%;
+  margin: 10px;
+  padding: 10px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
 }
 </style>
 </head>
@@ -108,66 +129,114 @@ button {
 <body>
 
 <nav>
-<a href="#home">Home</a>
-<a href="#projects">Projects</a>
-<a href="#wave">Waveform</a>
-<a href="#docs">Documents</a>
+  <a href="#home">Home</a>
+  <a href="#projects">Projects</a>
+  <a href="#docs">Documents</a>
+  <a href="#contact">Contact</a>
 </nav>
 
+<!-- HERO -->
 <section class="hero" id="home">
-<h1>KHAJAMOHIDDEEN</h1>
-<h2>DESIGN VERIFICATION ENGINEER</h2>
-<p>🚀 From Coding to Silicon</p>
+  <h1>KHAJAMOHIDDEEN</h1>
+  <h2>A DESIGN VERIFICATION ENGINEER</h2>
+  <p class="tagline">🚀 From Coding to Silicon</p>
 </section>
 
+<!-- PROJECTS -->
 <section id="projects">
 <h2>Projects</h2>
 <div class="cards">
 
 <div class="card">
-<h3>MIPI DSI</h3>
-<p>Verified pixel routing to display VIP ensuring correct protocol behavior.</p>
+<h3>MIPI DSI Verification</h3>
+<p>Verified pixel routing to display VIP ensuring correct transmission and protocol behavior.</p>
 </div>
 
 <div class="card">
-<h3>QSPI</h3>
-<p>Boot flow and DMA validation from flash to SRAM.</p>
+<h3>QSPI Verification</h3>
+<p>Verified boot flow and DMA transfers from flash to SRAM.</p>
+</div>
+
+<div class="card">
+<h3>GDMA Verification</h3>
+<p>Validated memory transfers using SystemVerilog and developed C test cases.</p>
+</div>
+
+<div class="card">
+<h3>GPIO Verification</h3>
+<p>Verified pad-level connectivity and IO functionality.</p>
+</div>
+
+<div class="card">
+<h3>PLL Verification</h3>
+<p>Validated clock generation and frequency configurations.</p>
 </div>
 
 </div>
 </section>
 
-<section id="wave">
-<h2>Simulation Waveform</h2>
-<div class="wave-container">
-<div class="signal"></div>
-<div class="signal"></div>
-<div class="signal"></div>
-</div>
-</section>
-
+<!-- DOCUMENTS -->
 <section id="docs">
-<h2>Documents</h2>
+<h2>Reference Documents</h2>
 
-<div class="doc-box">
-
-<button onclick="uploadFile()">Upload Document</button>
+<button onclick="upload()">Upload Document</button>
 
 <br>
 
-<a href="yourfile.pdf" download>
+<a href="notes.pdf" download>
 <button>Download Document</button>
 </a>
 
-</div>
+<p>(Upload protected | Download free)</p>
+
 </section>
 
+<!-- SKILLS -->
+<section>
+<h2>Expertise</h2>
+
+<div class="skill">SystemVerilog / UVM
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+
+<div class="skill">Protocols (AHB, AXI, APB, MIPI)
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+
+<div class="skill">C Test Case Development
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+<h2>Contact</h2>
+
+<form action="https://formspree.io/f/yourformid" method="POST">
+<input type="text" name="name" placeholder="Name" required>
+<input type="email" name="email" placeholder="Email" required>
+<textarea name="message" placeholder="Query"></textarea>
+<button type="submit">Send</button>
+</form>
+
+<p>Email: khajamohiddeen63@gmail.com</p>
+<p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
+
+</section>
+
+<!-- TERMS -->
+<section>
+<h2>Disclaimer</h2>
+<p>Here you are there for reference purpose only please don't touch or modify anything.</p>
+</section>
+
+<footer>
+<p>© Khajamohiddeen | VLSI World</p>
+</footer>
+
 <script>
-function uploadFile() {
-  let pass = prompt("Enter password to upload:");
-  
+function upload() {
+  let pass = prompt("Enter upload password:");
   if(pass === "6303") {
-    alert("Upload allowed. Now upload file to GitHub manually.");
+    alert("Access granted. Upload file to GitHub manually.");
   } else {
     alert("Wrong password!");
   }
