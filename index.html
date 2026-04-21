@@ -36,50 +36,64 @@ body::before {
   z-index: -1;
 }
 
-/* NAV */
+/* NAVBAR */
 nav {
   width: 100%;
   background: linear-gradient(90deg, orange, white, green);
-  padding: 12px;
+  padding: 12px 0;
   display: flex;
   justify-content: center;
   gap: 20px;
   position: sticky;
   top: 0;
+  z-index: 1000;
 }
 
 nav a {
   color: black;
   font-weight: bold;
   text-decoration: none;
+  font-size: 15px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 120px 20px 80px;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  text-shadow: 0 0 15px lime;
+}
+
+.hero h2 {
+  font-size: 1.4rem;
+  color: orange;
+  margin-top: 10px;
+}
+
+.tagline {
+  color: lightgreen;
+  margin-top: 10px;
+  font-size: 1rem;
 }
 
 /* SECTION */
 section {
   max-width: 1100px;
   margin: auto;
-  padding: 80px 20px;
+  padding: 70px 20px;
   text-align: center;
 }
 
-/* HERO */
-.hero h1 {
-  font-size: 2.2rem;
-  text-shadow: 0 0 15px lime;
-}
-.hero h2 {
-  color: orange;
-}
-.tagline {
-  color: lightgreen;
-}
-
-/* FADE ANIMATION */
+/* ANIMATION */
 .fade {
   opacity: 0;
-  transform: translateY(40px);
+  transform: translateY(30px);
   transition: 1s;
 }
+
 .show {
   opacity: 1;
   transform: translateY(0);
@@ -95,11 +109,11 @@ section {
 
 .card {
   background: rgba(0,0,0,0.85);
-  padding: 20px;
-  width: 260px;
   border-radius: 12px;
   border: 1px solid green;
   box-shadow: 0 0 10px green;
+  padding: 20px;
+  width: 260px;
   transition: 0.3s;
 }
 
@@ -108,24 +122,17 @@ section {
   box-shadow: 0 0 25px orange;
 }
 
-/* TIMELINE */
-.timeline {
-  text-align: left;
-  max-width: 600px;
-  margin: auto;
-}
-
-.timeline div {
-  margin: 15px 0;
-  padding-left: 10px;
-  border-left: 3px solid green;
-}
-
 /* SKILLS */
+.skill {
+  margin: 20px 0;
+}
+
 .bar {
   background: #333;
   border-radius: 10px;
+  overflow: hidden;
 }
+
 .fill {
   background: green;
   height: 10px;
@@ -139,6 +146,7 @@ button {
   color: white;
   border-radius: 6px;
 }
+
 button:hover {
   background: orange;
 }
@@ -150,6 +158,8 @@ input, textarea {
   margin: 10px auto;
   display: block;
   padding: 10px;
+  border-radius: 5px;
+  border: none;
 }
 
 /* FOOTER */
@@ -167,7 +177,6 @@ footer {
 <a href="#home">Home</a>
 <a href="#about">About</a>
 <a href="#projects">Projects</a>
-<a href="#timeline">Journey</a>
 <a href="#skills">Skills</a>
 <a href="#docs">Docs</a>
 <a href="#contact">Contact</a>
@@ -182,11 +191,11 @@ footer {
 
 <!-- ABOUT -->
 <section id="about" class="fade">
-<h2>What I Do</h2>
+<h2>About Me</h2>
 <p>
-I specialize in SoC Design Verification using SystemVerilog and UVM.
-I work on protocol verification including AXI, AHB, APB, and MIPI.
-I develop C testcases and debug complex hardware using waveform analysis.
+Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI DSI.
+Skilled in SystemVerilog, UVM, and protocol verification including AXI, AHB, APB.
+Focused on building robust testbenches and debugging complex SoC designs.
 </p>
 </section>
 
@@ -203,17 +212,17 @@ I develop C testcases and debug complex hardware using waveform analysis.
 
 <div class="card">
 <h3>QSPI</h3>
-<p>Validated boot flow and DMA transfers.</p>
+<p>Validated boot flow and DMA transfers from flash to SRAM.</p>
 </div>
 
 <div class="card">
 <h3>GDMA</h3>
-<p>Developed C testcases for memory transfers.</p>
+<p>Developed C test cases for memory transfers without CPU.</p>
 </div>
 
 <div class="card">
 <h3>GPIO</h3>
-<p>Verified IO functionality and pad behavior.</p>
+<p>Verified IO functionality and pad configuration.</p>
 </div>
 
 <div class="card">
@@ -224,31 +233,18 @@ I develop C testcases and debug complex hardware using waveform analysis.
 </div>
 </section>
 
-<!-- TIMELINE -->
-<section id="timeline" class="fade">
-<h2>My Journey</h2>
-
-<div class="timeline">
-<div>2024 → Started VLSI Learning</div>
-<div>2025 → Worked on QSPI, GDMA, GPIO</div>
-<div>2026 → MIPI DSI Verification</div>
-<div>Now → Design Verification Engineer</div>
-</div>
-
-</section>
-
 <!-- SKILLS -->
 <section id="skills" class="fade">
 <h2>Skills</h2>
 
-<p>SystemVerilog / UVM</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
+<div class="skill">SystemVerilog / UVM
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
-<p>Protocols (AXI, AHB, APB, MIPI)</p>
-<div class="bar"><div class="fill" style="width:85%"></div></div>
+<div class="skill">Protocols (AXI, AHB, APB, MIPI)
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
 
-<p>C Testcase Development</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
+<div class="skill">C Testcase Development
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
 </section>
 
@@ -256,8 +252,11 @@ I develop C testcases and debug complex hardware using waveform analysis.
 <section id="docs" class="fade">
 <h2>Reference Materials</h2>
 
-<a href="axi.pdf" download><button>📄 AXI Notes</button></a><br><br>
-<a href="uvm.pdf" download><button>📄 UVM Guide</button></a>
+<button onclick="upload()">Upload Document</button><br><br>
+
+<a href="notes.pdf" download>
+<button>Download Document</button>
+</a>
 
 </section>
 
@@ -266,10 +265,10 @@ I develop C testcases and debug complex hardware using waveform analysis.
 <h2>Contact</h2>
 
 <form action="https://formspree.io/f/yourformid" method="POST">
-<input type="text" placeholder="Name">
-<input type="email" placeholder="Email">
+<input type="text" placeholder="Name" required>
+<input type="email" placeholder="Email" required>
 <textarea placeholder="Message"></textarea>
-<button>Send</button>
+<button type="submit">Send</button>
 </form>
 
 <p>Email: khajamohiddeen63@gmail.com</p>
@@ -283,6 +282,16 @@ I develop C testcases and debug complex hardware using waveform analysis.
 </footer>
 
 <script>
+function upload() {
+  let pass = prompt("Enter password:");
+  if(pass === "6303") {
+    alert("Upload allowed via GitHub");
+  } else {
+    alert("Wrong password");
+  }
+}
+
+/* SCROLL ANIMATION */
 const elements = document.querySelectorAll('.fade');
 
 window.addEventListener('scroll', () => {
