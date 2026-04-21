@@ -10,26 +10,20 @@ body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   color: white;
-  overflow-x: hidden;
 }
 
-/* VLSI SoC Background + Indian Flag Overlay */
+/* VLSI Image + Dark Overlay */
 body::before {
   content: "";
   position: fixed;
-  width: 200%;
-  height: 200%;
+  width: 100%;
+  height: 100%;
   background:
-    linear-gradient(rgba(255,153,51,0.3), rgba(255,255,255,0.2), rgba(19,136,8,0.3)),
-    repeating-linear-gradient(0deg, rgba(0,255,100,0.08) 0px, rgba(0,255,100,0.08) 2px, transparent 2px, transparent 40px),
-    repeating-linear-gradient(90deg, rgba(0,255,100,0.08) 0px, rgba(0,255,100,0.08) 2px, transparent 2px, transparent 40px);
-  animation: move 12s linear infinite;
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+    url("https://images.unsplash.com/photo-1581092918056-0c4c3acd3789");
+  background-size: cover;
+  background-position: center;
   z-index: -1;
-}
-
-@keyframes move {
-  0% {transform: translate(0,0);}
-  100% {transform: translate(-200px,-200px);}
 }
 
 /* Navbar */
@@ -56,6 +50,7 @@ nav a {
 
 .hero h1 {
   font-size: 2.8rem;
+  text-shadow: 0 0 15px lime;
 }
 
 .hero h2 {
@@ -63,7 +58,7 @@ nav a {
 }
 
 .tagline {
-  color: green;
+  color: lightgreen;
   font-size: 1.3rem;
 }
 
@@ -81,9 +76,9 @@ section {
 }
 
 .card {
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.8);
   border: 1px solid green;
-  box-shadow: 0 0 10px green;
+  box-shadow: 0 0 15px green;
   padding: 20px;
   margin: 15px;
   width: 280px;
@@ -137,7 +132,7 @@ footer {
 <nav>
   <a href="#home">Home</a>
   <a href="#projects">Projects</a>
-  <a href="#skills">Skills</a>
+  <a href="#skills">Expertise</a>
   <a href="#contact">Contact</a>
 </nav>
 
@@ -160,22 +155,22 @@ footer {
 
 <div class="card">
 <h3>GDMA Verification</h3>
-<p>Validated memory-to-memory transfers with scoreboard and SystemVerilog + C testcases.</p>
+<p>Validated memory transfers using DMA without CPU intervention using SystemVerilog and C testcases.</p>
 </div>
 
 <div class="card">
 <h3>GPIO Verification</h3>
-<p>Verified pad-level connectivity and IO functionality using C testcases.</p>
+<p>Verified pad-level connectivity and IO configuration using C-based validation.</p>
 </div>
 
 <div class="card">
 <h3>PLL & Clock Verification</h3>
-<p>Validated PLL frequencies, clock routing and added assertions for sequence correctness.</p>
+<p>Validated PLL frequency configurations and clock propagation with assertions.</p>
 </div>
 
 <div class="card">
 <h3>MIPI DSI Verification</h3>
-<p>Verified pixel data routing to display VIP ensuring correct transmission and protocol behavior.</p>
+<p>Verified pixel routing to display VIP ensuring correct transmission and protocol behavior.</p>
 </div>
 
 </div>
@@ -216,6 +211,15 @@ footer {
 <p>Email: khajamohiddeen63@gmail.com</p>
 <p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
 
+</section>
+
+<!-- TERMS -->
+<section>
+<h2>Terms & Conditions</h2>
+<p>No one is allowed to modify or misuse any content of this website.</p>
+
+<h2>Disclaimer</h2>
+<p>Here you are there for reference purpose only please don't touch or modify anything.</p>
 </section>
 
 <footer>
