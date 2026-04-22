@@ -7,13 +7,12 @@
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
 
 <style>
-
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 font-family:'Segoe UI',sans-serif;
 color:white;
+line-height:1.6;
 }
 
 /* BACKGROUND */
@@ -32,19 +31,48 @@ z-index:-1;
 /* NAV */
 nav{
 background:linear-gradient(90deg,orange,white,green);
-padding:10px;
+padding:12px;
 display:flex;
 justify-content:center;
 gap:15px;
 flex-wrap:wrap;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+nav a{
+color:black;
+font-weight:bold;
+text-decoration:none;
 }
 
 /* SECTION */
 section{
 max-width:1100px;
 margin:auto;
-padding:60px 15px;
+padding:70px 15px;
 text-align:center;
+}
+
+/* HERO */
+.hero{margin-top:70px;}
+.hero h1{font-size:2rem;text-shadow:0 0 10px lime;}
+.hero h2{color:orange;}
+
+/* CARDS */
+.cards{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
+}
+
+.card{
+background:rgba(0,0,0,0.85);
+padding:20px;
+border-radius:10px;
+width:260px;
 }
 
 /* BUTTON */
@@ -64,61 +92,82 @@ cursor:pointer;
 padding:10px;
 width:90%;
 max-width:400px;
+margin:15px;
 border-radius:6px;
 border:none;
-margin:15px;
 }
 
-/* FOLDER */
-.folder{
-margin:15px 0;
-}
-
-/* CODE VIEW */
+/* CODE BOX */
 .code-box{
 display:none;
 background:#0d1117;
-color:#c9d1d9;
 padding:15px;
 border-radius:10px;
 text-align:left;
 overflow-x:auto;
 margin-top:10px;
 }
+pre{white-space:pre-wrap;font-size:12px;}
 
-pre{
-white-space:pre-wrap;
-font-size:12px;
-}
-
-/* COPY BUTTON */
-.copy-btn{
-background:#238636;
-margin-top:10px;
-}
-
+/* FOOTER */
+footer{text-align:center;padding:20px;}
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <nav>
+<a href="#home">Home</a>
+<a href="#about">About</a>
+<a href="#projects">Projects</a>
+<a href="#skills">Skills</a>
 <a href="#coding">Coding Hub</a>
 <a href="#contact">Contact</a>
 </nav>
 
+<!-- HERO -->
+<section id="home" class="hero">
+<h1>THE DV HUB</h1>
+<h2>Shaik Khaja Mohiddeen</h2>
+<p>🚀 From Coding to Silicon</p>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+<h2>About Me</h2>
+<p>Design Verification Engineer skilled in QSPI, GDMA, GPIO, PLL, MIPI DSI and protocols (AXI/AHB/APB).</p>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+<h2>Projects</h2>
+<div class="cards">
+<div class="card">MIPI DSI - Display VIP verification</div>
+<div class="card">QSPI - Boot & DMA</div>
+<div class="card">GDMA - C testcases</div>
+<div class="card">GPIO - IO verification</div>
+<div class="card">PLL - Clock validation</div>
+</div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+<h2>Skills</h2>
+<p>SystemVerilog / UVM</p>
+<p>Protocols (AXI, AHB, APB, MIPI)</p>
+<p>C Testcase Development</p>
+</section>
+
 <!-- CODING HUB -->
 <section id="coding">
-
-<h2>🚀 Advanced Coding Hub</h2>
+<h2>💻 Coding Hub</h2>
 
 <input type="text" id="search" placeholder="Search codes..." onkeyup="searchCodes()">
 
 <!-- AHB FOLDER -->
-<div class="folder">
 <h3>📂 AHB</h3>
-
-<button class="btn code-btn" onclick="toggleCode('ahb')">AHB Wrap Boundary</button>
+<button class="btn code-btn" onclick="toggleCode('ahb')">AHB Wrap</button>
 
 <div id="ahb" class="code-box">
 <pre id="ahb_code">
@@ -132,15 +181,11 @@ constraint c_burst { burst_len inside {4,8,16}; }
 
 endclass
 </pre>
-<button class="copy-btn" onclick="copyCode('ahb_code')">📋 Copy</button>
-</div>
-
+<button class="btn" onclick="copyCode('ahb_code')">📋 Copy</button>
 </div>
 
 <!-- CONSTRAINT FOLDER -->
-<div class="folder">
 <h3>📂 Constraints</h3>
-
 <button class="btn code-btn" onclick="toggleCode('constraint')">24688642 Constraint</button>
 
 <div id="constraint" class="code-box">
@@ -159,16 +204,13 @@ a[i]==a[a.size()-1-i];
 
 endclass
 </pre>
-<button class="copy-btn" onclick="copyCode('constraint_code')">📋 Copy</button>
-</div>
-
+<button class="btn" onclick="copyCode('constraint_code')">📋 Copy</button>
 </div>
 
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-
 <h2>Contact</h2>
 
 <form action="https://formspree.io/f/xvzdwkrb" method="POST">
@@ -186,36 +228,34 @@ endclass
 
 </section>
 
+<!-- FOOTER -->
 <footer>
-<p>© 2026 The DV Hub | Khaja Mohiddeen</p>
+<p>© 2026 The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
 </footer>
 
 <script>
 
-/* TOGGLE CODE */
+/* TOGGLE */
 function toggleCode(id){
 let box=document.getElementById(id);
-box.style.display = (box.style.display==="block")?"none":"block";
+box.style.display=(box.style.display==="block")?"none":"block";
 }
 
-/* COPY FUNCTION */
+/* COPY */
 function copyCode(id){
 let text=document.getElementById(id).innerText;
 navigator.clipboard.writeText(text);
-alert("Code copied!");
+alert("Copied!");
 }
 
-/* SEARCH FUNCTION */
+/* SEARCH */
 function searchCodes(){
 let input=document.getElementById("search").value.toLowerCase();
-let buttons=document.querySelectorAll(".code-btn");
+let btns=document.querySelectorAll(".code-btn");
 
-buttons.forEach(btn=>{
-if(btn.innerText.toLowerCase().includes(input)){
-btn.style.display="inline-block";
-}else{
-btn.style.display="none";
-}
+btns.forEach(btn=>{
+btn.style.display = btn.innerText.toLowerCase().includes(input)
+? "inline-block" : "none";
 });
 }
 
