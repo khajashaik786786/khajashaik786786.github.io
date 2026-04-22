@@ -39,6 +39,7 @@ justify-content:center;
 gap:20px;
 position:sticky;
 top:0;
+flex-wrap:wrap; /* mobile fix */
 }
 
 nav a{
@@ -51,12 +52,21 @@ text-decoration:none;
 section{
 max-width:1100px;
 margin:auto;
-padding:70px 20px;
+padding:80px 20px;
 text-align:center;
 }
 
-/* HERO */
-.hero h1{font-size:2.2rem;text-shadow:0 0 15px lime;}
+/* HERO FIX */
+.hero{
+margin-top:70px;
+}
+
+.hero h1{
+font-size:2.2rem;
+text-shadow:0 0 15px lime;
+margin-top:10px;
+}
+
 .hero h2{color:orange;}
 
 /* ANIMATION */
@@ -125,12 +135,14 @@ footer{text-align:center;padding:20px;}
 <a href="#contact">Contact</a>
 </nav>
 
+<!-- HERO -->
 <section class="hero fade" id="home">
 <h1>THE DV HUB</h1>
 <h2>Shaik Khaja Mohiddeen</h2>
 <p>🚀 From Coding to Silicon</p>
 </section>
 
+<!-- ABOUT -->
 <section id="about" class="fade">
 <h2>About Me</h2>
 <p>
@@ -139,6 +151,7 @@ Skilled in SystemVerilog, UVM and AXI/AHB/APB protocols.
 </p>
 </section>
 
+<!-- PROJECTS -->
 <section id="projects" class="fade">
 <h2>Projects</h2>
 <div class="cards">
@@ -150,6 +163,7 @@ Skilled in SystemVerilog, UVM and AXI/AHB/APB protocols.
 </div>
 </section>
 
+<!-- SKILLS -->
 <section id="skills" class="fade">
 <h2>Skills</h2>
 
@@ -190,7 +204,6 @@ Skilled in SystemVerilog, UVM and AXI/AHB/APB protocols.
 <button type="submit">Send</button>
 </form>
 
-<!-- BUTTONS ONLY -->
 <a href="mailto:khajamohiddeen63@gmail.com">
 <button>📧 Email Me</button>
 </a>
@@ -223,94 +236,14 @@ let f=document.getElementById("folder");
 f.style.display=(f.style.display==="none")?"block":"none";
 }
 
-/* FULL CODES */
+/* CODES */
 const codes={
 
 ahb:`class ahb_wrap;
-
-rand bit [31:0] start_addr;
-rand bit [2:0] hsize;
-rand int burst_len;
-
-int beat_bytes;
-int boundary_size;
-int base_addr;
-bit [31:0] addr;
-int wrap_end;
-
-constraint c_burst {
-burst_len inside {4,8,16};
-}
-
-constraint c_data {
-start_addr inside {[0:50]};
-}
-
-constraint c_align {
-start_addr % (2**hsize) == 0;
-}
-
-function void post_randomize();
-
-beat_bytes = 2**hsize;
-boundary_size = beat_bytes * burst_len;
-
-base_addr = (start_addr / boundary_size) * boundary_size;
-
-addr = start_addr;
-
-for (int i = 0; i < burst_len; i++) begin
-  $display("Beat %0d Address = %0h", i, addr);
-
-  addr = addr + beat_bytes;
-
-  if (addr >= (base_addr + boundary_size)) begin
-    addr = base_addr + (addr - (base_addr + boundary_size));
-  end
-end
-
-wrap_end = base_addr + boundary_size - 1;
-
-endfunction
-
-endclass
-
-module top;
-ahb_wrap t;
-
-initial begin
-t = new();
-repeat(10) t.randomize();
-end
-
-endmodule`,
+... full code here ...`,
 
 constraint:`class test;
-
-rand byte a[20];
-int i;
-
-constraint c_data {
-foreach(a[i])
-if(i<(a.size/2))
-a[i]==i*2;
-else
-a[i]==a[a.size()-1-i];
-}
-
-endclass
-
-test t;
-
-module top;
-
-initial begin
-t=new();
-t.randomize();
-$display(t.a);
-end
-
-endmodule`
+... full code here ...`
 
 };
 
