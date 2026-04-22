@@ -7,180 +7,136 @@
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
 
 <style>
+* { margin:0; padding:0; box-sizing:border-box; }
 
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* BODY */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  color: white;
-  overflow-x: hidden;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  overflow-x:hidden;
 }
 
 /* BACKGROUND */
 body::before {
-  content: "";
-  position: fixed;
-  width: 100%;
-  height: 100%;
+  content:"";
+  position:fixed;
+  width:100%;
+  height:100%;
   background:
-    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
-    url("IMG_20260422_001226.jpg");
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
+  linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+  url("IMG_20260422_001226.jpg");
+  background-size:cover;
+  background-position:center;
+  z-index:-1;
 }
 
-/* NAVBAR */
+/* NAV */
 nav {
-  width: 100%;
-  background: linear-gradient(90deg, orange, white, green);
-  padding: 12px 0;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  width:100%;
+  background:linear-gradient(90deg,orange,white,green);
+  padding:12px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  position:sticky;
+  top:0;
 }
 
 nav a {
-  color: black;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 15px;
-}
-
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 120px 20px 80px;
-}
-
-.hero h1 {
-  font-size: 2.2rem;
-  text-shadow: 0 0 15px lime;
-}
-
-.hero h2 {
-  font-size: 1.4rem;
-  color: orange;
-  margin-top: 10px;
-}
-
-.tagline {
-  color: lightgreen;
-  margin-top: 10px;
-  font-size: 1rem;
+  color:black;
+  font-weight:bold;
+  text-decoration:none;
 }
 
 /* SECTION */
 section {
-  max-width: 1100px;
-  margin: auto;
-  padding: 70px 20px;
-  text-align: center;
+  max-width:1100px;
+  margin:auto;
+  padding:70px 20px;
+  text-align:center;
 }
+
+/* HERO */
+.hero h1 { font-size:2.2rem; text-shadow:0 0 15px lime; }
+.hero h2 { color:orange; }
 
 /* ANIMATION */
-.fade {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: 1s;
-}
-
-.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+.fade { opacity:0; transform:translateY(30px); transition:1s; }
+.show { opacity:1; transform:translateY(0); }
 
 /* CARDS */
 .cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:20px;
 }
 
 .card {
-  background: rgba(0,0,0,0.85);
-  border-radius: 12px;
-  border: 1px solid green;
-  box-shadow: 0 0 10px green;
-  padding: 20px;
-  width: 260px;
-  transition: 0.3s;
+  background:rgba(0,0,0,0.85);
+  padding:20px;
+  width:260px;
+  border-radius:12px;
+  border:1px solid green;
+  box-shadow:0 0 10px green;
+  transition:0.3s;
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 25px orange;
+  transform:translateY(-8px);
+  box-shadow:0 0 25px orange;
 }
 
 /* SKILLS */
-.skill {
-  margin: 20px 0;
-}
-
-.bar {
-  background: #333;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.fill {
-  background: green;
-  height: 10px;
-}
+.bar { background:#333; border-radius:10px; }
+.fill { background:green; height:10px; }
 
 /* BUTTON */
 button {
-  padding: 10px 20px;
-  background: green;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+  padding:10px 20px;
+  background:green;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
 }
-
-button:hover {
-  background: orange;
-}
+button:hover { background:orange; }
 
 /* INPUT */
-input, textarea {
-  width: 90%;
-  max-width: 400px;
-  margin: 10px auto;
-  display: block;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
+input,textarea {
+  width:90%;
+  max-width:400px;
+  margin:10px auto;
+  display:block;
+  padding:10px;
+  border-radius:5px;
+  border:none;
+}
+
+/* CODE VIEWER */
+.code-box {
+  background:#161b22;
+  color:#c9d1d9;
+  padding:20px;
+  border-radius:10px;
+  text-align:left;
+  overflow-x:auto;
+  white-space:pre;
+  border:1px solid #30363d;
 }
 
 /* FOOTER */
-footer {
-  text-align: center;
-  padding: 20px;
-}
-
+footer { text-align:center; padding:20px; }
 </style>
 </head>
 
 <body>
 
-<!-- NAV -->
 <nav>
 <a href="#home">Home</a>
 <a href="#about">About</a>
 <a href="#projects">Projects</a>
 <a href="#skills">Skills</a>
-<a href="#docs">Docs</a>
+<a href="#docs">Coding Hub</a>
 <a href="#contact">Contact</a>
 </nav>
 
@@ -188,48 +144,46 @@ footer {
 <section class="hero fade" id="home">
 <h1>THE DV HUB</h1>
 <h2>Shaik Khaja Mohiddeen</h2>
-<p class="tagline">🚀 From Coding to Silicon</p>
+<p>🚀 From Coding to Silicon</p>
 </section>
 
 <!-- ABOUT -->
 <section id="about" class="fade">
 <h2>About Me</h2>
 <p>
-Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI DSI.
-Skilled in SystemVerilog, UVM, and protocol verification including AXI, AHB, APB.
-Focused on building robust testbenches and debugging complex SoC designs.
+Design Verification Engineer experienced in QSPI, GDMA, GPIO, PLL and MIPI DSI.
+Skilled in SystemVerilog, UVM and protocol verification (AXI, AHB, APB).
 </p>
 </section>
 
 <!-- PROJECTS -->
 <section id="projects" class="fade">
 <h2>Projects</h2>
-
 <div class="cards">
 
 <div class="card">
 <h3>MIPI DSI</h3>
-<p>Verified pixel routing to display VIP ensuring protocol correctness.</p>
+<p>Verified pixel routing to display VIP.</p>
 </div>
 
 <div class="card">
 <h3>QSPI</h3>
-<p>Validated boot flow and DMA transfers from flash to SRAM.</p>
+<p>Validated boot and DMA transfers.</p>
 </div>
 
 <div class="card">
 <h3>GDMA</h3>
-<p>Developed C test cases for memory transfers without CPU.</p>
+<p>Developed C testcases for transfers.</p>
 </div>
 
 <div class="card">
 <h3>GPIO</h3>
-<p>Verified IO functionality and pad configuration.</p>
+<p>Verified IO functionality.</p>
 </div>
 
 <div class="card">
 <h3>PLL</h3>
-<p>Validated clock generation and stability.</p>
+<p>Validated clock generation.</p>
 </div>
 
 </div>
@@ -239,26 +193,24 @@ Focused on building robust testbenches and debugging complex SoC designs.
 <section id="skills" class="fade">
 <h2>Skills</h2>
 
-<div class="skill">SystemVerilog / UVM
-<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+<p>SystemVerilog / UVM</p>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
 
-<div class="skill">Protocols (AXI, AHB, APB, MIPI)
-<div class="bar"><div class="fill" style="width:85%"></div></div></div>
+<p>Protocols (AXI, AHB, APB, MIPI)</p>
+<div class="bar"><div class="fill" style="width:85%"></div></div>
 
-<div class="skill">C Testcase Development
-<div class="bar"><div class="fill" style="width:90%"></div></div></div>
+<p>C Testcase Development</p>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
 
 </section>
 
-<!-- DOCS -->
+<!-- CODING HUB -->
 <section id="docs" class="fade">
-<h2>Reference Materials</h2>
+<h2>💻 Coding Hub</h2>
 
-<button onclick="upload()">Upload Document</button><br><br>
+<button onclick="showAHB()">AHB Wrap Boundary Calculation</button>
 
-<a href="notes.pdf" download>
-<button>Download Document</button>
-</a>
+<div id="viewer" style="margin-top:20px;"></div>
 
 </section>
 
@@ -267,17 +219,10 @@ Focused on building robust testbenches and debugging complex SoC designs.
 <h2>Contact</h2>
 
 <form action="https://formspree.io/f/xvzdwkrb" method="POST">
-
 <input type="text" name="name" placeholder="Name" required>
-
 <input type="email" name="email" placeholder="Email" required>
-
 <textarea name="message" placeholder="Message" required></textarea>
-
-<input type="hidden" name="_redirect" value="https://khajashaik786786.github.io/">
-
 <button type="submit">Send</button>
-
 </form>
 
 <p>Email: khajamohiddeen63@gmail.com</p>
@@ -291,29 +236,77 @@ Focused on building robust testbenches and debugging complex SoC designs.
 </footer>
 
 <script>
-function upload() {
-  let pass = prompt("Enter password:");
-  if(pass === "6303") {
-    alert("Upload allowed via GitHub");
-  } else {
-    alert("Wrong password");
-  }
-}
 
-/* SCROLL ANIMATION */
+/* SCROLL */
 const elements = document.querySelectorAll('.fade');
-
 window.addEventListener('scroll', () => {
   elements.forEach(el => {
-    const pos = el.getBoundingClientRect().top;
-    if(pos < window.innerHeight - 100){
+    if(el.getBoundingClientRect().top < window.innerHeight - 100){
       el.classList.add('show');
     }
   });
 });
 
-/* AUTO YEAR */
+/* YEAR */
 document.getElementById("year").innerText = new Date().getFullYear();
+
+/* SHOW AHB CODE */
+function showAHB(){
+document.getElementById("viewer").innerHTML = `
+<div class="code-box">
+
+class ahb_wrap;
+
+rand bit [31:0] start_addr;
+rand bit [2:0] hsize;
+rand int burst_len;
+
+int beat_bytes;
+int boundary_size;
+int base_addr;
+bit [31:0] addr;
+int wrap_end;
+
+constraint c_burst { burst_len inside {4,8,16}; }
+constraint c_data { start_addr inside {[0:50]}; }
+constraint c_align { start_addr % (2**hsize) == 0; }
+
+function void post_randomize();
+
+beat_bytes   = 2**hsize;
+boundary_size = beat_bytes * burst_len;
+
+base_addr = (start_addr / boundary_size) * boundary_size;
+
+addr = start_addr;
+
+for (int i = 0; i < burst_len; i++) begin
+  addr = addr + beat_bytes;
+
+  if (addr >= (base_addr + boundary_size)) begin
+    addr = base_addr + (addr - (base_addr + boundary_size));
+  end
+end
+
+wrap_end = base_addr + boundary_size - 1;
+
+endfunction
+
+endclass
+
+module top;
+ahb_wrap t;
+
+initial begin
+t = new();
+repeat(10) t.randomize();
+end
+
+endmodule
+
+</div>`;
+}
+
 </script>
 
 </body>
