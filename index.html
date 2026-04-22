@@ -784,6 +784,18 @@ footer {
   footer { flex-direction: column; gap: 8px; text-align: center; }
 }
 
+
+/* ── DEFINITION BOX ── */
+.def-box {
+  background: rgba(0,229,255,0.06);
+  border-left: 3px solid var(--cyan);
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  color: rgba(200,240,255,0.85);
+  line-height: 1.6;
+}
 </style>
 </head>
 <body>
@@ -829,6 +841,353 @@ footer {
     <div class="hex-ring">
       <div class="hex-inner">
         SV<br>UVM<br>AXI<br>MIPI<br>DV
+      </div>
+    </div>
+
+    <div class="folder-card" id="folder-proj">
+      <div class="folder-header" onclick="toggleFolder('folder-proj')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">PROJECT_CODES</span>
+        <span class="folder-count">6 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <li class="file-item" data-name="mipi dsi   packet sequence item   ecc">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              MIPI DSI — Packet Sequence Item + ECC
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj600')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 MIPI DSI (Display Serial Interface) uses D-PHY with 1 clock lane + up to 4 data lanes. Packets have DI (VC[7:6]+DT[5:0]), WC (word count), ECC (6-bit Hamming), and CRC. Two modes: High-Speed (HS) and Low-Power (LP/escape).</div>
+                <pre id="code-new-proj600">typedef enum logic [1:0] {
+  VC0=2&#x27;b00, VC1=2&#x27;b01, VC2=2&#x27;b10, VC3=2&#x27;b11
+} dsi_vc_e;
+
+typedef enum logic [5:0] {
+  DT_VSYNC_START=6&#x27;h01, DT_HSYNC_START=6&#x27;h21,
+  DT_RGB888=6&#x27;h3E, DT_GEN_LONG_WRITE=6&#x27;h29
+} dsi_datatype_e;
+
+class dsi_packet extends uvm_sequence_item;
+  `uvm_object_utils(dsi_packet)
+  rand dsi_vc_e       vc;
+  rand dsi_datatype_e dtype;
+  rand logic [15:0]   word_count;
+  rand byte unsigned  payload[];
+  logic [7:0]         ecc;
+  logic [15:0]        checksum;
+  rand bit            is_hs_mode;
+
+  constraint c_wc_payload { payload.size() == word_count; }
+  constraint c_wc_range   { word_count inside {[1:256]}; }
+  constraint c_hs_mode    { is_hs_mode dist {1:=80, 0:=20}; }
+
+  // ECC per MIPI DSI D-PHY Annex A
+  function logic [7:0] gen_ecc(logic [7:0] di, logic [15:0] wc);
+    logic [23:0] d = {wc, di};
+    logic [7:0]  e;
+    e[0]=d[0]^d[1]^d[2]^d[4]^d[5]^d[7]^d[10]^d[11]^d[13]^d[16]^d[20]^d[21]^d[22]^d[23];
+    e[1]=d[0]^d[1]^d[3]^d[4]^d[6]^d[8]^d[10]^d[12]^d[14]^d[17]^d[20]^d[21]^d[22]^d[23];
+    e[2]=d[0]^d[2]^d[3]^d[5]^d[6]^d[9]^d[11]^d[12]^d[15]^d[18]^d[20]^d[21]^d[22]^d[23];
+    e[3]=d[1]^d[2]^d[3]^d[7]^d[8]^d[9]^d[13]^d[14]^d[15]^d[19]^d[20]^d[21]^d[22]^d[23];
+    e[4]=d[4]^d[5]^d[6]^d[7]^d[8]^d[9]^d[16]^d[17]^d[18]^d[19]^d[20]^d[21]^d[22]^d[23];
+    e[5]=d[10]^d[11]^d[12]^d[13]^d[14]^d[15]^d[16]^d[17]^d[18]^d[19]^d[20]^d[21]^d[22]^d[23];
+    e[6]=0; e[7]=0;
+    return e;
+  endfunction
+
+  function void post_randomize();
+    ecc = gen_ecc({vc,dtype}, word_count);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="qspi   sequence item   driver">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              QSPI — Sequence Item + Driver
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj601')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 QSPI extends SPI with 4 bidirectional I/O lines (IO0–IO3) for x1/x2/x4 transfers. Supports Fast-Read, Quad-IO-Read, Page-Program, Sector-Erase commands. Common for NOR Flash (e.g. Winbond W25Q series). Dummy cycles separate command/address from data in high-speed reads.</div>
+                <pre id="code-new-proj601">typedef enum logic [7:0] {
+  QSPI_CMD_PAGE_PROG    = 8&#x27;h02,
+  QSPI_CMD_FAST_READ    = 8&#x27;h0B,
+  QSPI_CMD_SECTOR_ERASE = 8&#x27;hD8,
+  QSPI_CMD_QUAD_IO_READ = 8&#x27;hEB
+} qspi_cmd_e;
+
+class qspi_seq_item extends uvm_sequence_item;
+  `uvm_object_utils(qspi_seq_item)
+  rand qspi_cmd_e   cmd;
+  rand logic [23:0] addr;
+  rand byte         data[];
+  rand int unsigned dummy_cycles;
+  rand bit          is_read;
+
+  constraint c_page_boundary {
+    (cmd == QSPI_CMD_PAGE_PROG) -&gt;
+      (addr[7:0] + data.size()) &lt;= 256;
+  }
+  constraint c_sector_align {
+    (cmd == QSPI_CMD_SECTOR_ERASE) -&gt; addr[15:0] == 16&#x27;h0;
+  }
+  constraint c_fast_dummy { (cmd==QSPI_CMD_FAST_READ) -&gt; dummy_cycles==8; }
+  constraint c_data_size  { data.size() inside {[1:256]}; }
+endclass
+
+// Driver excerpt — x1 byte send
+task qspi_driver::send_byte_x1(logic [7:0] bval);
+  for (int i = 7; i &gt;= 0; i--) begin
+    vif.io[0] &lt;= bval[i];
+    #(vif.half_period); vif.sck &lt;= 1;
+    #(vif.half_period); vif.sck &lt;= 0;
+  end
+endtask</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="gdma   dma sequence item   scoreboard">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              GDMA — DMA Sequence Item + Scoreboard
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj602')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 GDMA (Generic DMA) supports M2M/M2P/P2M transfers with linked-list descriptors, programmable burst length, data width, and address-increment modes. TB validates data integrity, channel arbitration, and interrupt generation.</div>
+                <pre id="code-new-proj602">typedef enum logic [1:0] {
+  DMA_M2M=2&#x27;b00, DMA_M2P=2&#x27;b01, DMA_P2M=2&#x27;b10
+} dma_dir_e;
+
+class dma_seq_item extends uvm_sequence_item;
+  `uvm_object_utils(dma_seq_item)
+  rand logic [31:0] src_addr;
+  rand logic [31:0] dst_addr;
+  rand logic [15:0] length;
+  rand dma_dir_e    direction;
+  rand logic [3:0]  burst_len;
+  rand logic        src_inc, dst_inc, irq_en;
+  rand int unsigned channel_id;
+
+  constraint c_src_align  { src_addr[1:0] == 2&#x27;b00; }
+  constraint c_dst_align  { dst_addr[1:0] == 2&#x27;b00; }
+  constraint c_length     { length inside {[1:1024]}; }
+  constraint c_burst      { burst_len inside {1,4,8,16}; }
+  constraint c_channel    { channel_id inside {[0:7]}; }
+  constraint c_no_overlap {
+    (src_addr+(length&lt;&lt;2)) &lt;= dst_addr ||
+    (dst_addr+(length&lt;&lt;2)) &lt;= src_addr;
+  }
+  constraint c_sram {
+    src_addr inside {[32&#x27;h2000_0000:32&#x27;h200F_FFFF]};
+    dst_addr inside {[32&#x27;h2010_0000:32&#x27;h201F_FFFF]};
+  }
+endclass
+
+// Scoreboard verifies M2M data integrity
+class dma_scoreboard extends uvm_scoreboard;
+  logic [7:0] mem [logic [31:0]];
+  int pass_cnt, fail_cnt;
+  // init_mem(), write() — compare src vs dst after transfer
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="gpio   seq item   interrupt sequence">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              GPIO — Seq Item + Interrupt Sequence
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj603')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 GPIO block: per-pin DIR (0=input,1=output), DATA_OUT, DATA_IN (RO), INT_EN, INT_TYPE (rising/falling/both/level-H/level-L), INT_STATUS (W1C), PULL_EN, PULL_DIR, OD_EN. TB validates all register accesses and all interrupt trigger modes.</div>
+                <pre id="code-new-proj603">/`define GPIO_DIR        8&#x27;h00
+`define GPIO_DATA_OUT   8&#x27;h04
+`define GPIO_INT_EN     8&#x27;h0C
+`define GPIO_INT_TYPE   8&#x27;h10  // 2 bits/pin
+`define GPIO_INT_STATUS 8&#x27;h14  // W1C
+
+class gpio_seq_item extends uvm_sequence_item;
+  `uvm_object_utils(gpio_seq_item)
+  rand logic [7:0]  reg_addr;
+  rand logic [31:0] reg_data;
+  rand bit          is_write;
+
+  constraint c_valid_addr {
+    reg_addr inside {`GPIO_DIR, `GPIO_DATA_OUT,
+                     `GPIO_INT_EN, `GPIO_INT_TYPE};
+  }
+endclass
+
+// Interrupt test sequence
+class gpio_interrupt_seq extends uvm_sequence #(gpio_seq_item);
+  `uvm_object_utils(gpio_interrupt_seq)
+  rand int pin_num;
+  constraint c_pin { pin_num inside {[0:31]}; }
+
+  task body();
+    gpio_seq_item item;
+    // 1. Set pin as input
+    item = gpio_seq_item::type_id::create(&quot;dir&quot;);
+    start_item(item);
+    void&#x27;(item.randomize() with {
+      is_write==1; reg_addr==`GPIO_DIR;
+      reg_data[pin_num]==0;
+    });
+    finish_item(item);
+    // 2. Enable interrupt on this pin
+    item = gpio_seq_item::type_id::create(&quot;en&quot;);
+    start_item(item);
+    void&#x27;(item.randomize() with {
+      is_write==1; reg_addr==`GPIO_INT_EN;
+      reg_data[pin_num]==1;
+    });
+    finish_item(item);
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pll   seq item   scoreboard   constraints">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              PLL — Seq Item + Scoreboard + Constraints
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj604')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 PLL config exposed via APB: CTRL (EN/BYPASS/SRST/FRAC_EN), NDIV (pre-divider), MDIV (feedback), PDIV (post-divider), FDIV (fractional), STATUS (LOCK/LOST_LOCK/VCO_OOR). Fout = Fref * M / (N * P). VCO must stay in 800–3200 MHz range.</div>
+                <pre id="code-new-proj604">class pll_seq_item extends uvm_sequence_item;
+  `uvm_object_utils(pll_seq_item)
+  rand logic [7:0]  ndiv;
+  rand logic [11:0] mdiv;
+  rand logic [5:0]  pdiv;
+  rand logic        frac_en, bypass;
+  rand logic [23:0] fdiv;
+  rand int          fref_mhz;
+
+  // VCO must be 800–3200 MHz
+  constraint c_vco_lo  { (fref_mhz*mdiv/ndiv) &gt;= 800; }
+  constraint c_vco_hi  { (fref_mhz*mdiv/ndiv) &lt;= 3200; }
+  // Fout = 100–800 MHz
+  constraint c_fout    { (fref_mhz*mdiv/(ndiv*pdiv)) inside {[100:800]}; }
+  constraint c_ndiv    { ndiv inside {[1:16]}; }
+  constraint c_mdiv    { mdiv inside {[16:512]}; }
+  constraint c_pdiv    { pdiv inside {[1:8]}; }
+  constraint c_fref    { fref_mhz inside {24,25,26,38,40,52}; }
+
+  function real get_fout_mhz();
+    return real&#x27;(fref_mhz)*real&#x27;(mdiv) /
+           (real&#x27;(ndiv)*real&#x27;(pdiv));
+  endfunction
+endclass
+
+class pll_scoreboard extends uvm_scoreboard;
+  function void write(pll_seq_item item);
+    real vco = real&#x27;(item.fref_mhz)*real&#x27;(item.mdiv)/real&#x27;(item.ndiv);
+    if (vco&lt;800.0 || vco&gt;3200.0)
+      `uvm_error(&quot;PLL_SB&quot;,$sformatf(&quot;VCO OOR: %.1f MHz&quot;,vco))
+    else
+      `uvm_info(&quot;PLL_SB&quot;,$sformatf(&quot;OK fout=%.2f MHz&quot;,item.get_fout_mhz()),UVM_MEDIUM)
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="ahb   burst sequence   driver">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              AHB — Burst Sequence + Driver
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-proj605')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 AHB-Lite: transfers use HTRANS (IDLE/BUSY/NONSEQ/SEQ), HBURST (SINGLE/INCR/WRAP4/8/16), HSIZE (byte/hword/word). Wrapping bursts require naturally-aligned start address. HREADY extends transfer; HRESP signals error.</div>
+                <pre id="code-new-proj605">typedef enum logic [1:0] {
+  AHB_IDLE=2&#x27;b00, AHB_NONSEQ=2&#x27;b10, AHB_SEQ=2&#x27;b11
+} ahb_htrans_e;
+
+typedef enum logic [2:0] {
+  AHB_SINGLE=3&#x27;b000, AHB_WRAP4=3&#x27;b010,
+  AHB_INCR4=3&#x27;b011,  AHB_WRAP8=3&#x27;b100,
+  AHB_INCR8=3&#x27;b101,  AHB_WRAP16=3&#x27;b110
+} ahb_hburst_e;
+
+class ahb_seq_item extends uvm_sequence_item;
+  `uvm_object_utils(ahb_seq_item)
+  rand logic [31:0]  haddr;
+  rand logic [31:0]  hwdata;
+  rand logic         hwrite;
+  rand ahb_hburst_e  hburst;
+  rand logic [2:0]   hsize;
+
+  // Natural alignment for wrapping bursts
+  constraint c_wrap4  { (hburst==AHB_WRAP4)  -&gt; haddr[3:0]==4&#x27;h0; }
+  constraint c_wrap8  { (hburst==AHB_WRAP8)  -&gt; haddr[4:0]==5&#x27;h00; }
+  constraint c_wrap16 { (hburst==AHB_WRAP16) -&gt; haddr[5:0]==6&#x27;h00; }
+  constraint c_size   {
+    (hsize==3&#x27;b001) -&gt; haddr[0]==1&#x27;b0;    // halfword
+    (hsize==3&#x27;b010) -&gt; haddr[1:0]==2&#x27;b00; // word
+  }
+endclass
+
+// AHB burst sequence with wrap address calculation
+class ahb_burst_seq extends uvm_sequence #(ahb_seq_item);
+  `uvm_object_utils(ahb_burst_seq)
+  rand ahb_hburst_e burst_type;
+  rand logic [31:0] start_addr;
+
+  task body();
+    ahb_seq_item item;
+    int beats, step;
+    logic [31:0] addr = start_addr;
+    beats = (burst_type==AHB_WRAP4||burst_type==AHB_INCR4)  ? 4  :
+            (burst_type==AHB_WRAP8||burst_type==AHB_INCR8)  ? 8  :
+            (burst_type==AHB_WRAP16)                         ? 16 : 1;
+    step = 4; // word
+    for (int i=0; i&lt;beats; i++) begin
+      item = ahb_seq_item::type_id::create($sformatf(&quot;b%0d&quot;,i));
+      start_item(item);
+      void&#x27;(item.randomize() with {haddr==addr; hburst==burst_type;});
+      finish_item(item);
+      if (burst_type inside {AHB_WRAP4,AHB_WRAP8,AHB_WRAP16}) begin
+        int wsz = beats*step;
+        addr = (addr &amp; ~(wsz-1)) | ((addr+step) &amp; (wsz-1));
+      end else addr += step;
+    end
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW PROJECT_CODES FILES ABOVE THIS LINE -->
+        </ul>
       </div>
     </div>
   </div>
@@ -1076,7 +1435,7 @@ footer {
       <div class="folder-header" onclick="toggleFolder('folder-uvm')">
         <span class="folder-icon">📁</span>
         <span class="folder-name">UVM_COMPONENTS</span>
-        <span class="folder-count">14 FILES</span>
+        <span class="folder-count">26 FILES</span>
         <span class="folder-arrow">▶</span>
       </div>
       <div class="folder-body">
@@ -2876,6 +3235,1179 @@ endmodule</pre>
               </div>
             </div>
           </li>
+          <li class="file-item" data-name="apb seq item sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_seq_item.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">UVM Sequence Item for APB protocol. Holds address, data, write flag and delay with alignment constraints.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM / SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n1')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n1">class apb_seq_item extends uvm_sequence_item;
+  `uvm_object_utils_begin(apb_seq_item)
+    `uvm_field_int(addr,  UVM_ALL_ON)
+    `uvm_field_int(data,  UVM_ALL_ON)
+    `uvm_field_int(wr,    UVM_ALL_ON)
+    `uvm_field_int(delay, UVM_ALL_ON)
+  `uvm_object_utils_end
+
+  rand logic [31:0] addr;
+  rand logic [31:0] data;
+  rand logic        wr;
+  rand int unsigned delay;
+
+  constraint c_delay { delay inside {[0:5]}; }
+  constraint c_addr_align { addr[1:0] == 2&#x27;b00; }
+
+  function new(string name = &quot;apb_seq_item&quot;);
+    super.new(name);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb write seq sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_write_seq.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Write Sequence — drives N randomized write transactions to consecutive addresses.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM SEQUENCE</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n2')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n2">class apb_write_seq extends apb_base_seq;
+  `uvm_object_utils(apb_write_seq)
+  rand logic [31:0] start_addr;
+  rand int unsigned num_txn;
+  constraint c_num { num_txn inside {[4:16]}; }
+
+  task body();
+    apb_seq_item item;
+    repeat(num_txn) begin
+      item = apb_seq_item::type_id::create(&quot;item&quot;);
+      start_item(item);
+      if (!item.randomize() with { wr == 1; addr == start_addr; })
+        `uvm_fatal(&quot;RAND&quot;, &quot;Randomization failed&quot;)
+      start_addr += 4;
+      finish_item(item);
+    end
+  endtask
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb driver sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_driver.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB UVM Driver — implements SETUP and ACCESS phase protocol via clocking block. Gets items from sequencer and drives to VIF.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM DRIVER</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n3')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n3">class apb_driver extends uvm_driver #(apb_seq_item);
+  `uvm_component_utils(apb_driver)
+  virtual apb_if #(32,32) vif;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db #(virtual apb_if #(32,32))::get(this,&quot;&quot;,&quot;vif&quot;,vif))
+      `uvm_fatal(&quot;CFG&quot;,&quot;VIF not found&quot;)
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item;
+    forever begin
+      seq_item_port.get_next_item(item);
+      drive_item(item);
+      seq_item_port.item_done();
+    end
+  endtask
+
+  task drive_item(apb_seq_item item);
+    repeat(item.delay) @(vif.master_cb);
+    vif.master_cb.paddr  &lt;= item.addr;
+    vif.master_cb.pwrite &lt;= item.wr;
+    vif.master_cb.pwdata &lt;= item.wr ? item.data : &#x27;x;
+    vif.master_cb.psel   &lt;= 1;
+    vif.master_cb.penable&lt;= 0;
+    @(vif.master_cb);
+    vif.master_cb.penable &lt;= 1;
+    @(vif.master_cb iff vif.pready);
+    if (!item.wr) item.data = vif.prdata;
+    vif.master_cb.psel    &lt;= 0;
+    vif.master_cb.penable &lt;= 0;
+  endtask
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb monitor sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_monitor.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Monitor — observes bus transactions on clocking block, captures completed APB accesses and broadcasts via analysis port.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM MONITOR</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n4')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n4">class apb_monitor extends uvm_monitor;
+  `uvm_component_utils(apb_monitor)
+  uvm_analysis_port #(apb_seq_item) ap;
+  virtual apb_if #(32,32) vif;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    ap = new(&quot;ap&quot;, this);
+    if (!uvm_config_db #(virtual apb_if #(32,32))::get(this,&quot;&quot;,&quot;vif&quot;,vif))
+      `uvm_fatal(&quot;CFG&quot;,&quot;VIF not found&quot;)
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item;
+    forever begin
+      @(vif.monitor_cb iff (vif.psel &amp;&amp; vif.penable &amp;&amp; vif.pready));
+      item = apb_seq_item::type_id::create(&quot;mon_item&quot;);
+      item.addr = vif.monitor_cb.paddr;
+      item.wr   = vif.monitor_cb.pwrite;
+      item.data = item.wr ? vif.monitor_cb.pwdata : vif.monitor_cb.prdata;
+      ap.write(item);
+    end
+  endtask
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb scoreboard refmodel sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_scoreboard_refmodel.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Scoreboard with reference model — uses associative array as shadow register map. Compares DUT read data against expected writes.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM SCOREBOARD</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n5')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n5">class apb_scoreboard extends uvm_scoreboard;
+  `uvm_component_utils(apb_scoreboard)
+  uvm_analysis_imp #(apb_seq_item, apb_scoreboard) analysis_export;
+  int unsigned pass_cnt, fail_cnt;
+  logic [31:0] ref_mem [logic [31:0]]; // shadow register map
+
+  function void write(apb_seq_item item);
+    if (item.wr) begin
+      ref_mem[item.addr] = item.data;
+    end else begin
+      if (ref_mem.exists(item.addr)) begin
+        if (ref_mem[item.addr] === item.data) begin
+          pass_cnt++;
+          `uvm_info(&quot;SB&quot;, $sformatf(&quot;PASS addr=0x%08h&quot;, item.addr), UVM_MEDIUM)
+        end else begin
+          fail_cnt++;
+          `uvm_error(&quot;SB&quot;, $sformatf(&quot;FAIL addr=0x%08h exp=0x%08h got=0x%08h&quot;,
+                     item.addr, ref_mem[item.addr], item.data))
+        end
+      end
+    end
+  endfunction
+
+  function void report_phase(uvm_phase phase);
+    `uvm_info(&quot;SB&quot;, $sformatf(&quot;RESULTS: PASS=%0d FAIL=%0d&quot;, pass_cnt, fail_cnt), UVM_NONE)
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb agent sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_agent.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Agent — container for driver, monitor, coverage, and sequencer. Supports ACTIVE/PASSIVE modes.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM AGENT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n6')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n6">class apb_agent extends uvm_agent;
+  `uvm_component_utils(apb_agent)
+  apb_driver   drv;
+  apb_monitor  mon;
+  apb_coverage cov;
+  uvm_sequencer #(apb_seq_item) seqr;
+  uvm_analysis_port #(apb_seq_item) ap;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    ap  = new(&quot;ap&quot;, this);
+    mon = apb_monitor::type_id::create(&quot;mon&quot;, this);
+    cov = apb_coverage::type_id::create(&quot;cov&quot;, this);
+    if (get_is_active() == UVM_ACTIVE) begin
+      drv  = apb_driver::type_id::create(&quot;drv&quot;, this);
+      seqr = uvm_sequencer #(apb_seq_item)::type_id::create(&quot;seqr&quot;, this);
+    end
+  endfunction
+
+  function void connect_phase(uvm_phase phase);
+    mon.ap.connect(ap);
+    mon.ap.connect(cov.analysis_export);
+    if (get_is_active() == UVM_ACTIVE)
+      drv.seq_item_port.connect(seqr.seq_item_export);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb env sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_env.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Environment — instantiates agent and scoreboard, connects analysis port from agent to scoreboard.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM ENVIRONMENT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n7')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n7">class apb_env extends uvm_env;
+  `uvm_component_utils(apb_env)
+  apb_agent      agent;
+  apb_scoreboard sb;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    agent = apb_agent::type_id::create(&quot;agent&quot;, this);
+    sb    = apb_scoreboard::type_id::create(&quot;sb&quot;, this);
+  endfunction
+
+  function void connect_phase(uvm_phase phase);
+    agent.ap.connect(sb.analysis_export);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="virtual sequencer vseq sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              virtual_sequencer_vseq.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Virtual Sequencer and Virtual Sequence — coordinates multiple protocol sequencers from a single top-level sequence.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM VIRTUAL SEQ</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n8')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n8">class apb_vseqr extends uvm_sequencer;
+  `uvm_component_utils(apb_vseqr)
+  apb_agent agent_h;
+  function new(string name, uvm_component parent); super.new(name, parent); endfunction
+endclass
+
+class apb_vseq extends uvm_sequence;
+  `uvm_object_utils(apb_vseq)
+  apb_vseqr vseqr;
+
+  task body();
+    apb_write_seq wseq;
+    apb_rw_seq    rwseq;
+    wseq  = apb_write_seq::type_id::create(&quot;wseq&quot;);
+    rwseq = apb_rw_seq::type_id::create(&quot;rwseq&quot;);
+    wseq.start(vseqr.agent_h.seqr);
+    rwseq.start(vseqr.agent_h.seqr);
+  endtask
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="factory override sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              factory_override.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">UVM Factory Override — replaces seq_item type globally or per-instance without modifying TB code. Essential for error injection.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM FACTORY</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n9')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n9">// Type override — replace everywhere
+apb_seq_item::type_id::set_type_override(
+  error_apb_seq_item::type_id::get());
+
+// Instance override — only for specific path
+apb_seq_item::type_id::set_inst_override(
+  error_apb_seq_item::type_id::get(),
+  &quot;uvm_test_top.env.agent.*&quot;);
+
+// Error seq_item — forces odd address (triggers SLVERR)
+class error_apb_seq_item extends apb_seq_item;
+  `uvm_object_utils(error_apb_seq_item)
+  constraint c_force_error { addr[0] == 1&#x27;b1; }
+  function new(string name = &quot;error_apb_seq_item&quot;);
+    super.new(name);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm callbacks sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              uvm_callbacks.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">UVM Callbacks — pre/post drive hooks allow behavior customization without modifying the driver. Used for error injection and logging.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM CALLBACKS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n10')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n10">class apb_driver_cb extends uvm_callback;
+  `uvm_object_utils(apb_driver_cb)
+  virtual task pre_drive(apb_seq_item item); endtask
+  virtual task post_drive(apb_seq_item item); endtask
+  function new(string name = &quot;apb_driver_cb&quot;); super.new(name); endfunction
+endclass
+
+// In driver class:
+// `uvm_register_cb(apb_driver, apb_driver_cb)
+// Before driving:
+// `uvm_do_callbacks(apb_driver, apb_driver_cb, pre_drive(item))
+// After driving:
+// `uvm_do_callbacks(apb_driver, apb_driver_cb, post_drive(item))</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="tlm analysis fifo predictor sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              tlm_analysis_fifo_predictor.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">TLM Analysis FIFO Predictor — shadow register model that predicts read values from previous writes, feeds scoreboard.</p>
+              <div class="code-header">
+                <span class="code-lang">UVM TLM</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n11')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n11">class apb_predictor extends uvm_subscriber #(apb_seq_item);
+  `uvm_component_utils(apb_predictor)
+  uvm_tlm_analysis_fifo #(apb_seq_item) input_fifo;
+  uvm_analysis_port #(apb_seq_item)     predict_port;
+  logic [31:0] shadow_reg [logic [31:0]];
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    input_fifo   = new(&quot;input_fifo&quot;, this);
+    predict_port = new(&quot;predict_port&quot;, this);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item, predicted;
+    forever begin
+      input_fifo.get(item);
+      if (item.wr) shadow_reg[item.addr] = item.data;
+      else begin
+        predicted = apb_seq_item::type_id::create(&quot;predicted&quot;);
+        predicted.addr = item.addr;
+        predicted.data = shadow_reg.exists(item.addr) ?
+                         shadow_reg[item.addr] : 32&#x27;hx;
+        predict_port.write(predicted);
+      end
+    end
+  endtask
+
+  function void write(apb_seq_item t);
+    input_fifo.write(t);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="parameterized class sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              parameterized_class.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Parameterized Class — generic scoreboard/queue that works with any data type and configurable depth. Avoids code duplication.</p>
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n12')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n12">class generic_scoreboard #(type T = int, int DEPTH = 16);
+  T queue[$:DEPTH];
+
+  function void push(T item);
+    queue.push_back(item);
+  endfunction
+
+  function T pop();
+    return queue.pop_front();
+  endfunction
+
+  function bit is_empty();
+    return (queue.size() == 0);
+  endfunction
+endclass
+
+// Usage examples:
+// generic_scoreboard #(apb_seq_item, 32) apb_sb;
+// generic_scoreboard #(int, 8)           int_sb;</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb interface clocking block sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_interface_clocking_block.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">APB Interface with Clocking Blocks and Modports — eliminates race conditions, defines master/monitor/slave views.</p>
+              <div class="code-header">
+                <span class="code-lang">SV INTERFACE</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n13')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n13">interface apb_if #(parameter ADDR_WIDTH=32, DATA_WIDTH=32)(
+  input logic pclk, presetn);
+
+  logic [ADDR_WIDTH-1:0] paddr;
+  logic                  psel, penable, pwrite;
+  logic [DATA_WIDTH-1:0] pwdata, prdata;
+  logic                  pready, pslverr;
+
+  clocking master_cb @(posedge pclk);
+    default input #1 output #1;
+    output paddr, psel, penable, pwrite, pwdata;
+    input  prdata, pready, pslverr;
+  endclocking
+
+  clocking monitor_cb @(posedge pclk);
+    default input #1;
+    input paddr,psel,penable,pwrite,pwdata,prdata,pready,pslverr;
+  endclocking
+
+  modport master  (clocking master_cb,  input pclk, presetn);
+  modport monitor (clocking monitor_cb, input pclk, presetn);
+  modport slave   (input paddr,psel,penable,pwrite,pwdata,
+                   output prdata,pready,pslverr);
+endinterface</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="fork join variants sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              fork_join_variants.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Fork-Join Variants — fork/join waits all, fork/join_any waits first, fork/join_none fires and continues. Disable fork kills all spawned threads.</p>
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n14')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n14">// fork-join: wait ALL threads
+fork
+  task1();
+  task2();
+join
+
+// fork-join_any: wait FIRST thread to finish
+fork
+  begin #100ns; $display(&quot;fast&quot;); end
+  begin #500ns; $display(&quot;slow&quot;); end
+join_any
+disable fork; // kill remaining threads
+
+// fork-join_none: fire and forget
+fork
+  monitor_bus();
+  generate_stimulus();
+join_none
+
+// Timeout pattern with disable fork
+task fork_demo();
+  fork
+    begin : timeout_thread
+      #1000ns; $display(&quot;TIMEOUT&quot;);
+    end
+    begin : work_thread
+      do_work();
+      disable timeout_thread;
+    end
+  join_any
+  disable fork;
+endtask</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="ipc mailbox semaphore event sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ipc_mailbox_semaphore_event.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Inter-Process Communication — typed mailbox (bounded FIFO), semaphore (mutex), and event for producer-consumer synchronization.</p>
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n15')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n15">class ipc_demo;
+  mailbox #(int) mbx;   // typed, bounded mailbox
+  semaphore       sem;
+  event           ev_done;
+
+  task producer();
+    for (int i = 0; i &lt; 10; i++) begin
+      sem.get(1);          // acquire mutex
+      mbx.put(i);          // send to consumer
+      sem.put(1);          // release mutex
+    end
+    -&gt; ev_done;            // signal done
+  endtask
+
+  task consumer();
+    int val;
+    @ev_done;              // wait for producer
+    while (mbx.try_get(val))
+      $display(&quot;Got: %0d&quot;, val);
+  endtask
+
+  function new();
+    mbx = new(4);          // depth = 4
+    sem = new(1);          // 1 key = mutex
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="sv collections dynamic assoc sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              sv_collections_dynamic_assoc.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Dynamic Arrays, Queues, Associative Arrays — resize, preserve, insert, delete operations with practical patterns.</p>
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n16')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n16">class collections_demo;
+  int dyn[];           // dynamic array
+  int queue[$];        // unbounded queue
+  int assoc[string];   // associative array
+
+  function void demo();
+    // dynamic array — allocate then resize+copy
+    dyn = new[8];
+    dyn = new[16](dyn);
+
+    // queue operations
+    queue.push_back(10);
+    queue.push_front(5);
+    queue.delete(0);        // delete by index
+
+    // associative array
+    assoc[&quot;clk_freq&quot;] = 100;
+    if (assoc.exists(&quot;clk_freq&quot;))
+      $display(&quot;clk_freq=%0d&quot;, assoc[&quot;clk_freq&quot;]);
+    assoc.delete(&quot;clk_freq&quot;);
+
+    // sort queue
+    queue.sort();
+    queue.rsort();
+
+    // find with expression
+    int found[$] = queue.find with (item &gt; 5);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="typedef enum struct union sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              typedef_enum_struct_union.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Typedef, Enum, Struct, Union — APB state machine types showing packed struct for transactions and union for byte/word access.</p>
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm-n17')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-uvm-n17">typedef enum logic [1:0] {
+  IDLE  = 2&#x27;b00,
+  SETUP = 2&#x27;b01,
+  ACCESS= 2&#x27;b10,
+  ERROR = 2&#x27;b11
+} apb_state_e;
+
+typedef struct packed {
+  logic [31:0] addr;
+  logic [31:0] data;
+  logic        wr;
+  apb_state_e  state;
+} apb_pkt_t;
+
+// Union: same memory as word or 4 bytes
+typedef union packed {
+  logic [31:0]    word;
+  logic [3:0][7:0] bytes;  // bytes[3]=MSB, bytes[0]=LSB
+} word_union_t;
+
+// Usage
+apb_pkt_t pkt;
+word_union_t wu;
+wu.word   = 32&#x27;hDEAD_BEEF;
+wu.bytes[3] == 8&#x27;hDE; // true</pre></div>
+            </div>
+          </li>
+          
+          <li class="file-item" data-name="apb uvm sequence item">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              APB UVM Sequence Item
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm100')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The sequence item (transaction) is the fundamental data object passed between sequences, driver, and monitor. It uses uvm_field macros for auto copy/print/compare and defines constraints for valid stimulus.</div>
+                <pre id="code-new-uvm100">class apb_seq_item extends uvm_sequence_item;
+  `uvm_object_utils_begin(apb_seq_item)
+    `uvm_field_int(addr,  UVM_ALL_ON)
+    `uvm_field_int(data,  UVM_ALL_ON)
+    `uvm_field_int(wr,    UVM_ALL_ON)
+    `uvm_field_int(delay, UVM_ALL_ON)
+  `uvm_object_utils_end
+
+  rand logic [31:0] addr;
+  rand logic [31:0] data;
+  rand logic        wr;
+  rand int unsigned delay;
+
+  constraint c_delay      { delay inside {[0:5]}; }
+  constraint c_addr_align { addr[1:0] == 2&#x27;b00; }
+
+  function new(string name = &quot;apb_seq_item&quot;);
+    super.new(name);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb write   read after write sequence">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              APB Write + Read-After-Write Sequence
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm101')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A write sequence drives N write transactions to sequential addresses. The read-after-write sequence saves the written address/data then immediately reads it back — a basic data-integrity check.</div>
+                <pre id="code-new-uvm101">// Write Sequence
+class apb_write_seq extends uvm_sequence #(apb_seq_item);
+  `uvm_object_utils(apb_write_seq)
+  rand logic [31:0] start_addr;
+  rand int unsigned num_txn;
+  constraint c_num { num_txn inside {[4:16]}; }
+
+  task body();
+    apb_seq_item item;
+    repeat(num_txn) begin
+      item = apb_seq_item::type_id::create(&quot;item&quot;);
+      start_item(item);
+      if (!item.randomize() with { wr==1; addr==start_addr; })
+        `uvm_fatal(&quot;RAND&quot;,&quot;Randomization failed&quot;)
+      start_addr += 4;
+      finish_item(item);
+    end
+  endtask
+endclass
+
+// Read-After-Write Sequence
+class apb_rw_seq extends uvm_sequence #(apb_seq_item);
+  `uvm_object_utils(apb_rw_seq)
+  task body();
+    apb_seq_item wr_item, rd_item;
+    logic [31:0] saved_addr;
+    wr_item = apb_seq_item::type_id::create(&quot;wr&quot;);
+    start_item(wr_item);
+    void&#x27;(wr_item.randomize() with { wr==1; });
+    saved_addr = wr_item.addr;
+    finish_item(wr_item);
+
+    rd_item = apb_seq_item::type_id::create(&quot;rd&quot;);
+    start_item(rd_item);
+    void&#x27;(rd_item.randomize() with { wr==0; addr==saved_addr; });
+    finish_item(rd_item);
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb uvm driver">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              APB UVM Driver
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm102')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The driver receives sequence items from the sequencer via seq_item_port, translates them to pin-level activity on the virtual interface. It implements the two-phase APB protocol: SETUP then ACCESS.</div>
+                <pre id="code-new-uvm102">class apb_driver extends uvm_driver #(apb_seq_item);
+  `uvm_component_utils(apb_driver)
+  virtual apb_if #(32,32) vif;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db #(virtual apb_if #(32,32))::get(
+        this,&quot;&quot;,&quot;vif&quot;,vif))
+      `uvm_fatal(&quot;CFG&quot;,&quot;VIF not found&quot;)
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item;
+    vif.master_cb.psel    &lt;= 0;
+    vif.master_cb.penable &lt;= 0;
+    forever begin
+      seq_item_port.get_next_item(item);
+      drive_item(item);
+      seq_item_port.item_done();
+    end
+  endtask
+
+  task drive_item(apb_seq_item item);
+    repeat(item.delay) @(vif.master_cb);
+    // SETUP phase
+    vif.master_cb.paddr   &lt;= item.addr;
+    vif.master_cb.pwrite  &lt;= item.wr;
+    vif.master_cb.pwdata  &lt;= item.wr ? item.data : &#x27;x;
+    vif.master_cb.psel    &lt;= 1;
+    vif.master_cb.penable &lt;= 0;
+    @(vif.master_cb);
+    // ACCESS phase
+    vif.master_cb.penable &lt;= 1;
+    @(vif.master_cb iff vif.pready);
+    if (!item.wr) item.data = vif.prdata;
+    vif.master_cb.psel    &lt;= 0;
+    vif.master_cb.penable &lt;= 0;
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb uvm monitor">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              APB UVM Monitor
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm103')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The monitor passively observes the interface using a monitor clocking block. It samples completed APB transactions (when psel+penable+pready) and broadcasts them via an analysis port to scoreboard and coverage.</div>
+                <pre id="code-new-uvm103">class apb_monitor extends uvm_monitor;
+  `uvm_component_utils(apb_monitor)
+  uvm_analysis_port #(apb_seq_item) ap;
+  virtual apb_if #(32,32) vif;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    ap = new(&quot;ap&quot;, this);
+    if (!uvm_config_db #(virtual apb_if #(32,32))::get(
+        this,&quot;&quot;,&quot;vif&quot;,vif))
+      `uvm_fatal(&quot;CFG&quot;,&quot;VIF not found&quot;)
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item;
+    forever begin
+      // Wait for completed APB transfer
+      @(vif.monitor_cb iff
+        (vif.psel &amp;&amp; vif.penable &amp;&amp; vif.pready));
+      item = apb_seq_item::type_id::create(&quot;mon_item&quot;);
+      item.addr = vif.monitor_cb.paddr;
+      item.wr   = vif.monitor_cb.pwrite;
+      item.data = item.wr ? vif.monitor_cb.pwdata
+                          : vif.monitor_cb.prdata;
+      ap.write(item);  // broadcast to subscribers
+    end
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb scoreboard with reference model">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              APB Scoreboard with Reference Model
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm104')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The scoreboard maintains a shadow register map (associative array). On writes it updates the model; on reads it compares DUT output vs expected. Reports pass/fail counts in report_phase.</div>
+                <pre id="code-new-uvm104">class apb_scoreboard extends uvm_scoreboard;
+  `uvm_component_utils(apb_scoreboard)
+  uvm_analysis_imp #(apb_seq_item,apb_scoreboard) analysis_export;
+  int unsigned pass_cnt, fail_cnt;
+  logic [31:0] ref_mem [logic [31:0]]; // shadow model
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    analysis_export = new(&quot;analysis_export&quot;, this);
+  endfunction
+
+  function void write(apb_seq_item item);
+    if (item.wr) begin
+      ref_mem[item.addr] = item.data;
+    end else begin
+      if (ref_mem.exists(item.addr)) begin
+        if (ref_mem[item.addr] === item.data) begin
+          pass_cnt++;
+          `uvm_info(&quot;SB&quot;,$sformatf(&quot;PASS addr=0x%h&quot;,item.addr),UVM_MEDIUM)
+        end else begin
+          fail_cnt++;
+          `uvm_error(&quot;SB&quot;,$sformatf(
+            &quot;FAIL addr=0x%h exp=0x%h got=0x%h&quot;,
+            item.addr,ref_mem[item.addr],item.data))
+        end
+      end
+    end
+  endfunction
+
+  function void report_phase(uvm_phase phase);
+    `uvm_info(&quot;SB&quot;,$sformatf(
+      &quot;RESULTS: PASS=%0d FAIL=%0d&quot;,pass_cnt,fail_cnt),UVM_NONE)
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm agent   active and passive">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM Agent — Active and Passive
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm105')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 An agent bundles driver+sequencer+monitor (active) or just monitor (passive). Active agents generate stimulus; passive agents only observe. get_is_active() returns UVM_ACTIVE or UVM_PASSIVE.</div>
+                <pre id="code-new-uvm105">class apb_agent extends uvm_agent;
+  `uvm_component_utils(apb_agent)
+  apb_driver   drv;
+  apb_monitor  mon;
+  apb_coverage cov;
+  uvm_sequencer #(apb_seq_item) seqr;
+  uvm_analysis_port #(apb_seq_item) ap;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    ap  = new(&quot;ap&quot;, this);
+    mon = apb_monitor::type_id::create(&quot;mon&quot;, this);
+    cov = apb_coverage::type_id::create(&quot;cov&quot;, this);
+    if (get_is_active() == UVM_ACTIVE) begin
+      drv  = apb_driver::type_id::create(&quot;drv&quot;, this);
+      seqr = uvm_sequencer #(apb_seq_item)::
+             type_id::create(&quot;seqr&quot;,this);
+    end
+  endfunction
+
+  function void connect_phase(uvm_phase phase);
+    mon.ap.connect(ap);
+    mon.ap.connect(cov.analysis_export);
+    if (get_is_active() == UVM_ACTIVE)
+      drv.seq_item_port.connect(seqr.seq_item_export);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm environment and base test">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM Environment and Base Test
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm106')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The environment (uvm_env) instantiates and connects agents and scoreboards. The base test creates the env, raises objection to keep simulation alive, and drops it when done.</div>
+                <pre id="code-new-uvm106">// Environment
+class apb_env extends uvm_env;
+  `uvm_component_utils(apb_env)
+  apb_agent      agent;
+  apb_scoreboard sb;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    agent = apb_agent::type_id::create(&quot;agent&quot;,this);
+    sb    = apb_scoreboard::type_id::create(&quot;sb&quot;,this);
+  endfunction
+
+  function void connect_phase(uvm_phase phase);
+    agent.ap.connect(sb.analysis_export);
+  endfunction
+endclass
+
+// Base Test
+class apb_base_test extends uvm_test;
+  `uvm_component_utils(apb_base_test)
+  apb_env env;
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    env = apb_env::type_id::create(&quot;env&quot;,this);
+    // Pass VIF down the hierarchy
+    uvm_config_db #(virtual apb_if #(32,32))::set(
+      this,&quot;env.agent.*&quot;,&quot;vif&quot;,apb_vif);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_write_seq seq;
+    phase.raise_objection(this);
+    seq = apb_write_seq::type_id::create(&quot;seq&quot;);
+    void&#x27;(seq.randomize());
+    seq.start(env.agent.seqr);
+    phase.drop_objection(this);
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="virtual sequence and virtual sequencer">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Virtual Sequence and Virtual Sequencer
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm107')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A virtual sequencer holds handles to multiple sub-sequencers. A virtual sequence coordinates multiple protocol sequences in parallel or series — essential for multi-agent environments.</div>
+                <pre id="code-new-uvm107">// Virtual Sequencer
+class tb_vseqr extends uvm_sequencer;
+  `uvm_component_utils(tb_vseqr)
+  apb_agent  apb_agent_h;
+  ahb_agent  ahb_agent_h;
+  function new(string name, uvm_component parent);
+    super.new(name,parent);
+  endfunction
+endclass
+
+// Virtual Sequence
+class tb_vseq extends uvm_sequence;
+  `uvm_object_utils(tb_vseq)
+  tb_vseqr vseqr;
+  function new(string name=&quot;tb_vseq&quot;); super.new(name); endfunction
+
+  task body();
+    apb_write_seq apb_seq;
+    ahb_burst_seq ahb_seq;
+
+    // Run APB and AHB sequences in parallel
+    fork
+      begin
+        apb_seq = apb_write_seq::type_id::create(&quot;apb_seq&quot;);
+        void&#x27;(apb_seq.randomize());
+        apb_seq.start(vseqr.apb_agent_h.seqr);
+      end
+      begin
+        ahb_seq = ahb_burst_seq::type_id::create(&quot;ahb_seq&quot;);
+        void&#x27;(ahb_seq.randomize());
+        ahb_seq.start(vseqr.ahb_agent_h.seqr);
+      end
+    join
+  endtask
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm factory override">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM Factory Override
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm108')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The UVM factory lets you substitute a derived class for a base class without changing TB code. Type override replaces globally; instance override targets a specific hierarchy path.</div>
+                <pre id="code-new-uvm108">// Error injection item — overrides base item
+class error_apb_item extends apb_seq_item;
+  `uvm_object_utils(error_apb_item)
+  // Force misaligned address to trigger SLVERR
+  constraint c_force_error { addr[1:0] != 2&#x27;b00; }
+  function new(string name=&quot;error_apb_item&quot;);
+    super.new(name);
+  endfunction
+endclass
+
+// In test — type override (all instances)
+class error_test extends apb_base_test;
+  `uvm_component_utils(error_test)
+  function void build_phase(uvm_phase phase);
+    // Override BEFORE creating env
+    apb_seq_item::type_id::set_type_override(
+      error_apb_item::type_id::get());
+    super.build_phase(phase);
+  endfunction
+endclass
+
+// Instance override (only this agent&#x27;s driver)
+// apb_seq_item::type_id::set_inst_override(
+//   error_apb_item::type_id::get(),
+//   &quot;uvm_test_top.env.agent.drv&quot;);
+
+// Print factory state for debug
+// factory.print();</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm config db usage">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM Config DB Usage
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm109')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 uvm_config_db is a hierarchical key-value store. set() places a value at a scope; get() retrieves it. Used to pass virtual interfaces, agent configuration, and test parameters down the component hierarchy.</div>
+                <pre id="code-new-uvm109">// ── In tb_top (highest scope) ──
+// Register VIF so all components can find it
+uvm_config_db #(virtual apb_if #(32,32))::set(
+  null, &quot;uvm_test_top.*&quot;, &quot;vif&quot;, apb_vif_inst);
+
+// Pass integer config
+uvm_config_db #(int)::set(
+  null, &quot;uvm_test_top.env.agent.drv&quot;, &quot;num_idle&quot;, 3);
+
+// Set agent to passive
+uvm_config_db #(uvm_active_passive_enum)::set(
+  null, &quot;uvm_test_top.env.agent&quot;, &quot;is_active&quot;, UVM_PASSIVE);
+
+// ── In component build_phase ──
+virtual apb_if #(32,32) vif;
+int num_idle;
+
+if (!uvm_config_db #(virtual apb_if #(32,32))::get(
+    this,&quot;&quot;,&quot;vif&quot;,vif))
+  `uvm_fatal(&quot;CFG&quot;,&quot;VIF not found in config_db&quot;)
+
+if (!uvm_config_db #(int)::get(this,&quot;&quot;,&quot;num_idle&quot;,num_idle))
+  num_idle = 0;  // default</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm tlm analysis fifo and predictor">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM TLM Analysis FIFO and Predictor
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm110')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 An analysis FIFO decouples the monitor write() from the scoreboard — the monitor never blocks. A predictor computes expected output from inputs, separating prediction logic from checking logic.</div>
+                <pre id="code-new-uvm110">class apb_predictor extends uvm_subscriber #(apb_seq_item);
+  `uvm_component_utils(apb_predictor)
+  uvm_tlm_analysis_fifo #(apb_seq_item) input_fifo;
+  uvm_analysis_port #(apb_seq_item)     predict_port;
+  logic [31:0] shadow_reg [logic [31:0]];
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    input_fifo   = new(&quot;input_fifo&quot;, this);
+    predict_port = new(&quot;predict_port&quot;, this);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    apb_seq_item item, predicted;
+    forever begin
+      input_fifo.get(item);  // non-blocking read from FIFO
+      if (item.wr)
+        shadow_reg[item.addr] = item.data;
+      else begin
+        predicted = apb_seq_item::type_id::create(&quot;pred&quot;);
+        predicted.addr = item.addr;
+        predicted.data = shadow_reg.exists(item.addr)
+                         ? shadow_reg[item.addr] : 32&#x27;hx;
+        predict_port.write(predicted); // send to comparator
+      end
+    end
+  endtask
+
+  function void write(apb_seq_item t);
+    input_fifo.write(t);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="uvm callbacks">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM Callbacks
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-uvm111')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Callbacks allow customising a component&#x27;s behaviour (e.g. error injection) without modifying its code. The component defines hook methods; users register callback objects that override those hooks.</div>
+                <pre id="code-new-uvm111">// Step 1: Define callback class with hook methods
+class apb_driver_cb extends uvm_callback;
+  `uvm_object_utils(apb_driver_cb)
+  virtual task pre_drive(apb_seq_item item);  endtask
+  virtual task post_drive(apb_seq_item item); endtask
+  function new(string name=&quot;apb_driver_cb&quot;); super.new(name); endfunction
+endclass
+
+// Step 2: Register in driver
+class apb_driver extends uvm_driver #(apb_seq_item);
+  `uvm_register_cb(apb_driver, apb_driver_cb)
+  task drive_item(apb_seq_item item);
+    `uvm_do_callbacks(apb_driver, apb_driver_cb, pre_drive(item))
+    // ... actual drive logic ...
+    `uvm_do_callbacks(apb_driver, apb_driver_cb, post_drive(item))
+  endtask
+endclass
+
+// Step 3: Error injection callback
+class error_inject_cb extends apb_driver_cb;
+  `uvm_object_utils(error_inject_cb)
+  virtual task pre_drive(apb_seq_item item);
+    if ($urandom_range(0,9) == 0)
+      item.addr[1:0] = $urandom; // corrupt alignment
+  endtask
+endclass
+
+// Step 4: Register in test
+// apb_driver_cb::type_id::set_type_override(error_inject_cb::type_id::get());</pre>
+              </div>
+            </div>
+          </li>
           <!-- ✅ ADD NEW UVM_COMPONENTS FILES ABOVE THIS LINE -->
         </ul>
       </div>
@@ -2885,7 +4417,7 @@ endmodule</pre>
       <div class="folder-header" onclick="toggleFolder('folder-con')">
         <span class="folder-icon">📁</span>
         <span class="folder-name">SV_CONSTRAINTS</span>
-        <span class="folder-count">26 FILES</span>
+        <span class="folder-count">52 FILES</span>
         <span class="folder-arrow">▶</span>
       </div>
       <div class="folder-body">
@@ -4173,6 +5705,1385 @@ endmodule</pre>
               </div>
             </div>
           </li>
+          <li class="file-item" data-name="pattern 0101010101 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_0101010101.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Alternating 0-1 pattern using modulo index.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n1')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n1">class cons;
+  rand int a[];
+  constraint x { a.size == 10; }
+  constraint y {
+    foreach(a[i])
+      if(i%2==0) a[i]==0; else a[i]==1;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 1234554321 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_1234554321.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Pyramid pattern 1-2-3-4-5-5-4-3-2-1.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n2')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n2">class cons;
+  rand int a[];
+  constraint x { a.size == 10; }
+  constraint y {
+    foreach(a[i])
+      if(i&lt;5) a[i]==i+1; else a[i]==10-i;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 9 19 29 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_9_19_29.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Arithmetic progression: 9,19,29,39... using index formula.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n3')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n3">class cons;
+  rand int a[];
+  constraint x { a.size == 7; }
+  constraint y { foreach(a[i]) a[i] == (i*10)+9; }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 5 neg10 15 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_5_neg10_15.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Alternating sign pattern: 5,-10,15,-20,25,-30.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n4')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n4">class cons;
+  rand int a[];
+  constraint size { a.size == 6; }
+  constraint x {
+    foreach(a[i])
+      if(i%2==0) a[i]==(i*5)+5; else a[i]==-5*(i+1);
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 1122334455 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_1122334455.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Duplicate pairs: 1,1,2,2,3,3,4,4,5,5 using (i+2)/2.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n5')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n5">class cons;
+  rand int da[];
+  constraint size { da.size == 10; }
+  constraint x { foreach(da[i]) da[i] == (i+2)/2; }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, da);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="random float range sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              random_float_range.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Generate random float between 1.35 and 2.57 using integer scaling.</p>
+              <div class="code-header">
+                <span class="code-lang">SV PATTERN CONSTRAINT</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n6')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n6">class cons;
+  rand int a;
+  real b;
+  constraint size { a inside {[1350:2570]}; }
+  function void post_randomize();
+    b = a / 1000.0;
+    $display(&quot;Float: %0f&quot;, b);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="power of 2 constraint sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              power_of_2_constraint.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Power of 2 without using 2**n — only one bit high (onehot trick).</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n7')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n7">class cons;
+  rand bit [7:0] num;
+  constraint power2 {
+    num != 0;
+    (num &amp; (num - 1)) == 0; // exactly one bit set
+  }
+  function void post_randomize();
+    $display(&quot;Power of 2: %0d&quot;, num);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="queue four sevens sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              queue_four_sevens.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Queue size=15 with exactly four 7s and no two consecutive 7s.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n8')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n8">class A;
+  rand int q[$];
+  constraint c_size  { q.size() == 15; }
+  constraint c_count { q.sum() with (int&#x27;(item == 7)) == 4; }
+  constraint no_adj  {
+    foreach(q[i])
+      if(i&gt;0) !(q[i]==7 &amp;&amp; q[i-1]==7);
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="ascending unique no keyword sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ascending_unique_no_keyword.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Ascending unique array without unique keyword — foreach nested comparison.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n9')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n9">class A;
+  rand int arr[5];
+  constraint asc_unique {
+    foreach(arr[i])
+      if(i &gt; 0) arr[i] &gt; arr[i-1];
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="memory partition 8regions sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              memory_partition_8regions.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Partition 1MB memory into 8 non-overlapping regions with contiguous boundaries.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n10')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n10">class mem;
+  rand int start[8];
+  rand int size[8];
+  constraint total {
+    start[0] == 0;
+    foreach(start[i])
+      if(i&gt;0) start[i] == start[i-1] + size[i-1];
+    start[7] + size[7] == 1024*1024;
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="2d neighbor not equal sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              2d_neighbor_not_equal.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">2D array constraint: no two horizontally or vertically adjacent cells are equal.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n11')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n11">class cons;
+  rand int arr[][];
+  constraint c {
+    foreach(arr[i,j]) {
+      if(i&gt;0) arr[i][j] != arr[i-1][j];
+      if(j&gt;0) arr[i][j] != arr[i][j-1];
+    }
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="dynamic array 5 50to60 unique sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              dynamic_array_5_50to60_unique.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Dynamic array size=5, values in [50:60], all unique.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n12')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n12">class A;
+  rand int arr[];
+  constraint c {
+    arr.size() == 5;
+    foreach(arr[i]) arr[i] inside {[50:60]};
+    foreach(arr[i])
+      foreach(arr[j])
+        if(i != j) arr[i] != arr[j];
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="cyclic rand without randc sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              cyclic_rand_without_randc.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Implement randc behavior manually using a queue to track used values.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n13')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n13">class cons;
+  rand bit [1:0] a;
+  int que[$];
+  constraint x { !(a inside {que}); }
+  function void post_randomize();
+    que.push_front(a);
+    if(que.size == 2**$size(a)) que = {};
+    $display(&quot;a=%0d&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="even loc odd num odd loc even sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              even_loc_odd_num_odd_loc_even.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Even indices hold odd numbers, odd indices hold even numbers.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n14')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n14">class cons;
+  rand int eo[];
+  constraint size  { eo.size inside {[10:20]}; }
+  constraint range { foreach(eo[i]) eo[i] inside {[1:100]}; }
+  constraint x {
+    foreach(eo[i])
+      if(i%2==0) eo[i]%2==1; else eo[i]%2==0;
+  }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="fibonacci constraint sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              fibonacci_constraint.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Fibonacci sequence using foreach constraint: each element = sum of two previous.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n15')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n15">class cons;
+  rand int n;
+  rand int a[];
+  constraint x { n inside {[7:15]}; }
+  constraint y { a.size == n; }
+  constraint z {
+    foreach(a[i])
+      if(i==0)      a[i]==0;
+      else if(i==1) a[i]==1;
+      else          a[i]==a[i-1]+a[i-2];
+  }
+  function void post_randomize();
+    $display(&quot;Fib: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="palindrome check constraint sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              palindrome_check_constraint.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Randomize 3-digit number and check if palindrome in post_randomize.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n16')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n16">class cons;
+  rand int num;
+  constraint x { num inside {[100:999]}; }
+  function void post_randomize();
+    int r, sum, temp;
+    temp = num;
+    for(int i=0; i&lt;3; i++) begin
+      r   = num%10;
+      sum = (sum*10)+r;
+      num = num/10;
+    end
+    if(temp==sum) $display(&quot;%0d is palindrome&quot;,temp);
+    else          $display(&quot;%0d is NOT palindrome&quot;,temp);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="no consecutive ones 16bit sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              no_consecutive_ones_16bit.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">16-bit variable: no two consecutive 1s using foreach implication.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n17')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n17">class cons;
+  rand bit [15:0] a;
+  constraint x {
+    foreach(a[i])
+      if(i&gt;0 &amp;&amp; a[i]==1) a[i] != a[i-1];
+  }
+  function void post_randomize();
+    $display(&quot;%0b&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="alternate pairs 0011 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              alternate_pairs_0011.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Alternate pairs of 0s and 1s: 0011001100... or 1100110011...</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n18')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n18">class cons;
+  rand bit [15:0] a;
+  constraint x {
+    foreach(a[i])
+      if(i&lt;15)
+        if(i%2==0) a[i+1]==a[i]; else a[i]!=a[i+1];
+  }
+  function void post_randomize();
+    $display(&quot;%0b&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="sum three consecutive even sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              sum_three_consecutive_even.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Sum of any 3 consecutive array elements must be even.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n19')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n19">class cons;
+  rand int a[];
+  constraint x { a.size inside {[10:20]}; }
+  constraint y {
+    foreach(a[i])
+      if(i&gt;1) (a[i]+a[i-1]+a[i-2])%2==0;
+  }
+  constraint z { foreach(a[i]) a[i] inside {[0:10]}; }
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="payload increment by2 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              payload_increment_by2.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Payload array: size 11-22, each element = previous + 2.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n20')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n20">class cons;
+  rand int payload[];
+  constraint size { payload.size inside {[11:22]}; }
+  constraint y    { foreach(payload[i]) payload[i] inside {[0:100]}; }
+  constraint x    {
+    foreach(payload[i])
+      if(i&gt;0) payload[i] == payload[i-1]+2;
+  }
+  function void post_randomize();
+    $display(&quot;Payload: %0p&quot;, payload);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 1221122112211 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pattern_1221122112211.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Pattern 1221 repeating: positions mod 4 == 0 or 3 → 1, else → 2.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n21')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n21">class cons;
+  rand int a[];
+  constraint x { a.size inside {[10:20]}; }
+  constraint y {
+    foreach(a[i])
+      if(i%4==0 || i%4==3) a[i]==1; else a[i]==2;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="countones based on b sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              countones_based_on_b.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">b in {3,4,7} → count of 1s in a must be b+1, with weighted distribution.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n22')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n22">class cons;
+  rand bit [7:0] a;
+  rand bit [2:0] b;
+  constraint x { b dist {3:/2, 4:/2, 7:/6}; }
+  constraint y { $countones(a) == b+1; }
+  function void post_randomize();
+    $display(&quot;b=%0d ones_in_a=%0d&quot;, b, $countones(a));
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="sorting dynamic array post rand sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              sorting_dynamic_array_post_rand.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Generate random array then bubble-sort in post_randomize without sort().</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n23')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n23">class cons;
+  rand int a[];
+  constraint size  { a.size inside {[10:20]}; }
+  constraint range { foreach(a[i]) a[i] inside {[0:100]}; }
+  function void post_randomize();
+    $display(&quot;Before: %0p&quot;, a);
+    foreach(a[i])
+      for(int j=i+1; j&lt;$size(a); j++)
+        if(a[i]&gt;a[j]) begin
+          a[i]=a[i]+a[j]; a[j]=a[i]-a[j]; a[i]=a[i]-a[j];
+        end
+    $display(&quot;After:  %0p&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="two queues distinct sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              two_queues_distinct.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Two queues where q2 elements must not appear in q1.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n24')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n24">class AC;
+  rand int q_1[$];
+  rand int q_2[$];
+  constraint distinct {
+    q_1.size inside {[10:20]};
+    q_2.size inside {[10:20]};
+    foreach(q_1[i]) q_1[i] inside {[1:100]};
+    foreach(q_2[i]) !(q_2[i] inside {q_1});
+  }
+  function void post_randomize();
+    $display(&quot;q1=%0p
+q2=%0p&quot;, q_1, q_2);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="extern constraint ascending sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              extern_constraint_ascending.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Extern constraint declared in class, defined outside — ascending array size 5-10.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n25')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n25">class cons;
+  rand int a[];
+  constraint size;
+  constraint ascending;
+  function void post_randomize();
+    $display(&quot;%0p&quot;, a);
+  endfunction
+endclass
+
+constraint cons::size {
+  a.size inside {[5:10]};
+}
+constraint cons::ascending {
+  foreach(a[i]) a[i] inside {[1:10]};
+  foreach(a[i]) if(i&gt;0) a[i] &gt; a[i-1];
+}</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="weighted dist 70 30 sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              weighted_dist_70_30.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Weighted distribution: 70% for range 0-100, 30% for 101-255.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con-n26')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-con-n26">class cons;
+  rand bit [7:0] a;
+  constraint x { a dist {[0:100]:=70, [101:255]:=30}; }
+  function void post_randomize();
+    $display(&quot;%0d&quot;, a);
+  endfunction
+endclass</pre></div>
+            </div>
+          </li>
+          
+          <li class="file-item" data-name="pattern 0101010101">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 0101010101
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con200')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Generate alternating 0 and 1 pattern using index parity constraint.</div>
+                <pre id="code-new-con200">class cons;
+  rand int a[];
+  constraint x { a.size == 10; }
+  constraint y {
+    foreach(a[i])
+      if(i%2==0) a[i]==0;
+      else        a[i]==1;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 1234554321">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 1234554321
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con201')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Mirror pattern: ascending first half, descending second half.</div>
+                <pre id="code-new-con201">class cons;
+  rand int a[];
+  constraint x { a.size == 10; }
+  constraint y {
+    foreach(a[i])
+      if(i&lt;5) a[i] == i+1;
+      else    a[i] == 10-i;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 9 19 29 39   arithmetic progression">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 9 19 29 39 — Arithmetic Progression
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con202')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Generate arithmetic sequence with step 10, starting at 9.</div>
+                <pre id="code-new-con202">class cons;
+  rand int a[];
+  constraint x { a.size == 7; }
+  constraint y { foreach(a[i]) a[i] == (i*10)+9; }
+  function void post_randomize();
+    $display(&quot;AP pattern: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 5  10 15  20   alternating sign">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 5 -10 15 -20 — Alternating Sign
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con203')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Even indices: positive multiples of 5. Odd indices: negative multiples of 5.</div>
+                <pre id="code-new-con203">class cons;
+  rand int a[];
+  constraint size { a.size == 6; }
+  constraint x {
+    foreach(a[i])
+      if(i%2==0) a[i] ==  (i*5)+5;
+      else        a[i] == -(5*(i+1));
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 1122334455">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 1122334455
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con204')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Pairs: each value appears twice consecutively.</div>
+                <pre id="code-new-con204">class cons;
+  rand int da[];
+  constraint size { da.size == 10; }
+  constraint x    { foreach(da[i]) da[i] == (i+2)/2; }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, da);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="random float between 1 35 and 2 57">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Random Float Between 1.35 and 2.57
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con205')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Trick: randomize integer in [1350:2570] then divide by 1000.0 to get float.</div>
+                <pre id="code-new-con205">class cons;
+  rand int a;
+  real b;
+  constraint size { a inside {[1350:2570]}; }
+  function void post_randomize();
+    b = a / 1000.0;
+    $display(&quot;Float: %0f&quot;, b);
+  endfunction
+endclass
+
+module top;
+  initial begin
+    cons c = new();
+    repeat(10) void&#x27;(c.randomize());
+  end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pattern 0102030405">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Pattern 0102030405
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con206')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Even indices: 0. Odd indices: sequential values 1,2,3...</div>
+                <pre id="code-new-con206">class cons;
+  rand int a[];
+  constraint size { a.size == 10; }
+  constraint x {
+    foreach(a[i])
+      if(i%2==0) a[i] == 0;
+      else        a[i] == (i+2)/2;
+  }
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="even location odd  odd location even">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Even-location Odd, Odd-location Even
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con207')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Even array indices hold odd numbers; odd array indices hold even numbers.</div>
+                <pre id="code-new-con207">class cons;
+  rand int eo[];
+  constraint size  { eo.size inside {[10:20]}; }
+  constraint range { foreach(eo[i]) eo[i] inside {[1:100]}; }
+  constraint x {
+    foreach(eo[i])
+      if(i%2==0) eo[i]%2 == 1;   // odd number at even index
+      else        eo[i]%2 == 0;   // even number at odd index
+  }
+  function void post_randomize();
+    $display(&quot;Array: %0p&quot;, eo);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="32 bit variable with 12 non consecutive ones">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              32-bit Variable with 12 Non-Consecutive Ones
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con208')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 $countones() checks bit count. foreach constraint ensures no two adjacent 1-bits.</div>
+                <pre id="code-new-con208">class cons;
+  rand bit [31:0] a;
+  constraint no_of_ones { $countones(a) == 12; }
+  constraint no_consec {
+    foreach(a[i])
+      if(i&gt;0 &amp;&amp; a[i]==1) a[i] != a[i-1];
+  }
+  function void post_randomize();
+    $display(&quot;32-bit val: %0b  ones=%0d&quot;, a, $countones(a));
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="fibonacci sequence constraint">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Fibonacci Sequence Constraint
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con209')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Each element = sum of previous two. Array size randomised between 7–15.</div>
+                <pre id="code-new-con209">class cons;
+  rand int n;
+  rand int a[];
+  constraint x { n inside {[7:15]}; }
+  constraint y { a.size == n; }
+  constraint z {
+    foreach(a[i])
+      if(i==0)      a[i] == 0;
+      else if(i==1) a[i] == 1;
+      else          a[i] == a[i-1]+a[i-2];
+  }
+  function void post_randomize();
+    $display(&quot;Fibonacci: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="cyclic randomisation without randc">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Cyclic Randomisation Without randc
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con210')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Queue tracks seen values; constraint excludes them until all values covered, then resets.</div>
+                <pre id="code-new-con210">class cons;
+  rand bit [1:0] a;
+  int que[$];
+  constraint x { !(a inside {que}); }
+  function void post_randomize();
+    que.push_front(a);
+    if(que.size == 2**$size(a)) que = {};  // reset cycle
+    $display(&quot;a = %0d&quot;, a);
+  endfunction
+endclass
+
+module top;
+  initial begin
+    cons c = new();
+    repeat(8) void&#x27;(c.randomize());
+  end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="payload with step 2 increment">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Payload with Step-2 Increment
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con211')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Each element must be exactly 2 more than the previous — useful for address generation.</div>
+                <pre id="code-new-con211">class cons;
+  rand int payload[];
+  constraint size { payload.size inside {[11:22]}; }
+  constraint y    { foreach(payload[i]) payload[i] inside {[0:100]}; }
+  constraint x {
+    foreach(payload[i])
+      if(i&gt;0) payload[i] == payload[i-1]+2;
+  }
+  function void post_randomize();
+    $display(&quot;Payload: %0p&quot;, payload);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="solve before constraint">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Solve Before Constraint
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con212')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Solve before changes randomisation order — solve a first, then b uses a&#x27;s resolved value for its constraint. Affects probability distribution.</div>
+                <pre id="code-new-con212">class cons;
+  rand bit        a;
+  rand bit [3:0]  b;
+  constraint x {
+    (a==0) -&gt; (b==1);
+    solve a before b;  // resolve a first, then b
+  }
+  function void post_randomize();
+    $display(&quot;a=%0d b=%0d&quot;, a, b);
+  endfunction
+endclass
+
+module top;
+  initial begin
+    cons c = new();
+    repeat(20) void&#x27;(c.randomize());
+  end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="1221122112211 pattern">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              1221122112211 Pattern
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con213')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Groups of 4: positions 0&amp;3 = 1, positions 1&amp;2 = 2.</div>
+                <pre id="code-new-con213">class cons;
+  rand int a[];
+  constraint x { a.size inside {[10:20]}; }
+  constraint y {
+    foreach(a[i])
+      if(i%4==0 || i%4==3) a[i] == 1;
+      else                   a[i] == 2;
+  }
+  function void post_randomize();
+    $display(&quot;Pattern: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="unique prime numbers with digit 7">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Unique Prime Numbers with Digit 7
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con214')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Generate prime numbers, filter those containing digit 7.</div>
+                <pre id="code-new-con214">class cons;
+  rand int a[];
+  int q[$];
+  constraint size { a.size inside {[100:150]}; }
+  constraint x    { foreach(a[i]) a[i] == prime(i); }
+
+  function int prime(int j);
+    if(j&lt;=1) return 2;
+    for(int k=2; k&lt;j; k++)
+      if(j%k==0) return 3;
+    return j;
+  endfunction
+
+  function void post_randomize();
+    foreach(a[i])
+      if(a[i]%10==7) q.push_front(a[i]);
+    $display(&quot;Primes with digit 7: %0p&quot;, q);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="alternate pairs of 0s and 1s   16 bit">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Alternate Pairs of 0s and 1s — 16-bit
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con215')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Groups of 2 bits alternate: 00,11,00,11... or 11,00,11,00...</div>
+                <pre id="code-new-con215">class cons;
+  rand bit [15:0] a;
+  constraint x {
+    foreach(a[i])
+      if(i&lt;15)
+        if(i%2==0) a[i+1] == a[i];
+        else        a[i]   != a[i+1];
+  }
+  function void post_randomize();
+    $display(&quot;Alternate pairs: %0b&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="axi4 4kb boundary   burst constraints">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              AXI4 4KB Boundary + Burst Constraints
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con216')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 AXI4 spec: entire burst must not cross 4KB boundary. addr[11:0] + total_bytes &lt;= 0xFFF. Also constrains burst size, length, and address alignment.</div>
+                <pre id="code-new-con216">class axi4_constraints;
+  rand logic [7:0]  awlen;
+  rand logic [2:0]  awsize;
+  rand logic [1:0]  awburst;
+  rand logic [31:0] awaddr;
+  rand logic [3:0]  awid;
+
+  constraint c_burst_len  { awlen  inside {[0:255]}; }
+  constraint c_burst_size { awsize inside {[0:3]}; }
+  constraint c_4kb_boundary {
+    (awaddr[11:0] + ((awlen+1) &lt;&lt; awsize)) &lt;= 12&#x27;hFFF;
+  }
+  constraint c_addr_align { awaddr[awsize-1:0] == &#x27;0; }
+  constraint c_id_range   { awid inside {[0:3]}; }
+  constraint c_incr       { awburst == 2&#x27;b01; }
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="error injection constraints">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Error Injection Constraints
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con217')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 At most one error type active at a time. Each error type has low probability (~2–15%). Used for fault injection testing.</div>
+                <pre id="code-new-con217">class error_injection_constraints;
+  rand bit inject_ecc_error;
+  rand bit inject_parity_error;
+  rand bit inject_crc_error;
+  rand bit inject_timeout;
+  rand bit inject_addr_decode_err;
+  rand bit inject_backpressure;
+
+  // At most one error at a time
+  constraint c_one_error_max {
+    (inject_ecc_error + inject_parity_error + inject_crc_error +
+     inject_timeout + inject_addr_decode_err +
+     inject_backpressure) &lt;= 1;
+  }
+  constraint c_rates {
+    inject_ecc_error       dist {0:=98, 1:=2};
+    inject_parity_error    dist {0:=97, 1:=3};
+    inject_crc_error       dist {0:=97, 1:=3};
+    inject_timeout         dist {0:=98, 1:=2};
+    inject_addr_decode_err dist {0:=97, 1:=3};
+    inject_backpressure    dist {0:=85, 1:=15};
+  }
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="soft constraints">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Soft Constraints
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con218')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Soft constraints are lower-priority — they can be overridden by inline randomize() or harder constraints in derived classes without triggering a contradiction.</div>
+                <pre id="code-new-con218">class soft_demo extends uvm_sequence_item;
+  `uvm_object_utils(soft_demo)
+  rand int unsigned delay;
+  rand logic [31:0] addr;
+
+  // Soft: preferred but overridable
+  constraint c_delay_soft { soft delay inside {[1:4]}; }
+  constraint c_addr_soft  { soft addr[31:24] == 8&#x27;h40; }
+
+  function new(string name=&quot;soft_demo&quot;); super.new(name); endfunction
+endclass
+
+// Override soft constraint inline:
+// item.randomize() with { delay == 0; }  // delay soft overridden
+// item.randomize() with { addr[31:24] == 8&#x27;hA0; } // addr soft overridden</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="i2c and uart constraints">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              I2C and UART Constraints
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con219')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 I2C: valid 7-bit slave address excluding reserved ranges. UART: standard baud rates, valid stop bits, rare error injection.</div>
+                <pre id="code-new-con219">// I2C Constraints
+class i2c_constraints;
+  rand logic [6:0] slave_addr;
+  rand logic       rw_bit;
+  rand logic [7:0] reg_addr;
+  rand bit         gen_nack;
+
+  constraint c_addr_valid { slave_addr != 7&#x27;h00; slave_addr != 7&#x27;h7F; }
+  constraint c_addr_rsvd  { !(slave_addr inside {7&#x27;h78,7&#x27;h79,7&#x27;h7A,7&#x27;h7B}); }
+  constraint c_nack_rare  { gen_nack dist {0:=95, 1:=5}; }
+endclass
+
+// UART Constraints
+class uart_constraints;
+  rand int   baud_rate;
+  rand logic parity_en;
+  rand logic parity_odd;
+  rand bit   force_framing_err;
+  rand bit   force_parity_err;
+
+  constraint c_baud_std  { baud_rate inside
+    {9600,19200,38400,57600,115200,230400,921600}; }
+  constraint c_err_rare  { force_framing_err dist {0:=97,1:=3}; }
+  constraint c_perr_rare { force_parity_err  dist {0:=97,1:=3}; }
+  constraint c_err_xor   { !(force_framing_err &amp;&amp; force_parity_err); }
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="unique elements without unique keyword">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Unique Elements Without unique Keyword
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con220')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Double foreach: for every pair (i,j) where i≠j, elements must differ.</div>
+                <pre id="code-new-con220">class cons;
+  rand int a[10];
+  constraint x {
+    foreach(a[i])
+      foreach(a[j])
+        if(i!=j) a[i] != a[j];
+  }
+  constraint y { foreach(a[i]) a[i] inside {[1:100]}; }
+  function void post_randomize();
+    $display(&quot;Unique: %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="two queues with different elements">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Two Queues with Different Elements
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con221')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Constraint ensures no element of q2 appears in q1 using !(inside {q1}).</div>
+                <pre id="code-new-con221">class AC;
+  rand int q_1[$];
+  rand int q_2[$];
+  constraint distinct {
+    q_1.size inside {[10:20]};
+    q_2.size inside {[10:20]};
+    foreach(q_1[i]) q_1[i] inside {[1:100]};
+    foreach(q_2[i]) !(q_2[i] inside {q_1});
+  }
+  function void post_randomize();
+    $display(&quot;q1=%0p\nq2=%0p&quot;, q_1, q_2);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="2d array unique elements without unique">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              2D Array Unique Elements Without unique
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con222')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Nested foreach across all pairs of 2D indices ensures all elements globally unique.</div>
+                <pre id="code-new-con222">class cons;
+  rand int a[][];
+  constraint x {
+    a.size inside {[5:10]};
+    foreach(a[i]) a[i].size inside {[1:3]};
+  }
+  constraint y {
+    foreach(a[i]) foreach(a[i][j])
+      foreach(a[m]) foreach(a[m][n])
+        if(!(i==m &amp;&amp; j==n)) a[i][j] != a[m][n];
+  }
+  constraint z {
+    foreach(a[i]) foreach(a[i][j])
+      a[i][j] inside {[0:100]};
+  }
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="array sorting in post randomize">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Array Sorting in post_randomize
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con223')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Randomise the array then sort it using bubble-sort in post_randomize — no sort() method needed.</div>
+                <pre id="code-new-con223">class cons;
+  rand int a[];
+  constraint size  { a.size inside {[10:20]}; }
+  constraint range { foreach(a[i]) a[i] inside {[0:100]}; }
+  function void post_randomize();
+    $display(&quot;Before sort: %0p&quot;, a);
+    foreach(a[i])
+      for(int j=i+1; j&lt;$size(a); j++)
+        if(a[i]&gt;a[j]) begin
+          a[i]=a[i]+a[j]; a[j]=a[i]-a[j]; a[i]=a[i]-a[j];
+        end
+    $display(&quot;After sort:  %0p&quot;, a);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="extern constraint   ascending array">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Extern Constraint — Ascending Array
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con224')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 extern constraint declares constraint prototype in class; definition is outside. Useful for separating test-specific constraints from the base item.</div>
+                <pre id="code-new-con224">class cons;
+  rand int a[];
+  constraint size;       // declared extern
+  constraint ascending;  // declared extern
+  function void post_randomize();
+    $display(&quot;Sorted: %0p&quot;, a);
+  endfunction
+endclass
+
+// Definition outside class
+constraint cons::size {
+  a.size inside {[5:10]};
+}
+constraint cons::ascending {
+  foreach(a[i]) a[i] inside {[1:10]};
+  foreach(a[i]) if(i&gt;0) a[i] &gt; a[i-1];
+}</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="sum of array elements constraint">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Sum of Array Elements Constraint
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-con225')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Use .sum() with() to constrain total. Also shows .sum() without keyword using explicit accumulation.</div>
+                <pre id="code-new-con225">// Using .sum()
+class cons_sum;
+  rand int a[10];
+  constraint x { a.sum() == 100; }
+  constraint y { foreach(a[i]) a[i] inside {[0:20]}; }
+endclass
+
+// Without .sum() — explicit sum variable
+class cons_nosum;
+  rand bit [3:0] a[10];
+  rand int       total;
+  constraint c_sum {
+    total == a.sum() with (int&#x27;(item));
+    total == 45;
+  }
+  constraint c_range { foreach(a[i]) a[i] inside {[0:9]}; }
+endclass</pre>
+              </div>
+            </div>
+          </li>
           <!-- ✅ ADD NEW SV_CONSTRAINTS FILES ABOVE THIS LINE -->
         </ul>
       </div>
@@ -4182,7 +7093,7 @@ endmodule</pre>
       <div class="folder-header" onclick="toggleFolder('folder-asr')">
         <span class="folder-icon">📁</span>
         <span class="folder-name">ASSERTIONS</span>
-        <span class="folder-count">6 FILES</span>
+        <span class="folder-count">9 FILES</span>
         <span class="folder-arrow">▶</span>
       </div>
       <div class="folder-body">
@@ -4788,6 +7699,116 @@ endmodule</pre>
               </div>
             </div>
           </li>
+          <li class="file-item" data-name="axi4 valid stable sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              axi4_valid_stable.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">AXI4 protocol assertion: valid must not deassert until ready is seen. No X on data during handshake.</p>
+              <div class="code-header">
+                <span class="code-lang">SVA — AXI4</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr-n1')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-asr-n1">// AXI4: once awvalid asserted, hold until awready
+property axi4_valid_stable;
+  @(posedge aclk) disable iff (!aresetn)
+  (awvalid &amp;&amp; !awready) |=&gt; awvalid;
+endproperty
+assert property(axi4_valid_stable);
+
+// No X/Z on write data during data handshake
+property axi4_no_x_on_data;
+  @(posedge aclk) disable iff (!aresetn)
+  (wvalid &amp;&amp; wready) |-&gt; !$isunknown(wdata);
+endproperty
+assert property(axi4_no_x_on_data);
+
+// ARLEN: burst length must be stable during address phase
+property axi4_arlen_stable;
+  @(posedge aclk) disable iff (!aresetn)
+  (arvalid &amp;&amp; !arready) |=&gt; $stable(arlen);
+endproperty
+assert property(axi4_arlen_stable);</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="ahb protocol assertions sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ahb_protocol_assertions.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">AHB protocol assertions: NONSEQ requires HREADY, INCR4 must have 3 SEQ beats after first NONSEQ.</p>
+              <div class="code-header">
+                <span class="code-lang">SVA — AHB</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr-n2')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-asr-n2">// AHB: NONSEQ transfer only when HREADY is high
+property ahb_hready_before_htrans;
+  @(posedge hclk) disable iff (!hresetn)
+  (htrans == 2&#x27;b10) |-&gt; hready;
+endproperty
+assert property(ahb_hready_before_htrans);
+
+// INCR4: must be followed by exactly 3 SEQ transfers
+property ahb_burst_incr4;
+  @(posedge hclk) disable iff (!hresetn)
+  (hburst == 3&#x27;b011 &amp;&amp; htrans == 2&#x27;b10) |-&gt;
+    ##1 (htrans == 2&#x27;b11) ##1
+    (htrans == 2&#x27;b11) ##1
+    (htrans == 2&#x27;b11);
+endproperty
+assert property(ahb_burst_incr4);
+
+// HRESP ERROR must be two cycles
+property ahb_error_two_cycles;
+  @(posedge hclk) disable iff (!hresetn)
+  (hresp == 1&#x27;b1) |-&gt; ##1 (hresp == 1&#x27;b1);
+endproperty
+assert property(ahb_error_two_cycles);</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="apb full protocol assertions sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              apb_full_protocol_assertions.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Complete APB protocol assertions: setup→enable sequence, data stable during enable, no sel deassert without ready.</p>
+              <div class="code-header">
+                <span class="code-lang">SVA — APB</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr-n3')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-asr-n3">// APB SETUP: psel high → penable must be low
+property apb_setup_phase;
+  @(posedge pclk) disable iff (!presetn)
+  $rose(psel) |-&gt; !penable;
+endproperty
+
+// APB: enable follows sel after one cycle
+property apb_enable_follows_sel;
+  @(posedge pclk) disable iff (!presetn)
+  (psel &amp;&amp; !penable) |=&gt; penable;
+endproperty
+
+// Write data stable during ACCESS phase
+property apb_data_stable;
+  @(posedge pclk) disable iff (!presetn)
+  (psel &amp;&amp; penable &amp;&amp; pwrite) |-&gt; $stable(pwdata);
+endproperty
+
+// psel must stay high until pready
+property apb_no_sel_without_ready;
+  @(posedge pclk) disable iff (!presetn)
+  (psel &amp;&amp; penable &amp;&amp; !pready) |=&gt; (psel &amp;&amp; penable);
+endproperty
+
+assert property(apb_setup_phase);
+assert property(apb_enable_follows_sel);
+assert property(apb_data_stable);
+assert property(apb_no_sel_without_ready);</pre></div>
+            </div>
+          </li>
           <!-- ✅ ADD NEW ASSERTIONS FILES ABOVE THIS LINE -->
         </ul>
       </div>
@@ -5343,7 +8364,7 @@ endmodule</pre>
       <div class="folder-header" onclick="toggleFolder('folder-svc')">
         <span class="folder-icon">📁</span>
         <span class="folder-name">SV_CONCEPTS</span>
-        <span class="folder-count">8 FILES</span>
+        <span class="folder-count">24 FILES</span>
         <span class="folder-arrow">▶</span>
       </div>
       <div class="folder-body">
@@ -5854,6 +8875,1160 @@ end
 p.print();
 end
 endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="bit vs logic vs reg sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              bit_vs_logic_vs_reg.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">bit is 2-state unsigned. logic is 4-state (0,1,X,Z) replacing both reg and wire — can be driven in always AND assign. reg is 4-state procedural only.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n1')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n1">// 2-state types (no X/Z)
+bit           single_bit;      // unsigned, 1-bit
+byte          b;               // signed 8-bit
+shortint      si;              // signed 16-bit
+int           i;               // signed 32-bit
+longint       li;              // signed 64-bit
+
+// 4-state types (0,1,X,Z)
+logic         l;               // replaces reg + wire
+reg           r;               // procedural only (legacy)
+integer       n;               // 4-state 32-bit signed
+time          t;               // 4-state 64-bit unsigned
+
+// logic can be driven from both:
+logic q;
+assign q = a &amp; b;              // continuous — OK
+always @(posedge clk) q &lt;= d;  // procedural  — OK
+// reg r;
+// assign r = a;               // ILLEGAL in Verilog</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="packed vs unpacked array sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              packed_vs_unpacked_array.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Packed array: dimensions before name, stored contiguously as vector. Unpacked array: dimensions after name, non-contiguous storage.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n2')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n2">// PACKED — before name, contiguous bits, can be sliced
+bit  [2:0][3:0] packed_arr;     // 12-bit vector
+packed_arr[2]        = 4&#x27;hA;    // slice by row index
+packed_arr[2][3]     = 1&#x27;b1;    // slice single bit
+
+// UNPACKED — after name
+int unpacked_arr [2:0][3:0];    // 3x4 array of ints
+unpacked_arr[0][1]   = 42;
+
+// Packed struct — all fields share one vector
+typedef struct packed {
+  logic [7:0] addr;
+  logic [7:0] data;
+} pkt_s;
+pkt_s p;
+p.addr = 8&#x27;hFF;
+// Access as vector: p[15:8] == p.addr</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="fork join race program block sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              fork_join_race_program_block.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Program blocks execute in the Reactive region (after NBA) — eliminating race conditions between DUT NBA updates and TB sampling.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n3')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n3">// Race condition exists in module-based TB:
+// DUT uses non-blocking: out &lt;= 2 (updates in NBA region)
+// TB reads &#x27;out&#x27; in Active region — sees OLD value (0)
+
+// SOLUTION: program block runs in Reactive region
+// By Reactive time, NBA has already updated &#x27;out&#x27;
+program tb_pro(input [3:0] out);
+  initial begin
+    if (out == 2)
+      $display(&quot;Correct: out = 2&quot;);   // always prints this
+    else
+      $display(&quot;Wrong: out = %0d&quot;, out);
+  end
+endprogram
+
+// Scheduling order:
+// Active → NBA (non-blocking updates) → Reactive (program)
+// clocking block inputs also sampled in Preponed (before Active)</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="shallow vs deep copy sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              shallow_vs_deep_copy.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Shallow copy (default new) copies handles not objects — nested object changes affect both copies. Deep copy recursively clones nested objects.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n4')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n4">class inner_c;
+  int val;
+endclass
+
+class outer_c;
+  int       data;
+  inner_c   inner;  // nested object
+
+  // SHALLOW COPY — built-in
+  // outer_c copy = new src;
+  // copy.inner IS SAME OBJECT as src.inner!
+
+  // DEEP COPY — manual
+  function outer_c deep_copy();
+    outer_c c  = new this;     // copy primitives
+    c.inner    = new inner;    // clone nested object
+    return c;
+  endfunction
+endclass
+
+// Example
+outer_c src  = new();
+src.inner    = new();
+src.inner.val = 5;
+
+outer_c sh   = new src;         // shallow
+outer_c dp   = src.deep_copy(); // deep
+
+sh.inner.val = 99;  // also changes src.inner.val!
+dp.inner.val = 99;  // does NOT change src.inner.val</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="virtual function polymorphism sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              virtual_function_polymorphism.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Virtual function enables runtime polymorphism — parent handle calls child method when child object is assigned. Without virtual, static binding uses parent method.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n5')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n5">class parent;
+  virtual function void display();
+    $display(&quot;PARENT&quot;);
+  endfunction
+endclass
+
+class child extends parent;
+  function void display();  // overrides parent
+    $display(&quot;CHILD&quot;);
+  endfunction
+endclass
+
+module top;
+  initial begin
+    parent p;
+    child  c = new();
+    p = c;              // parent handle → child object
+
+    p.display();        // prints &quot;CHILD&quot; — virtual dispatch
+    // Without virtual: would print &quot;PARENT&quot;
+
+    // $cast for downcast
+    child c2;
+    if ($cast(c2, p))
+      $display(&quot;Cast OK&quot;);
+  end
+endmodule</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="abstract pure virtual sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              abstract_pure_virtual.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Abstract class (virtual class) cannot be instantiated. pure virtual forces all derived classes to implement the method — used in UVM base classes.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n6')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n6">virtual class base_tb_component;
+  // pure virtual — MUST be overridden
+  pure virtual function void build();
+  pure virtual task         run();
+
+  // Regular virtual — CAN be overridden
+  virtual function void report();
+    $display(&quot;Default report&quot;);
+  endfunction
+endclass
+
+class apb_agent extends base_tb_component;
+  function void build();
+    $display(&quot;APB agent built&quot;);
+  endfunction
+  task run();
+    $display(&quot;APB agent running&quot;);
+  endtask
+endclass
+
+// base_tb_component b = new(); // ILLEGAL — abstract
+apb_agent a = new();            // OK</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="rand randc pre post randomize sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              rand_randc_pre_post_randomize.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">rand gives uniform distribution. randc cycles through all values before repeating. pre_randomize/post_randomize are callbacks before and after randomize().</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n7')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n7">class demo;
+  rand  bit [2:0] uniform_val; // any value, can repeat
+  randc bit [1:0] cyclic_val;  // 0,1,2,3 then repeat
+
+  constraint c_range { uniform_val inside {[1:6]}; }
+
+  function void pre_randomize();
+    $display(&quot;Before randomize&quot;);
+    // e.g. disable a constraint here
+  endfunction
+
+  function void post_randomize();
+    $display(&quot;uniform=%0d cyclic=%0d&quot;,
+             uniform_val, cyclic_val);
+  endfunction
+endclass
+
+// Execution order:
+// pre_randomize() → randomize() (solver) → post_randomize()
+
+// std::randomize — no rand/randc keyword needed
+int x;
+std::randomize(x) with { x inside {5,10,15,20}; };</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="assertions immediate concurrent sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              assertions_immediate_concurrent.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Immediate assertions check at current time (like if-statement). Concurrent assertions check sequences across clock cycles using properties.</p>
+              <div class="code-header">
+                <span class="code-lang">SV ASSERTIONS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n8')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n8">// IMMEDIATE assertion — active region check
+always @(posedge clk)
+  assert (data !== &#x27;x)
+    else $error(&quot;X on data at %0t&quot;, $time);
+
+// CONCURRENT assertion — temporal, clock-based
+property req_ack;
+  @(posedge clk) disable iff (!rst_n)
+  req |-&gt; ##[1:4] ack;   // req must be followed by ack within 4 cycles
+endproperty
+assert property(req_ack);
+
+// Implication types:
+// |-&gt;  overlapped:    consequent starts SAME cycle as antecedent
+// |=&gt;  non-overlapped: consequent starts NEXT cycle
+
+// $rose/$fell/$stable
+property stable_during_enable;
+  @(posedge clk)
+  (en &amp;&amp; write) |-&gt; $stable(data);
+endproperty
+
+// Sequence operators
+// ##1   next cycle
+// ##[1:3] 1 to 3 cycles
+// [*3]  repeat 3 times
+// [-&gt;2] eventually, non-consecutive 2 times</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="functional code coverage sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              functional_code_coverage.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Code coverage is automatic (line/toggle/FSM/expression). Functional coverage is user-defined via covergroups — measures design feature exercise.</p>
+              <div class="code-header">
+                <span class="code-lang">SV COVERAGE</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n9')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n9">// Functional Coverage
+covergroup apb_cg @(posedge pclk);
+  cp_addr: coverpoint paddr {
+    bins low  = {[32&#x27;h0000_0000 : 32&#x27;h0000_FFFF]};
+    bins mid  = {[32&#x27;h0001_0000 : 32&#x27;hFFFE_FFFF]};
+    bins high = {32&#x27;hFFFF_FFFF};
+    illegal_bins rsvd = {32&#x27;hDEAD_BEEF};
+  }
+  cp_wr: coverpoint pwrite {
+    bins read  = {0};
+    bins write = {1};
+  }
+  cp_err: coverpoint pslverr {
+    bins ok  = {0};
+    bins err = {1};
+  }
+  // Cross coverage = cartesian product
+  cx_rw_err: cross cp_wr, cp_err;
+endgroup
+
+// Cross coverage goal: cover all combinations of
+// {read,write} x {ok,err} = 4 cross bins
+
+// Ignore bins — excluded from coverage
+// ignore_bins dont_care = {[8&#x27;hF0:8&#x27;hFF]};
+
+// Transition bins — sequence coverage
+// bins reset_to_active = (IDLE =&gt; SETUP =&gt; ACCESS);</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="constraint operators reference sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              constraint_operators_reference.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">All constraint operators: inside, dist (:= vs :/), solve before, soft, constraint_mode, rand_mode, foreach, unique, implication.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONSTRAINTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n10')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n10">class all_operators;
+  rand int a, b;
+  rand bit [7:0] arr[];
+
+  // inside: set membership
+  constraint c1 { a inside {[1:10], 20, 30}; }
+
+  // dist := : each value gets EXACT weight
+  constraint c2 { a dist {1:=10, [2:5]:=30}; }
+  // dist :/ : weight SPLIT across range
+  constraint c3 { b dist {1:/10, [2:5]:/30}; }
+  // [2:5]:=30 → each of 2,3,4,5 gets weight 30
+  // [2:5]:/30 → total weight 30 split: each gets 7.5
+
+  // implication
+  constraint c4 { (a &gt; 5) -&gt; b &gt; 10; }
+
+  // solve before: affects probability not solution
+  constraint c5 { solve a before b; }
+
+  // soft: can be overridden by inline constraint
+  constraint c6 { soft a inside {[1:5]}; }
+
+  // foreach + unique
+  constraint c7 {
+    arr.size() == 8;
+    foreach(arr[i]) arr[i] inside {[0:100]};
+    unique { arr };
+  }
+
+  // Disable at runtime:
+  // c1.constraint_mode(0);   // disable constraint
+  // a.rand_mode(0);          // disable randomization for a
+endclass</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="rand mode constraint mode sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              rand_mode_constraint_mode.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">rand_mode(0) disables randomization for a variable (keeps last value). constraint_mode(0) disables a specific constraint block.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n11')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n11">class seq_item;
+  rand bit [7:0] value1;
+  rand bit [7:0] value2;
+  constraint c1 { value1 inside {[10:30]}; }
+  constraint c2 { value2 inside {40,70,80}; }
+endclass
+
+module top;
+  seq_item item = new();
+  initial begin
+    item.randomize();
+
+    item.c2.constraint_mode(0); // disable c2 only
+    item.randomize();
+
+    item.value2.rand_mode(0);   // freeze value2
+    item.randomize();
+
+    $display(&quot;rand_mode: v1=%0d v2=%0d&quot;,
+      item.value1.rand_mode(), item.value2.rand_mode());
+  end
+endmodule</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="static vs automatic sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              static_vs_automatic.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Static variables shared across all instances — persists between calls. Automatic variables local to each call/thread — default in classes.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n12')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n12">class trans;
+  static int id_counter = 0;  // shared across ALL objects
+  int        id;              // automatic — per object
+
+  function new();
+    id_counter++;
+    id = id_counter;
+  endfunction
+endclass
+
+// Module functions are STATIC by default
+function automatic int add(int a, b); // force automatic
+  return a + b;
+endfunction
+
+// Recursive needs automatic:
+function automatic int factorial(int n);
+  if(n==0) return 1;
+  return n * factorial(n-1);
+endfunction</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="display strobe monitor write sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              display_strobe_monitor_write.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">$display: active region immediately. $strobe: postpone region (end of timestep). $monitor: fires on any signal change. $write: no newline.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n13')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n13">module display_tb;
+  reg [3:0] d1, d2;
+  initial begin
+    d1=4; d2=5;
+    #5 d1=2; d2=3;
+  end
+  initial begin
+    // Active region — sees values at start
+    $display(&quot;display: d1=%0d d2=%0d&quot;, d1, d2);
+    // Postpone — sees final values after NBA
+    $strobe(&quot;strobe:  d1=%0d d2=%0d&quot;, d1, d2);
+    // Fires on ANY change to d1 or d2
+    $monitor(&quot;monitor: d1=%0d d2=%0d&quot;, d1, d2);
+    // No newline appended
+    $write(&quot;write: d1=%0d &quot;, d1);
+  end
+endmodule</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="semaphore mutex shared resource sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              semaphore_mutex_shared_resource.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Semaphore is a built-in class with a key counter. get(N) blocks until N keys available. put(N) returns keys. Used as mutex for shared resources.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n14')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n14">module semaphore_example;
+  semaphore sem = new(1);  // 1 key = binary mutex
+
+  task write_mem();
+    sem.get();                    // acquire
+    $display(&quot;Writing...&quot;);
+    #5ns;
+    $display(&quot;Write done&quot;);
+    sem.put();                    // release
+  endtask
+
+  task read_mem();
+    sem.get();
+    $display(&quot;Reading...&quot;);
+    #4ns;
+    $display(&quot;Read done&quot;);
+    sem.put();
+  endtask
+
+  initial begin
+    fork
+      write_mem();
+      read_mem();    // blocks until write_mem releases
+    join
+  end
+endmodule</pre></div>
+            </div>
+          </li>
+          <li class="file-item" data-name="callbacks error injection sv">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              callbacks_error_injection.sv
+            </div>
+            <div class="code-panel">
+              <p class="file-def">Callbacks are virtual hook methods in driver/component. Derived class overrides them for error injection without modifying the original component.</p>
+              <div class="code-header">
+                <span class="code-lang">SV CONCEPTS</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc-n15')">COPY</button>
+              </div>
+              <div class="code-scroll"><pre id="code-svc-n15">typedef enum {GOOD, BAD_ERR1, BAD_ERR2} pkt_type;
+
+class driver;
+  pkt_type pkt;
+  task pkt_sender();
+    std::randomize(pkt) with {pkt==GOOD;};
+    modify_pkt();              // callback hook
+  endtask
+  virtual task modify_pkt(); endtask // empty by default
+endclass
+
+class err_driver extends driver;
+  task modify_pkt();           // override for error inject
+    std::randomize(pkt) with {pkt inside {BAD_ERR1,BAD_ERR2};};
+  endtask
+endclass
+
+class env;
+  bit inject_err;
+  driver drv;
+  err_driver drv_err;
+  function new(); drv=new(); drv_err=new(); endfunction
+  task execute();
+    if(inject_err) drv = drv_err; // swap at runtime
+    drv.pkt_sender();
+    $display(&quot;Pkt: %s&quot;, drv.pkt.name());
+  endtask
+endclass</pre></div>
+            </div>
+          </li>
+          
+          <li class="file-item" data-name="parameterized classes">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Parameterized Classes
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc500')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A parameterized class allows the same class to be instantiated with different data types or widths using #(parameter) syntax. Avoids duplicating class definitions.</div>
+                <pre id="code-new-svc500">class generic_scoreboard #(type T = int, int DEPTH = 16);
+  T queue[$:DEPTH];
+
+  function void push(T item);
+    queue.push_back(item);
+  endfunction
+
+  function T pop();
+    return queue.pop_front();
+  endfunction
+
+  function bit is_empty();
+    return (queue.size() == 0);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="interface with clocking blocks   modports">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Interface with Clocking Blocks &amp; Modports
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc501')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A clocking block specifies signal timing (input/output skew) relative to a clock edge, eliminating race conditions. Modports restrict signal direction per component (driver vs monitor).</div>
+                <pre id="code-new-svc501">interface apb_if #(parameter ADDR_WIDTH=32, DATA_WIDTH=32)(
+  input logic pclk, presetn);
+
+  logic [ADDR_WIDTH-1:0] paddr;
+  logic psel, penable, pwrite;
+  logic [DATA_WIDTH-1:0] pwdata, prdata;
+  logic pready, pslverr;
+
+  clocking master_cb @(posedge pclk);
+    default input #1 output #1;
+    output paddr, psel, penable, pwrite, pwdata;
+    input  prdata, pready, pslverr;
+  endclocking
+
+  clocking monitor_cb @(posedge pclk);
+    default input #1;
+    input paddr,psel,penable,pwrite,pwdata,prdata,pready,pslverr;
+  endclocking
+
+  modport master  (clocking master_cb,  input pclk, presetn);
+  modport monitor (clocking monitor_cb, input pclk, presetn);
+  modport slave   (input paddr,psel,penable,pwrite,pwdata,
+                   output prdata,pready,pslverr);
+endinterface</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="fork join variants   disable fork">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Fork-Join Variants + Disable Fork
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc502')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 fork-join waits for ALL threads. fork-join_any waits for ANY one. fork-join_none spawns all and continues immediately. disable fork kills all spawned threads from current scope.</div>
+                <pre id="code-new-svc502">task fork_demo();
+  fork
+    begin : timeout_thread
+      #1000ns;
+      $display(&quot;TIMEOUT&quot;);
+    end
+    begin : work_thread
+      do_work();
+      disable timeout_thread;
+    end
+  join_any
+  disable fork;  // kill remaining threads
+endtask
+
+// fork-join_none example — fire and forget
+task fire_and_forget();
+  fork
+    monitor_bus();   // runs independently
+    check_timeout(); // runs independently
+  join_none
+  // execution continues immediately here
+endtask</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="dynamic arrays  queues   associative arrays">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Dynamic Arrays, Queues &amp; Associative Arrays
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc503')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Dynamic arrays allocate memory at runtime with new[]. Queues are ordered, variable-size with push/pop. Associative arrays use any index type (string, int) — ideal for sparse memory models.</div>
+                <pre id="code-new-svc503">class collections_demo;
+  int dyn[];           // dynamic array
+  int queue[$];        // unbounded queue
+  int assoc[string];   // associative array
+
+  function void demo();
+    // dynamic array
+    dyn = new[8];
+    dyn = new[16](dyn);   // resize + preserve
+
+    // queue ops
+    queue.push_back(10);
+    queue.push_front(5);
+    queue.delete(0);
+
+    // associative array
+    assoc[&quot;clk_freq&quot;] = 100;
+    if (assoc.exists(&quot;clk_freq&quot;))
+      $display(&quot;clk_freq=%0d&quot;, assoc[&quot;clk_freq&quot;]);
+    assoc.delete(&quot;clk_freq&quot;);
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="typedef enum struct union">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Typedef Enum Struct Union
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc504')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 typedef creates type aliases. enum defines named states (FSM). struct packed groups signals contiguously in memory. union shares the same memory across different interpretations.</div>
+                <pre id="code-new-svc504">typedef enum logic [1:0] {
+  IDLE=2&#x27;b00, SETUP=2&#x27;b01, ACCESS=2&#x27;b10, ERROR=2&#x27;b11
+} apb_state_e;
+
+typedef struct packed {
+  logic [31:0] addr;
+  logic [31:0] data;
+  logic        wr;
+  apb_state_e  state;
+} apb_pkt_t;
+
+typedef union packed {
+  logic [31:0]    word;
+  logic [3:0][7:0] bytes;  // access as bytes[0..3]
+} word_union_t;
+
+// Usage
+apb_pkt_t pkt;
+pkt.addr  = 32&#x27;hA000_0000;
+pkt.state = ACCESS;
+
+word_union_t u;
+u.word    = 32&#x27;hDEAD_BEEF;
+$display(&quot;byte0 = 0x%02h&quot;, u.bytes[0]); // 0xEF</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="mailbox semaphore event ipc">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Mailbox Semaphore Event IPC
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc505')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Mailbox: typed FIFO channel between threads. Semaphore: key-based mutual exclusion for shared resources. Event: one-shot or persistent trigger for thread synchronisation.</div>
+                <pre id="code-new-svc505">class ipc_demo;
+  mailbox #(int) mbx;  // typed, bounded mailbox
+  semaphore        sem;
+  event            ev_done;
+
+  task producer();
+    for (int i = 0; i &lt; 10; i++) begin
+      sem.get(1);          // acquire key
+      mbx.put(i);          // send data
+      sem.put(1);          // release key
+    end
+    -&gt; ev_done;            // trigger event
+  endtask
+
+  task consumer();
+    int val;
+    @ev_done;              // wait for event
+    while (mbx.try_get(val))
+      $display(&quot;Got: %0d&quot;, val);
+  endtask
+
+  function new();
+    mbx = new(4);  // depth=4 bounded mailbox
+    sem = new(1);  // 1 key = mutex
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="virtual function and polymorphism">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Virtual Function and Polymorphism
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc506')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A virtual function allows a base-class handle to call the overridden method in a child class at runtime. This is the basis of polymorphism — same handle, different behaviour based on actual object type.</div>
+                <pre id="code-new-svc506">class parent_trans;
+  virtual function void display();
+    $display(&quot;Base class display&quot;);
+  endfunction
+endclass
+
+class child_trans extends parent_trans;
+  function void display();  // overrides virtual
+    $display(&quot;Child class display&quot;);
+  endfunction
+endclass
+
+module poly_demo;
+  initial begin
+    parent_trans p;
+    child_trans  c = new();
+    p = c;          // base handle → child object
+    p.display();    // prints: Child class display
+    // Without virtual: prints Base class display
+  end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="abstract class and pure virtual">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Abstract Class and Pure Virtual
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc507')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 An abstract (virtual) class cannot be instantiated directly. Pure virtual functions have no implementation in the base — derived classes MUST override them. Used for defining interfaces/contracts.</div>
+                <pre id="code-new-svc507">virtual class base_agent;
+  // Pure virtual — no body, must be implemented by child
+  pure virtual task run();
+  pure virtual function void build();
+
+  // Regular method — optional to override
+  virtual function void report();
+    $display(&quot;Base report&quot;);
+  endfunction
+endclass
+
+class apb_agent extends base_agent;
+  task run();
+    $display(&quot;APB agent running&quot;);
+  endtask
+
+  function void build();
+    $display(&quot;APB agent built&quot;);
+  endfunction
+endclass
+
+// base_agent b = new(); // ERROR: cannot instantiate abstract
+apb_agent a = new();     // OK</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="static vs automatic variables">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Static vs Automatic Variables
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc508')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Static variables retain their value across calls and are shared across all instances. Automatic variables are allocated fresh on each call (stack-based). Class methods are automatic by default.</div>
+                <pre id="code-new-svc508">class counter;
+  static int shared_count = 0;  // shared across all instances
+  int        local_count  = 0;  // per-instance
+
+  function void increment();
+    shared_count++;
+    local_count++;
+  endfunction
+
+  static function int get_shared();
+    return shared_count;
+  endfunction
+endclass
+
+module static_demo;
+  initial begin
+    counter c1 = new();
+    counter c2 = new();
+    c1.increment();
+    c1.increment();
+    c2.increment();
+    $display(&quot;c1.local=%0d c2.local=%0d shared=%0d&quot;,
+             c1.local_count, c2.local_count,
+             counter::get_shared()); // 2 1 3
+  end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="shallow copy vs deep copy">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Shallow Copy vs Deep Copy
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc509')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Shallow copy (default new) copies handles, not objects — nested objects are shared. Deep copy requires a custom copy() method that creates new instances of nested objects.</div>
+                <pre id="code-new-svc509">class inner;
+  int data;
+endclass
+
+class outer;
+  inner obj;
+  int   id;
+
+  // Shallow copy — obj handle copied, same nested object
+  function outer shallow_copy();
+    outer tmp = new this;   // built-in shallow copy
+    return tmp;
+  endfunction
+
+  // Deep copy — new nested object created
+  function outer deep_copy();
+    outer tmp   = new();
+    inner i_new = new();
+    i_new.data  = this.obj.data;  // copy data, not handle
+    tmp.obj     = i_new;
+    tmp.id      = this.id;
+    return tmp;
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="rand vs randc">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              rand vs randc
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc510')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 rand generates uniformly distributed values — same value can repeat immediately. randc generates cyclic permutations — all values appear before any repeats. Use randc for coverage-completeness.</div>
+                <pre id="code-new-svc510">class rand_demo;
+  rand  bit [1:0] rnd;   // 0,1,2,3 in any order, may repeat
+  randc bit [1:0] cyc;   // 0,1,2,3 — all before repeat
+
+  function void show();
+    repeat(8) begin
+      void&#x27;(this.randomize());
+      $write(&quot;rnd=%0d cyc=%0d  &quot;, rnd, cyc);
+    end
+    $display();
+  endfunction
+endclass
+// Possible rnd output: 2 0 2 1 3 3 0 1 (repeats OK)
+// Possible cyc output: 2 0 3 1 | 1 3 0 2 (never repeats within cycle)</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="pre randomize and post randomize">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              pre_randomize and post_randomize
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc511')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 pre_randomize() runs before randomize() — use it to disable constraints or set up state. post_randomize() runs after — use it to print values, compute derived fields, or override specific bits.</div>
+                <pre id="code-new-svc511">class seq_item;
+  rand bit [7:0] val1;
+  rand bit [7:0] val2;
+  constraint c1 { val1 &gt; 100; val1 &lt; 200; }
+  constraint c2 { val2 &gt; 5;   val2 &lt; 8;   }
+
+  function void pre_randomize();
+    $display(&quot;pre_randomize: disabling c2&quot;);
+    c2.constraint_mode(0);  // disable before randomize
+  endfunction
+
+  function void post_randomize();
+    $display(&quot;post_randomize: val1=%0d val2=%0d&quot;,val1,val2);
+    // val2 unconstrained because c2 was disabled
+  endfunction
+endclass</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="scope resolution operator">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Scope Resolution Operator
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc512')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 The :: operator accesses static class members, package items, or allows method definition outside class. Avoids needing an object handle for class-level operations.</div>
+                <pre id="code-new-svc512">// 1. Access static member
+class transaction;
+  static int id_counter = 0;
+  static function int next_id();
+    return ++id_counter;
+  endfunction
+endclass
+
+// Call without object: transaction::next_id()
+
+// 2. Define method outside class
+class bus_item;
+  rand bit [31:0] addr;
+  extern function void display();
+endclass
+
+function void bus_item::display();
+  $display(&quot;addr = 0x%08h&quot;, addr);
+endfunction
+
+// 3. Import package item
+package utils_pkg;
+  function int clz(int x); // count leading zeros
+    for (int i=31; i&gt;=0; i--)
+      if (x[i]) return 31-i;
+    return 32;
+  endfunction
+endpackage
+// Usage: utils_pkg::clz(32&#x27;h00FF0000) → 8</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="dpi   direct programming interface">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              DPI — Direct Programming Interface
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc513')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 DPI bridges SystemVerilog and C/C++. import DPI-C lets SV call C functions. export DPI-C lets C call SV functions. Used for complex mathematical models, legacy C testbenches, or OS calls.</div>
+                <pre id="code-new-svc513">// C file: my_math.c
+// #include &lt;stdio.h&gt;
+// int multiply(int a, int b) { return a * b; }
+
+// SV import example
+module dpi_demo;
+  import &quot;DPI-C&quot; function int multiply(int a, int b);
+
+  initial begin
+    int result = multiply(6, 7);
+    $display(&quot;6 x 7 = %0d&quot;, result);  // 42
+  end
+endmodule
+
+// SV export example — C can call SV function
+module dpi_export_demo;
+  export &quot;DPI-C&quot; function sv_add;
+  import &quot;DPI-C&quot; context function void c_caller();
+
+  function void sv_add(int a, int b);
+    $display(&quot;SV: %0d + %0d = %0d&quot;, a, b, a+b);
+  endfunction
+
+  initial c_caller();  // C will call sv_add internally
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="implication operator in sva">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Implication Operator in SVA
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc514')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 Overlapped (|-&gt;) checks consequent starting same clock cycle as antecedent. Non-overlapped (|=&gt;) checks consequent starting NEXT clock cycle. Both skip consequent if antecedent is false (vacuous pass).</div>
+                <pre id="code-new-svc514">// Overlapped: same clock cycle
+property p_overlapped;
+  @(posedge clk) disable iff(!rst_n)
+  psel |-&gt; !penable;  // when psel high, penable must be low SAME cycle
+endproperty
+a_overlap: assert property(p_overlapped);
+
+// Non-overlapped: next clock cycle
+property p_nonoverlap;
+  @(posedge clk) disable iff(!rst_n)
+  (psel &amp;&amp; !penable) |=&gt; penable; // next cycle penable must be high
+endproperty
+a_nonoverlap: assert property(p_nonoverlap);
+
+// Chained sequence with ## delay
+property p_ahb_nonseq_to_seq;
+  @(posedge hclk)
+  (htrans == NONSEQ) |=&gt; (htrans == SEQ)[*3];
+endproperty</pre>
+              </div>
+            </div>
+          </li>
+          <li class="file-item" data-name="functional coverage   covergroup   cross">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Functional Coverage — Covergroup &amp; Cross
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-new-svc515')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <div class="def-box">📖 A covergroup defines what scenarios to track. Coverpoints specify variables/expressions. Bins partition values into trackable ranges. Cross coverage tracks combinations of two or more coverpoints.</div>
+                <pre id="code-new-svc515">bit [7:0] addr;
+logic     pwrite;
+logic     pslverr;
+
+covergroup apb_cg @(posedge pclk);
+  cp_addr : coverpoint addr {
+    bins low    = {[8&#x27;h00 : 8&#x27;h3F]};
+    bins mid    = {[8&#x27;h40 : 8&#x27;hBF]};
+    bins high   = {[8&#x27;hC0 : 8&#x27;hFE]};
+    illegal_bins rsvd = {8&#x27;hFF};
+  }
+  cp_dir  : coverpoint pwrite {
+    bins rd = {0}; bins wr = {1};
+  }
+  cp_err  : coverpoint pslverr {
+    bins ok = {0}; bins err = {1};
+  }
+  // Cross: all combinations of dir x err
+  cx_rw_err : cross cp_dir, cp_err;
+endgroup
+
+// Transition coverage
+covergroup fsm_cg @(posedge clk);
+  cp_state : coverpoint state {
+    bins idle_to_setup  = (IDLE  =&gt; SETUP);
+    bins setup_to_acc   = (SETUP =&gt; ACCESS);
+    bins acc_to_idle    = (ACCESS=&gt; IDLE);
+    bins acc_to_err     = (ACCESS=&gt; ERROR);
+  }
+endgroup</pre>
               </div>
             </div>
           </li>
