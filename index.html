@@ -1070,328 +1070,71 @@ footer {
     </span>
   </div>
 
-  <div class="folder-grid">
+    <div class="folder-grid">
 
-    <!-- ── FOLDER: AHB ── -->
-    <div class="folder-card" id="folder-ahb">
-      <div class="folder-header" onclick="toggleFolder('folder-ahb')">
-        <span class="folder-icon">📁</span>
-        <span class="folder-name">AHB_PROTOCOLS</span>
-        <span class="folder-count">2 FILES</span>
-        <span class="folder-arrow">▶</span>
-      </div>
-      <div class="folder-body">
-        <ul class="file-list">
-
-          <!-- File 1 -->
-          <li class="file-item" data-name="ahb wrap burst">
-            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
-              <span class="file-dot"></span>
-              ahb_wrap_burst.sv
-            </div>
-            <div class="code-panel">
-              <div class="code-header">
-                <span class="code-lang">SYSTEMVERILOG</span>
-                <button class="copy-btn" onclick="copyCode(this, 'code-ahb1')">COPY</button>
-              </div>
-              <div class="code-scroll">
-<pre id="code-ahb1"><span class="cm">// AHB Wrap Burst Transaction Class
-// Covers WRAP4, WRAP8, WRAP16 burst types</span>
-
-<span class="kw">class</span> <span class="tp">ahb_wrap_burst</span>;
-
-  <span class="kw">rand</span> <span class="tp">bit</span> [31:0] start_addr;
-  <span class="kw">rand</span> <span class="tp">bit</span> [2:0]  hsize;    <span class="cm">// 0=byte, 1=half, 2=word</span>
-  <span class="kw">rand</span> <span class="tp">bit</span> [2:0]  hburst;   <span class="cm">// WRAP4/8/16</span>
-  <span class="kw">rand</span> <span class="tp">int</span>        burst_len;
-
-  <span class="cm">// Constrain to wrap burst types only</span>
-  <span class="kw">constraint</span> <span class="nm">c_burst_type</span> {
-    hburst <span class="op">inside</span> {3'b010, 3'b100, 3'b110}; <span class="cm">// WRAP4/8/16</span>
-  }
-
-  <span class="kw">constraint</span> <span class="nm">c_len</span> {
-    burst_len <span class="op">inside</span> {4, 8, 16};
-    hburst == 3'b010 -> burst_len == 4;
-    hburst == 3'b100 -> burst_len == 8;
-    hburst == 3'b110 -> burst_len == 16;
-  }
-
-  <span class="cm">// Address must be aligned to transfer size</span>
-  <span class="kw">constraint</span> <span class="nm">c_align</span> {
-    (start_addr & ((1 << hsize) - 1)) == 0;
-  }
-
-  <span class="kw">function void</span> <span class="nm">display</span>();
-    $display("[AHB_WRAP] addr=0x%0h size=%0d len=%0d burst=0x%0b",
-             start_addr, hsize, burst_len, hburst);
-  <span class="kw">endfunction</span>
-
-<span class="kw">endclass</span></pre>
-              </div>
-            </div>
-          </li>
-
-          <!-- File 2 -->
-          <li class="file-item" data-name="ahb sequence base">
-            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
-              <span class="file-dot"></span>
-              ahb_base_seq.sv
-            </div>
-            <div class="code-panel">
-              <div class="code-header">
-                <span class="code-lang">SYSTEMVERILOG / UVM</span>
-                <button class="copy-btn" onclick="copyCode(this, 'code-ahb2')">COPY</button>
-              </div>
-              <div class="code-scroll">
-<pre id="code-ahb2"><span class="cm">// AHB UVM Base Sequence
-// Drives INCR and WRAP bursts via sequencer</span>
-
-<span class="kw">class</span> <span class="tp">ahb_base_seq</span> <span class="kw">extends</span> <span class="tp">uvm_sequence</span> #(<span class="tp">ahb_seq_item</span>);
-  `uvm_object_utils(<span class="tp">ahb_base_seq</span>)
-
-  <span class="kw">function new</span>(<span class="tp">string</span> name = <span class="st">"ahb_base_seq"</span>);
-    <span class="kw">super</span>.new(name);
-  <span class="kw">endfunction</span>
-
-  <span class="kw">task</span> <span class="nm">body</span>();
-    <span class="tp">ahb_seq_item</span> req;
-
-    <span class="kw">repeat</span>(10) <span class="kw">begin</span>
-      req = <span class="tp">ahb_seq_item</span>::<span class="nm">type_id</span>::<span class="nm">create</span>(<span class="st">"req"</span>);
-      <span class="nm">start_item</span>(req);
-      <span class="kw">if</span>(!req.<span class="nm">randomize</span>() <span class="kw">with</span> {
-        hburst <span class="op">inside</span> {WRAP4, INCR4, INCR8};
-        hsize  == 2'b10; <span class="cm">// Word transfers</span>
-      })
-        `uvm_error(<span class="nm">get_name</span>(), <span class="st">"Randomization failed"</span>)
-      <span class="nm">finish_item</span>(req);
-    <span class="kw">end</span>
-  <span class="kw">endtask</span>
-
-<span class="kw">endclass</span></pre>
-              </div>
-            </div>
-          </li>
-
-        </ul>
-      </div>
-    </div>
-
-    <!-- ── FOLDER: CONSTRAINTS ── -->
-    <div class="folder-card" id="folder-constraints">
-      <div class="folder-header" onclick="toggleFolder('folder-constraints')">
-        <span class="folder-icon">📁</span>
-        <span class="folder-name">SV_CONSTRAINTS</span>
-        <span class="folder-count">3 FILES</span>
-        <span class="folder-arrow">▶</span>
-      </div>
-      <div class="folder-body">
-        <ul class="file-list">
-
-          <!-- File 1 -->
-          <li class="file-item" data-name="24688642 constraint array pattern">
-            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
-              <span class="file-dot"></span>
-              array_24688642.sv
-            </div>
-            <div class="code-panel">
-              <div class="code-header">
-                <span class="code-lang">SYSTEMVERILOG</span>
-                <button class="copy-btn" onclick="copyCode(this, 'code-c1')">COPY</button>
-              </div>
-              <div class="code-scroll">
-<pre id="code-c1"><span class="cm">// Constraint: Array Pattern 2-4-6-8-8-6-4-2
-// First half: even sequence ascending
-// Second half: mirror of first half</span>
-
-<span class="kw">class</span> <span class="tp">array_pattern</span>;
-
-  <span class="kw">rand byte</span> a[20];
-
-  <span class="kw">constraint</span> <span class="nm">c_mirror_pattern</span> {
-    <span class="kw">foreach</span>(a[i]) {
-      <span class="kw">if</span>(i < (a.size() / 2))
-        a[i] == (i + 1) * 2;        <span class="cm">// 2,4,6,8,10...</span>
-      <span class="kw">else</span>
-        a[i] == a[a.size() - 1 - i]; <span class="cm">// mirror</span>
-    }
-  }
-
-  <span class="kw">function void</span> <span class="nm">print_array</span>();
-    $write(<span class="st">"Pattern: "</span>);
-    <span class="kw">foreach</span>(a[i]) $write(<span class="st">"%0d "</span>, a[i]);
-    $display();
-  <span class="kw">endfunction</span>
-
-<span class="kw">endclass</span>
-
-<span class="cm">// Testbench usage:
-// array_pattern obj = new();
-// obj.randomize();
-// obj.print_array();</span></pre>
-              </div>
-            </div>
-          </li>
-
-          <!-- File 2 -->
-          <li class="file-item" data-name="weighted distribution constraint rand">
-            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
-              <span class="file-dot"></span>
-              weighted_dist.sv
-            </div>
-            <div class="code-panel">
-              <div class="code-header">
-                <span class="code-lang">SYSTEMVERILOG</span>
-                <button class="copy-btn" onclick="copyCode(this, 'code-c2')">COPY</button>
-              </div>
-              <div class="code-scroll">
-<pre id="code-c2"><span class="cm">// Weighted Distribution Constraint
-// Useful for biasing stimulus toward corner cases</span>
-
-<span class="kw">class</span> <span class="tp">ahb_data_gen</span>;
-
-  <span class="kw">rand</span> <span class="tp">bit</span> [31:0] data;
-  <span class="kw">rand</span> <span class="tp">bit</span> [7:0]  addr_offset;
-
-  <span class="cm">// 60% normal, 30% max, 10% zero</span>
-  <span class="kw">constraint</span> <span class="nm">c_data_dist</span> {
-    data <span class="op">dist</span> {
-      [32'h0000_0001 : 32'hFFFE_FFFE] := 60,
-      32'hFFFF_FFFF                   := 30,
-      32'h0000_0000                   := 10
-    };
-  }
-
-  <span class="cm">// Address aligned to 4-byte boundary</span>
-  <span class="kw">constraint</span> <span class="nm">c_addr_align</span> {
-    addr_offset[1:0] == 2'b00;
-    addr_offset <span class="op">inside</span> {[8'h00 : 8'hFC]};
-  }
-
-<span class="kw">endclass</span></pre>
-              </div>
-            </div>
-          </li>
-
-          <!-- File 3 -->
-          <li class="file-item" data-name="unique constraint no repeat solve before">
-            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
-              <span class="file-dot"></span>
-              unique_no_repeat.sv
-            </div>
-            <div class="code-panel">
-              <div class="code-header">
-                <span class="code-lang">SYSTEMVERILOG</span>
-                <button class="copy-btn" onclick="copyCode(this, 'code-c3')">COPY</button>
-              </div>
-              <div class="code-scroll">
-<pre id="code-c3"><span class="cm">// Unique Constraint — No Repeated Addresses
-// Ensures all generated addresses are distinct</span>
-
-<span class="kw">class</span> <span class="tp">unique_addr_gen</span>;
-
-  <span class="kw">rand</span> <span class="tp">bit</span> [7:0] addr[8];
-  <span class="kw">rand</span> <span class="tp">bit</span> [2:0] priority_level;
-
-  <span class="cm">// All 8 addresses must be unique</span>
-  <span class="kw">constraint</span> <span class="nm">c_unique_addr</span> {
-    <span class="kw">unique</span> { addr };
-  }
-
-  <span class="cm">// Addresses in ascending order</span>
-  <span class="kw">constraint</span> <span class="nm">c_ascending</span> {
-    <span class="kw">foreach</span>(addr[i])
-      <span class="kw">if</span>(i > 0) addr[i] > addr[i-1];
-  }
-
-  <span class="cm">// Resolve priority before address</span>
-  <span class="kw">constraint</span> <span class="nm">c_solve_order</span> {
-    <span class="kw">solve</span> priority_level <span class="kw">before</span> addr;
-  }
-
-<span class="kw">endclass</span></pre>
-              </div>
-            </div>
-          </li>
-
-        </ul>
-      </div>
-    </div>
-
-    <!-- ── FOLDER: UVM COMPONENTS ── -->
     <div class="folder-card" id="folder-uvm">
       <div class="folder-header" onclick="toggleFolder('folder-uvm')">
         <span class="folder-icon">📁</span>
         <span class="folder-name">UVM_COMPONENTS</span>
-        <span class="folder-count">2 FILES</span>
+        <span class="folder-count">14 FILES</span>
         <span class="folder-arrow">▶</span>
       </div>
       <div class="folder-body">
         <ul class="file-list">
 
-          <!-- File 1 -->
-          <li class="file-item" data-name="scoreboard uvm checker">
+          <li class="file-item" data-name="uvm pool">
             <div class="file-toggle" onclick="toggleFile(this.parentElement)">
               <span class="file-dot"></span>
-              scoreboard.sv
+              UVM POOL
             </div>
             <div class="code-panel">
               <div class="code-header">
-                <span class="code-lang">UVM / SYSTEMVERILOG</span>
+                <span class="code-lang">SYSTEMVERILOG</span>
                 <button class="copy-btn" onclick="copyCode(this, 'code-uvm1')">COPY</button>
               </div>
               <div class="code-scroll">
-<pre id="code-uvm1"><span class="cm">// Generic UVM Scoreboard
-// Compares expected vs actual transactions</span>
+                <pre id="code-uvm1">class my_obj extends uvm_object;
+int data;
+`uvm_object_utils(my_obj)
 
-<span class="kw">class</span> <span class="tp">ahb_scoreboard</span> <span class="kw">extends</span> <span class="tp">uvm_scoreboard</span>;
-  `uvm_component_utils(<span class="tp">ahb_scoreboard</span>)
+function new(string name=&quot;my_obj&quot;);
+super.new(name);
+endfunction
+endclass
 
-  <span class="tp">uvm_analysis_imp</span> #(<span class="tp">ahb_seq_item</span>, <span class="tp">ahb_scoreboard</span>)
-    exp_port, act_port;
+module top;
 
-  <span class="tp">ahb_seq_item</span> exp_queue[$], act_queue[$];
-  <span class="tp">int</span> pass_cnt, fail_cnt;
+initial begin
+uvm_object_string_pool #(my_obj) pool;
 
-  <span class="kw">function new</span>(<span class="tp">string</span> name, <span class="tp">uvm_component</span> parent);
-    <span class="kw">super</span>.new(name, parent);
-  <span class="kw">endfunction</span>
+my_obj obj;
 
-  <span class="kw">function void</span> <span class="nm">write_exp</span>(<span class="tp">ahb_seq_item</span> t);
-    exp_queue.push_back(t);
-  <span class="kw">endfunction</span>
+// create pool
+pool = new(&quot;pool&quot;);
 
-  <span class="kw">function void</span> <span class="nm">write_act</span>(<span class="tp">ahb_seq_item</span> t);
-    act_queue.push_back(t);
-    <span class="nm">check_transaction</span>();
-  <span class="kw">endfunction</span>
+// create object
+obj = my_obj::type_id::create(&quot;obj&quot;);
+obj.data = 55;
 
-  <span class="kw">function void</span> <span class="nm">check_transaction</span>();
-    <span class="tp">ahb_seq_item</span> exp, act;
-    <span class="kw">if</span>(exp_queue.size() == 0) <span class="kw">return</span>;
-    exp = exp_queue.pop_front();
-    act = act_queue.pop_front();
-    <span class="kw">if</span>(exp.data === act.data) begin
-      pass_cnt++;
-      `uvm_info(<span class="nm">get_name</span>(), <span class="st">"PASS: data match"</span>, UVM_LOW)
-    <span class="kw">end else begin</span>
-      fail_cnt++;
-      `uvm_error(<span class="nm">get_name</span>(), $sformatf(
-        <span class="st">"FAIL: exp=0x%0h act=0x%0h"</span>, exp.data, act.data))
-    <span class="kw">end</span>
-  <span class="kw">endfunction</span>
+// 🔷 store in pool
+pool.add(&quot;key1&quot;, obj);
 
-<span class="kw">endclass</span></pre>
+// 🔷 retrieve from pool
+my_obj obj2;
+obj2 = pool.get(&quot;key1&quot;);
+
+$display(&quot;Data = %0d&quot;, obj2.data);
+end
+
+endmodule</pre>
               </div>
             </div>
           </li>
 
-          <!-- File 2 -->
-          <li class="file-item" data-name="coverage collector functional covergroup">
+          <li class="file-item" data-name="singleton object">
             <div class="file-toggle" onclick="toggleFile(this.parentElement)">
               <span class="file-dot"></span>
-              coverage_collector.sv
+              singleton object
             </div>
             <div class="code-panel">
               <div class="code-header">
@@ -1399,57 +1142,4728 @@ footer {
                 <button class="copy-btn" onclick="copyCode(this, 'code-uvm2')">COPY</button>
               </div>
               <div class="code-scroll">
-<pre id="code-uvm2"><span class="cm">// Functional Coverage Collector
-// Tracks AHB burst types and transfer sizes</span>
+                <pre id="code-uvm2">class singleton;
 
-<span class="kw">class</span> <span class="tp">ahb_coverage</span> <span class="kw">extends</span> <span class="tp">uvm_subscriber</span> #(<span class="tp">ahb_seq_item</span>);
-  `uvm_component_utils(<span class="tp">ahb_coverage</span>)
+// 🔥 single shared object
+static singleton inst;
 
-  <span class="tp">ahb_seq_item</span> trans;
+int data;
 
-  <span class="kw">covergroup</span> <span class="nm">ahb_cg</span>;
+// restrict direct creation
+protected function new();
+endfunction
 
-    <span class="nm">cp_burst</span>: <span class="kw">coverpoint</span> trans.hburst {
-      bins single  = {3'b000};
-      bins incr    = {3'b001};
-      bins wrap4   = {3'b010};
-      bins incr4   = {3'b011};
-      bins wrap8   = {3'b100};
-      bins incr8   = {3'b101};
-      bins wrap16  = {3'b110};
-      bins incr16  = {3'b111};
-    }
+// method to get the single object
+static function singleton get_instance();
+if (inst == null)
+inst = new(); // object created only once
+return inst; // same object returned always
+endfunction
 
-    <span class="nm">cp_size</span>: <span class="kw">coverpoint</span> trans.hsize {
-      bins byte_sz = {3'b000};
-      bins half_sz = {3'b001};
-      bins word_sz = {3'b010};
-    }
+endclass
 
-    <span class="nm">cx_burst_size</span>: <span class="kw">cross</span> cp_burst, cp_size;
+module top;
 
-  <span class="kw">endgroup</span>
+initial begin
+singleton obj1, obj2, obj3;
 
-  <span class="kw">function new</span>(<span class="tp">string</span> name, <span class="tp">uvm_component</span> parent);
-    <span class="kw">super</span>.new(name, parent);
-    ahb_cg = <span class="kw">new</span>();
-  <span class="kw">endfunction</span>
+// all get SAME object
+obj1 = singleton::get_instance();
+obj2 = singleton::get_instance();
+obj3 = singleton::get_instance();
 
-  <span class="kw">function void</span> <span class="nm">write</span>(<span class="tp">ahb_seq_item</span> t);
-    trans = t;
-    ahb_cg.sample();
-  <span class="kw">endfunction</span>
+obj1.data = 100;
 
-<span class="kw">endclass</span></pre>
+// accessing through different handles
+$display(&quot;obj2.data = %0d&quot;, obj2.data);
+$display(&quot;obj3.data = %0d&quot;, obj3.data);
+
+// check if all are same object
+if (obj1 == obj2 &amp;&amp; obj2 == obj3)
+  $display(&quot;All are SAME singleton object&quot;);
+else
+  $display(&quot;Different objects&quot;);
+end
+
+endmodule</pre>
               </div>
             </div>
           </li>
 
+          <li class="file-item" data-name="ral complete code">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Ral complete code
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm3">/ ============================================================
+// SINGLE FILE RAL EXAMPLE
+// ============================================================
+
+`include &quot;uvm_macros.svh&quot;
+import uvm_pkg::*;
+
+// ============================================================
+// 🔷 SIMPLE DUT (1 REGISTER)
+// ============================================================
+module dut (
+input logic clk,
+input logic rst_n,
+input logic wr_en,
+input logic rd_en,
+input logic [7:0] addr,
+input logic [31:0] wdata,
+output logic [31:0] rdata
+);
+
+logic [31:0] reg0;
+
+always_ff @(posedge clk or negedge rst_n) begin
+if (!rst_n)
+reg0 &lt;= 32&#x27;h0;
+else if (wr_en &amp;&amp; addr == 8&#x27;h00)
+reg0 &lt;= wdata;
+end
+
+assign rdata = (rd_en &amp;&amp; addr == 8&#x27;h00) ? reg0 : 32&#x27;h0;
+
+endmodule
+
+// ============================================================
+// 🔷 BUS TRANSACTION
+// ============================================================
+class bus_txn extends uvm_sequence_item;
+rand bit wr;
+rand bit [7:0] addr;
+rand bit [31:0] data;
+
+`uvm_object_utils(bus_txn)
+
+function new(string name=&quot;bus_txn&quot;);
+super.new(name);
+endfunction
+endclass
+
+// ============================================================
+// 🔷 RAL REGISTER
+// ============================================================
+class my_reg extends uvm_reg;
+
+uvm_reg_field f1;
+
+`uvm_object_utils(my_reg)
+
+function new(string name=&quot;my_reg&quot;);
+super.new(name, 32, UVM_NO_COVERAGE);
+endfunction
+
+virtual function void build();
+f1 = uvm_reg_field::type_id::create(&quot;f1&quot;);
+
+f1.configure(this,
+             32, 0, &quot;RW&quot;,
+             0, 0, 1, 1, 0);
+endfunction
+
+endclass
+
+// ============================================================
+// 🔷 RAL BLOCK
+// ============================================================
+class my_block extends uvm_reg_block;
+
+my_reg reg0;
+
+`uvm_object_utils(my_block)
+
+function new(string name=&quot;my_block&quot;);
+super.new(name, UVM_NO_COVERAGE);
+endfunction
+
+virtual function void build();
+reg0 = my_reg::type_id::create(&quot;reg0&quot;);
+
+reg0.configure(this, null, &quot;reg0&quot;);
+reg0.build();
+
+default_map = create_map(&quot;map&quot;, 0, 4, UVM_LITTLE_ENDIAN);
+default_map.add_reg(reg0, &#x27;h0, &quot;RW&quot;);
+
+lock_model();
+endfunction
+
+endclass
+
+// ============================================================
+// 🔷 ADAPTER (RAL → BUS)
+// ============================================================
+class my_adapter extends uvm_reg_adapter;
+
+`uvm_object_utils(my_adapter)
+
+function new(string name=&quot;my_adapter&quot;);
+super.new(name);
+endfunction
+
+virtual function uvm_sequence_item reg2bus(const ref uvm_reg_bus_op rw);
+bus_txn tx = bus_txn::type_id::create(&quot;tx&quot;);
+
+tx.addr = rw.addr;
+tx.data = rw.data;
+tx.wr   = (rw.kind == UVM_WRITE);
+
+return tx;
+endfunction
+
+virtual function void bus2reg(uvm_sequence_item bus_item,
+ref uvm_reg_bus_op rw);
+bus_txn tx;
+$cast(tx, bus_item);
+
+rw.addr = tx.addr;
+rw.data = tx.data;
+rw.kind = tx.wr ? UVM_WRITE : UVM_READ;
+rw.status = UVM_IS_OK;
+endfunction
+
+endclass
+
+// ============================================================
+// 🔷 TEST
+// ============================================================
+class my_test extends uvm_test;
+
+`uvm_component_utils(my_test)
+
+my_block blk;
+my_adapter adapter;
+
+function new(string name=&quot;my_test&quot;, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+virtual function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+
+blk = my_block::type_id::create(&quot;blk&quot;, this);
+blk.build();
+
+adapter = my_adapter::type_id::create(&quot;adapter&quot;);
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+uvm_status_e status;
+uvm_reg_data_t data;
+
+phase.raise_objection(this);
+
+// WRITE
+blk.reg0.write(status, 32&#x27;hA5A5A5A5);
+`uvm_info(&quot;TEST&quot;, &quot;WRITE DONE&quot;, UVM_LOW)
+
+// READ
+blk.reg0.read(status, data);
+`uvm_info(&quot;TEST&quot;, $sformatf(&quot;READ DATA = %h&quot;, data), UVM_LOW)
+
+phase.drop_objection(this);
+endtask
+
+endclass
+
+// ============================================================
+// 🔷 TOP
+// ============================================================
+module top;
+
+logic clk, rst_n;
+
+initial begin
+clk = 0;
+forever #5 clk = ~clk;
+end
+
+initial begin
+rst_n = 0;
+#20 rst_n = 1;
+end
+
+initial begin
+run_test(&quot;my_test&quot;);
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="sv uvm all concept definitons  48">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              SV UVM ALL CONCEPT DEFINITONS #48
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm4')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm4">Perfect — this is exactly what interviewers expect: crisp, one-line + 2-line definitions with keywords.
+I’ll give you clean interview-ready definitions (not textbook, not too long, not too short).
+
+🟦 I. SYSTEMVERILOG CORE (INTERVIEW DEFINITIONS)
+🔹 Data Types
+bit → 2-state data type (0,1), faster, no X/Z
+logic → 4-state (0,1,X,Z), used in RTL
+byte/int/longint → signed integer types (8/32/64-bit)
+enum → user-defined named constants for readability
+struct → group of different data types into one unit
+string → dynamic text storage
+parameter → compile-time constant, can be overridden
+localparam → fixed constant, cannot be overridden
+void → function with no return value
+🔹 OOP Concepts
+Class → blueprint for objects
+this → refers to current object instance
+new() → constructor used to create object
+Inheritance → child class derives from parent (extends)
+super → used to access parent class methods/variables
+Polymorphism → same method behaves differently (via virtual)
+Virtual function/task → allows runtime binding
+Encapsulation → data hiding using local, protected
+🔹 Randomization
+rand → random variable
+randc → cyclic random (no repetition until all values used)
+constraint → rules applied during randomization
+inside → restrict values to range/set
+dist → weighted distribution
+solve before → control solving order
+constraint_mode() → enable/disable constraint
+rand_mode() → enable/disable random variable
+pre_randomize() → executes before randomization
+post_randomize() → executes after randomization
+🔹 Arrays &amp; Queues
+Packed array → continuous bits (hardware representation)
+Unpacked array → array of elements
+Dynamic array → size decided at runtime
+Associative array → indexed by key (string/int)
+Queue → dynamic FIFO structure
+push/pop → insert/remove elements
+Array methods → sum, find, sort
+🔹 Interfaces
+interface → bundle of signals
+modport → defines direction for modules
+clocking block → handles timing and synchronization
+🔹 Concurrency &amp; IPC
+task → time-consuming procedure
+function → zero-time execution
+fork...join → parallel execution
+join_any → completes when any thread finishes
+join_none → doesn&#x27;t wait
+disable fork → kills all threads
+semaphore → resource locking
+mailbox → communication between processes
+event → synchronization trigger
+🔹 Assertions (SVA)
+assert → checks design behavior
+sequence → defines event pattern
+property → logical rule using sequence
+Immediate assertion → evaluated instantly
+Concurrent assertion → evaluated over time
+cover property → checks if scenario occurred
+🔹 Functional Coverage
+covergroup → defines coverage model
+coverpoint → variable to track
+bins → value ranges
+cross → combination coverage
+🔹 Others
+package → container for reusable code
+import → access package contents
+macro (`define) → text substitution
+typedef → create new type name
+virtual interface → handle to interface in class
+🟩 II. UVM FUNDAMENTALS
+🔹 UVM Hierarchy
+uvm_object → base for all data objects
+uvm_sequence_item → transaction class
+uvm_component → base for testbench components
+uvm_driver → drives DUT signals
+uvm_monitor → observes DUT signals
+uvm_sequencer → controls sequence flow
+uvm_agent → bundle of driver, monitor, sequencer
+uvm_env → top-level environment
+uvm_test → test scenario controller
+🔹 UVM Factory
+Allows dynamic object/component creation
+uvm_*_utils → register with factory
+create() → factory-based object creation
+Type override → replace class globally
+Instance override → replace specific instance
+🔹 Phasing
+build_phase → create components (top-down)
+connect_phase → connect ports (bottom-up)
+run_phase → main stimulus (task phase)
+Other phases → reset, configure, main, shutdown, check, report
+🔹 Config DB
+Used to pass configuration across hierarchy
+set() → store value
+get() → retrieve value
+🔹 Objection Mechanism
+Controls simulation end
+raise_objection() → keep simulation running
+drop_objection() → allow simulation to end
+set_drain_time() → delay end
+🔹 Reporting
+uvm_info → normal message
+uvm_warning → warning
+uvm_error → error
+uvm_fatal → stops simulation
+verbosity → controls message printing
+🟨 III. UVM STRUCTURE &amp; FLOW
+🔹 TLM (Transaction-Level Modeling)
+Communication between components
+uvm_port → sends data
+uvm_export → receives data
+uvm_analysis_port → broadcast data
+🔹 Sequences &amp; Sequencer
+uvm_sequence → generates transactions
+uvm_sequencer → arbitrates sequences
+start_item()/finish_item() → send transactions
+🔹 Agent
+Active agent → drives DUT
+Passive agent → only monitors
+Controlled by is_active
+🔹 DUT Connection
+Done via virtual interface
+🔹 Scoreboard
+Compares expected vs actual results
+🟥 IV. ADVANCED UVM
+🔹 Virtual Sequence
+Controls multiple sequencers
+Used for SoC-level verification
+🔹 RAL (Register Abstraction Layer)
+uvm_reg → register model
+uvm_reg_block → group of registers
+uvm_reg_map → address mapping
+uvm_mem → memory model
+🔹 Callbacks
+Allows modifying behavior without changing original class
+🔹 Overrides
+set_type_override_by_type → replace class globally
+set_type_override_by_name → replace using string
+🔹 Wait Concepts
+wait_for_sequences() → wait for sequence completion
+wait_for_item_done() → wait for driver response
+🔹 TLM2.0
+Advanced communication
+Supports:
+Blocking transport
+Non-blocking trans</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="sv uvm concepts all concepts code examples  47">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              SV UVM CONCEPTS ALL CONCEPTS CODE EXAMPLES #47
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm5')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm5">// =============================================================
+// SYSTEMVERILOG + UVM COMPLETE DEFINITIONS + CODE (MASTER FILE)
+// =============================================================
+
+// =============================================================
+// I. SYSTEMVERILOG CORE CONCEPTS
+// =============================================================
+
+// ---------------- DATA TYPES ----------------
+// bit: 2-state (0,1)
+bit b;
+
+// logic: 4-state (0,1,X,Z)
+logic l;
+
+// integer types
+byte by; // 8-bit
+int i; // 32-bit
+longint li; // 64-bit
+
+// enum
+typedef enum {IDLE, BUSY} state_e;
+state_e st;
+
+// struct
+typedef struct {
+int a;
+int b;
+} my_struct;
+
+// string
+string s = &quot;hello&quot;;
+
+// parameter vs localparam
+parameter int P = 10;
+localparam int LP = 20;
+
+// void function
+function void display();
+$display(&quot;void function&quot;);
+endfunction
+
+// ---------------- OOP ----------------
+class base;
+int a; // public by default
+
+function new(int a);
+this.a = a;
+endfunction
+
+virtual function void display();
+$display(&quot;Base a=%0d&quot;, a);
+endfunction
+endclass
+
+class child extends base;
+function new(int a);
+super.new(a);
+endfunction
+
+function void display(); // polymorphism
+$display(&quot;Child a=%0d&quot;, a);
+endfunction
+endclass
+
+// encapsulation
+class encap;
+local int x;
+protected int y;
+endclass
+
+// ---------------- RANDOMIZATION ----------------
+class rand_ex;
+rand bit [3:0] a;
+randc bit [3:0] b;
+
+constraint c1 { a inside {[1:10]}; }
+constraint c2 { solve a before b; }
+constraint c3 { b dist {1:=50, [2:5]:=50}; }
+
+function void pre_randomize();
+$display(&quot;Before randomization&quot;);
+endfunction
+
+function void post_randomize();
+$display(&quot;After randomization&quot;);
+endfunction
+endclass
+
+// constraint control
+// obj.constraint_mode(0);
+// obj.rand_mode(0);
+
+// ---------------- ARRAYS ----------------
+module arrays_demo;
+bit [7:0] packed_arr; // packed
+int unpacked_arr[5]; // unpacked
+
+int dyn[];
+int assoc[string];
+int q[$];
+
+initial begin
+dyn = new[5];
+q.push_back(10);
+q.push_front(5);
+q.pop_back();
+assoc[&quot;key&quot;] = 100;
+
+$display(&quot;Sum=%0d&quot;, q.sum());
+q.sort();
+end
+endmodule
+
+// ---------------- INTERFACE ----------------
+interface my_if(input clk);
+logic a,b;
+
+modport drv (output a, input b);
+modport mon (input a,b);
+
+clocking cb @(posedge clk);
+output a;
+input b;
+endclocking
+endinterface
+
+// ---------------- CONCURRENCY ----------------
+module concurrency;
+event ev;
+semaphore sem = new(1);
+mailbox mb = new();
+
+task t1();
+sem.get();
+#10 -&gt; ev;
+sem.put();
+endtask
+
+task t2();
+@(ev);
+endtask
+
+initial begin
+fork
+t1();
+t2();
+join_any
+
+disable fork;
+end
+endmodule
+
+// ---------------- ASSERTIONS ----------------
+module sva(input clk,a,b);
+
+sequence seq1;
+a ##1 b;
+endsequence
+
+property p1;
+@(posedge clk) seq1;
+endproperty
+
+assert property(p1);
+cover property(p1);
+
+// immediate
+always @(posedge clk)
+if(a &amp;&amp; !b) $error(&quot;Immediate assertion&quot;);
+endmodule
+
+// ---------------- COVERAGE ----------------
+module coverage;
+int a,b;
+
+covergroup cg;
+cp1: coverpoint a {
+bins low = {[0:5]};
+bins high = {[6:10]};
+}
+
+cp2: coverpoint b;
+
+cross cp1, cp2;
+endgroup
+
+cg c = new();
+endmodule
+
+// ---------------- OTHERS ----------------
+package my_pkg;
+typedef int my_int;
+endpackage
+
+`define ADD(a,b) a+b
+
+// virtual interface example
+virtual my_if vif;
+
+// =============================================================
+// II. UVM FUNDAMENTALS
+// =============================================================
+
+class txn extends uvm_sequence_item;
+rand int data;
+`uvm_object_utils(txn)
+endclass
+
+class my_driver extends uvm_driver #(txn);
+`uvm_component_utils(my_driver)
+endclass
+
+class my_monitor extends uvm_component;
+`uvm_component_utils(my_monitor)
+endclass
+
+class my_seqr extends uvm_sequencer #(txn);
+`uvm_component_utils(my_seqr)
+endclass
+
+class my_agent extends uvm_agent;
+`uvm_component_utils(my_agent)
+endclass
+
+class my_env extends uvm_env;
+`uvm_component_utils(my_env)
+endclass
+
+class my_test extends uvm_test;
+`uvm_component_utils(my_test)
+endclass
+
+// ---------------- FACTORY ----------------
+// Registration already done via macros
+// Override
+initial begin
+uvm_factory::get().set_type_override_by_type(txn::get_type(), txn::get_type());
+end
+
+// ---------------- PHASES ----------------
+// build_phase → create components
+// connect_phase → connect TLM
+// run_phase → stimulus
+// others: reset, configure, main, shutdown, check, report
+
+// ---------------- CONFIG DB ----------------
+initial begin
+uvm_config_db#(int)::set(null,&quot;*&quot;,&quot;cfg&quot;,10);
+end
+
+// get example
+// uvm_config_db#(int)::get(this,&quot;&quot;,&quot;cfg&quot;,var);
+
+// ---------------- OBJECTIONS ----------------
+// phase.raise_objection(this);
+// phase.drop_objection(this);
+// phase.set_drain_time(this,100);
+
+// ---------------- REPORTING ----------------
+// uvm_info(&quot;TAG&quot;,&quot;msg&quot;,UVM_LOW) // uvm_warning(...)
+// uvm_error(...) // uvm_fatal(...)
+
+// =============================================================
+// III. UVM STRUCTURE + FLOW
+// =============================================================
+
+// TLM
+uvm_analysis_port #(txn) ap;
+uvm_analysis_export #(txn) exp;
+
+// Sequence
+class my_seq extends uvm_sequence #(txn);
+`uvm_object_utils(my_seq)
+
+task body();
+txn t;
+t = txn::type_id::create(&quot;t&quot;);
+start_item(t);
+finish_item(t);
+endtask
+endclass
+
+// Active vs Passive agent
+// is_active = UVM_ACTIVE / UVM_PASSIVE
+
+// Virtual interface connect
+// uvm_config_db#(virtual my_if)::set(...)
+
+// Scoreboard
+class scb extends uvm_component;
+`uvm_component_utils(scb)
+endclass
+
+// =============================================================
+// IV. ADVANCED UVM
+// =============================================================
+
+// Virtual sequence
+class vseq extends uvm_sequence;
+`uvm_object_utils(vseq)
+endclass
+
+// RAL
+uvm_reg r;
+uvm_reg_block blk;
+uvm_reg_map map;
+uvm_mem mem;
+
+// Callbacks
+class my_cb extends uvm_callback;
+endclass
+
+// Overrides
+// set_type_override_by_type
+// set_type_override_by_name
+
+// Wait concepts
+// wait_for_sequences()
+// wait_for_item_done()
+
+// TLM2.0
+// sockets, blocking/non-blocking transport
+
+// =============================================================
+// TOP
+// =============================================================
+module top;
+initial run_test();
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="lock grab methods  46">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              LOCK GRAB METHODS #46
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm6')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm6">In UVM, lock() and grab() are used in sequences to control access to the sequencer when multiple sequences are running in parallel.
+timescale 1ns/1ps import uvm_pkg::*; include &quot;uvm_macros.svh&quot;
+
+//////////////////////////////////////////////
+// TRANSACTION
+//////////////////////////////////////////////
+class txn extends uvm_sequence_item;
+rand int data;
+`uvm_object_utils(txn)
+
+function new(string name=&quot;txn&quot;);
+super.new(name);
+endfunction
+endclass
+
+//////////////////////////////////////////////
+// SEQUENCER
+//////////////////////////////////////////////
+class my_seqr extends uvm_sequencer #(txn);
+`uvm_component_utils(my_seqr)
+
+function new(string name, uvm_component parent);
+super.new(name,parent);
+endfunction
+endclass
+
+//////////////////////////////////////////////
+// DRIVER
+//////////////////////////////////////////////
+class my_driver extends uvm_driver #(txn);
+`uvm_component_utils(my_driver)
+
+function new(string name, uvm_component parent);
+super.new(name,parent);
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+txn t;
+forever begin
+seq_item_port.get_next_item(t);
+`uvm_info(&quot;DRV&quot;,$sformatf(&quot;Driving data=%0d&quot;,t.data),UVM_LOW)
+#10;
+seq_item_port.item_done();
+end
+endtask
+endclass
+
+//////////////////////////////////////////////
+// NORMAL SEQUENCE (uses lock)
+//////////////////////////////////////////////
+class seq_lock extends uvm_sequence #(txn);
+`uvm_object_utils(seq_lock)
+
+function new(string name=&quot;seq_lock&quot;);
+super.new(name);
+endfunction
+
+virtual task body();
+txn t;
+
+`uvm_info(&quot;SEQ_LOCK&quot;,&quot;Requesting LOCK&quot;,UVM_LOW)
+lock();  // wait and lock
+
+repeat(3) begin
+  t = txn::type_id::create(&quot;t&quot;);
+  assert(t.randomize());
+  start_item(t);
+  finish_item(t);
+end
+
+unlock();
+`uvm_info(&quot;SEQ_LOCK&quot;,&quot;Released LOCK&quot;,UVM_LOW)
+endtask
+endclass
+
+//////////////////////////////////////////////
+// HIGH PRIORITY SEQUENCE (uses grab)
+//////////////////////////////////////////////
+class seq_grab extends uvm_sequence #(txn);
+`uvm_object_utils(seq_grab)
+
+function new(string name=&quot;seq_grab&quot;);
+super.new(name);
+endfunction
+
+virtual task body();
+txn t;
+
+#5; // start slightly later
+
+`uvm_info(&quot;SEQ_GRAB&quot;,&quot;Requesting GRAB&quot;,UVM_LOW)
+grab();  // immediate control
+
+repeat(2) begin
+  t = txn::type_id::create(&quot;t&quot;);
+  assert(t.randomize());
+  start_item(t);
+  finish_item(t);
+end
+
+ungrab();
+`uvm_info(&quot;SEQ_GRAB&quot;,&quot;Released GRAB&quot;,UVM_LOW)
+endtask
+endclass
+
+//////////////////////////////////////////////
+// ENV
+//////////////////////////////////////////////
+class my_env extends uvm_env;
+`uvm_component_utils(my_env)
+
+my_seqr seqr;
+my_driver drv;
+
+function new(string name, uvm_component parent);
+super.new(name,parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+seqr = my_seqr::type_id::create(&quot;seqr&quot;,this);
+drv = my_driver::type_id::create(&quot;drv&quot;,this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+drv.seq_item_port.connect(seqr.seq_item_export);
+endfunction
+endclass
+
+//////////////////////////////////////////////
+// TEST
+//////////////////////////////////////////////
+class my_test extends uvm_test;
+`uvm_component_utils(my_test)
+
+my_env env;
+
+function new(string name, uvm_component parent);
+super.new(name,parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+env = my_env::type_id::create(&quot;env&quot;,this);
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+seq_lock s1;
+seq_grab s2;
+
+phase.raise_objection(this);
+
+s1 = seq_lock::type_id::create(&quot;s1&quot;);
+s2 = seq_grab::type_id::create(&quot;s2&quot;);
+
+fork
+  s1.start(env.seqr);
+  s2.start(env.seqr);
+join
+
+phase.drop_objection(this);
+endtask
+endclass
+
+//////////////////////////////////////////////
+// TOP
+//////////////////////////////////////////////
+module top;
+initial run_test(&quot;my_test&quot;);
+endmodule
+
+🔑 lock()
+Respects arbitration
+Waits for its turn
+Used in normal sequencing
+🔑 grab()
+Ignores arbitration queue
+Takes immediate control
+Used in:
+Error handling
+Interrupt sequences
+Debug sequences
+👉 lock = wait → execute exclusively
+👉 grab = interrupt → execute immediately</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="all sv uvm concepts in one file  45">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              All sv uvm concepts in one file #45
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm7')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm7">timescale 1ns/1ps import uvm_pkg::*; include &quot;uvm_macros.svh&quot;
+
+//////////////////////////////////////////////
+// 1. TRANSACTION CLASS (with constraints)
+//////////////////////////////////////////////
+class txn extends uvm_sequence_item;
+
+rand bit [7:0] addr;
+rand bit [7:0] data;
+rand bit wr;
+
+constraint c_addr { addr inside {[0:255]}; }
+constraint c_data { data inside {[10:100]}; }
+
+`uvm_object_utils(txn)
+
+function new(string name=&quot;txn&quot;);
+super.new(name);
+endfunction
+
+function void do_print(uvm_printer printer);
+super.do_print(printer);
+printer.print_field(&quot;addr&quot;, addr, 8);
+printer.print_field(&quot;data&quot;, data, 8);
+printer.print_field(&quot;wr&quot;, wr, 1);
+endfunction
+
+endclass
+
+//////////////////////////////////////////////
+// 2. SEQUENCE
+//////////////////////////////////////////////
+class my_seq extends uvm_sequence #(txn);
+
+`uvm_object_utils(my_seq)
+
+function new(string name=&quot;my_seq&quot;);
+super.new(name);
+endfunction
+
+virtual task body();
+txn t;
+repeat(5) begin
+t = txn::type_id::create(&quot;t&quot;);
+assert(t.randomize());
+start_item(t);
+finish_item(t);
+end
+endtask
+
+endclass
+
+//////////////////////////////////////////////
+// 3. SEQUENCER
+//////////////////////////////////////////////
+class my_seqr extends uvm_sequencer #(txn);
+`uvm_component_utils(my_seqr)
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+endclass
+
+//////////////////////////////////////////////
+// 4. DRIVER (Mailbox + Virtual Interface style)
+//////////////////////////////////////////////
+class my_driver extends uvm_driver #(txn);
+
+`uvm_component_utils(my_driver)
+
+mailbox #(txn) mbx; // SV concept
+event drv_done; // event concept
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+mbx = new();
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+txn t;
+forever begin
+seq_item_port.get_next_item(t);
+
+  // mimic drive
+  `uvm_info(&quot;DRV&quot;, $sformatf(&quot;Driving addr=%0d data=%0d&quot;, t.addr, t.data), UVM_LOW)
+
+  mbx.put(t); // mailbox usage
+
+  -&gt; drv_done; // event trigger
+
+  seq_item_port.item_done();
+end
+endtask
+
+endclass
+
+//////////////////////////////////////////////
+// 5. MONITOR (Analysis port)
+//////////////////////////////////////////////
+class my_monitor extends uvm_component;
+
+`uvm_component_utils(my_monitor)
+
+uvm_analysis_port #(txn) ap;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+ap = new(&quot;ap&quot;, this);
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+txn t;
+forever begin
+#10;
+t = txn::type_id::create(&quot;t&quot;);
+void&#x27;(t.randomize());
+ap.write(t); // TLM
+end
+endtask
+
+endclass
+
+//////////////////////////////////////////////
+// 6. SCOREBOARD
+//////////////////////////////////////////////
+class my_scoreboard extends uvm_component;
+
+`uvm_component_utils(my_scoreboard)
+
+uvm_analysis_imp #(txn, my_scoreboard) imp;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+imp = new(&quot;imp&quot;, this);
+endfunction
+
+virtual function void write(txn t);
+if(t.data &lt; 10)
+uvm_error(&quot;SCB&quot;, &quot;Data too small&quot;) else uvm_info(&quot;SCB&quot;, &quot;Transaction OK&quot;, UVM_LOW)
+endfunction
+
+endclass
+
+//////////////////////////////////////////////
+// 7. AGENT
+//////////////////////////////////////////////
+class my_agent extends uvm_component;
+
+`uvm_component_utils(my_agent)
+
+my_driver drv;
+my_monitor mon;
+my_seqr seqr;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+drv = my_driver::type_id::create(&quot;drv&quot;, this);
+mon = my_monitor::type_id::create(&quot;mon&quot;, this);
+seqr = my_seqr::type_id::create(&quot;seqr&quot;, this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+drv.seq_item_port.connect(seqr.seq_item_export);
+endfunction
+
+endclass
+
+//////////////////////////////////////////////
+// 8. ENVIRONMENT
+//////////////////////////////////////////////
+class my_env extends uvm_env;
+
+`uvm_component_utils(my_env)
+
+my_agent agt;
+my_scoreboard scb;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+agt = my_agent::type_id::create(&quot;agt&quot;, this);
+scb = my_scoreboard::type_id::create(&quot;scb&quot;, this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+agt.mon.ap.connect(scb.imp);
+endfunction
+
+endclass
+
+//////////////////////////////////////////////
+// 9. TEST
+//////////////////////////////////////////////
+class my_test extends uvm_test;
+
+`uvm_component_utils(my_test)
+
+my_env env;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+env = my_env::type_id::create(&quot;env&quot;, this);
+endfunction
+
+virtual task run_phase(uvm_phase phase);
+my_seq seq;
+
+phase.raise_objection(this);
+
+seq = my_seq::type_id::create(&quot;seq&quot;);
+seq.start(env.agt.seqr);
+
+#100;
+
+phase.drop_objection(this);
+endtask
+
+endclass
+
+//////////////////////////////////////////////
+// 10. ASSERTIONS (SVA)
+//////////////////////////////////////////////
+module assertions(input clk, input a, input b);
+
+property p1;
+@(posedge clk) a |-&gt; ##1 b;
+endproperty
+
+assert property(p1)
+else $error(&quot;Assertion failed&quot;);
+
+endmodule
+
+//////////////////////////////////////////////
+// 11. TOP MODULE
+//////////////////////////////////////////////
+module top;
+
+bit clk;
+bit a, b;
+
+// Clock generation
+always #5 clk = ~clk;
+
+// Instantiate assertion module
+assertions asrt(clk, a, b);
+
+initial begin
+clk = 0;
+a = 0; b = 0;
+
+// stimulus
+#10 a = 1;
+#10 b = 1;
+
+// Run UVM
+run_test(&quot;my_test&quot;);
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="clock generation code thigh tlow  33">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              clock generation code thigh,tlow #33
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm8')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm8">`timescale 1ns/1ps
+
+module tb;
+
+reg clk;
+realtime t_rise = 0, t_fall = 0;
+
+initial begin
+clk = 0;
+forever #5.55 clk = ~clk;
+end
+
+always @(posedge clk) begin
+if (t_fall != 0) begin
+if (($realtime - t_fall) &lt; 5 || ($realtime - t_fall) &gt; 6)
+$display(&quot;LOW time violation at %0t&quot;, $time);
+end
+t_rise = $realtime;
+end
+
+always @(negedge clk) begin
+if (t_rise != 0) begin
+if ((($realtime - t_rise) &lt; 5) || (($realtime - t_rise) &gt; 6))
+$display(&quot;HIGH time violation at %0t&quot;, $time);
+end
+t_fall = $realtime;
+end
+initial
+begin
+$dumpfile(&quot;dump.vcd&quot;);
+$dumpvars();
+end
+initial
+#100
+$finish;
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="uvm barrier concept code  30">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              uvm barrier concept code #30
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm9')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm9">`include &quot;uvm_macros.svh&quot;
+import uvm_pkg::*;
+
+class barrier_test extends uvm_test;
+
+`uvm_component_utils(barrier_test)
+
+uvm_barrier b;
+
+function new(string name = &quot;barrier_test&quot;, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+
+b = new(&quot;b&quot;, 3);
+endfunction
+
+task run_phase(uvm_phase phase);
+phase.raise_objection(this);
+
+fork
+  process1();
+  process2();
+  process3();
+join
+
+phase.drop_objection(this);
+endtask
+
+task process1();
+`uvm_info(&quot;P1&quot;, &quot;Process 1 started&quot;, UVM_LOW)
+
+#10;
+`uvm_info(&quot;P1&quot;, &quot;Reached barrier&quot;, UVM_LOW)
+
+b.wait_for();
+
+`uvm_info(&quot;P1&quot;, &quot;Crossed barrier&quot;, UVM_LOW)
+endtask
+
+task process2();
+`uvm_info(&quot;P2&quot;, &quot;Process 2 started&quot;, UVM_LOW)
+
+#20;
+`uvm_info(&quot;P2&quot;, &quot;Reached barrier&quot;, UVM_LOW)
+
+b.wait_for();
+
+`uvm_info(&quot;P2&quot;, &quot;Crossed barrier&quot;, UVM_LOW)
+endtask
+
+task process3();
+`uvm_info(&quot;P3&quot;, &quot;Process 3 started&quot;, UVM_LOW)
+
+#30;
+`uvm_info(&quot;P3&quot;, &quot;Reached barrier&quot;, UVM_LOW)
+
+b.wait_for();
+
+`uvm_info(&quot;P3&quot;, &quot;Crossed barrier&quot;, UVM_LOW)
+endtask
+
+endclass
+
+module top;
+
+initial begin
+run_test(&quot;barrier_test&quot;);
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="uvm constraint for sum of elements without  sum me  27">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              uvm constraint for sum of elements without .sum me #27
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm10')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm10">class dv_seq_item extends uvm_sequence_item;
+`uvm_object_utils(dv_seq_item)
+
+rand int arr[10];
+
+rand int prefix_sum[10];
+
+function new(string name = &quot;dv_seq_item&quot;);
+super.new(name);
+endfunction
+
+constraint c_main {
+
+arr.size() == 10;
+prefix_sum.size() == 10;
+
+foreach (arr[i]) {
+  arr[i] inside {[0:20]};
+}
+
+prefix_sum[0] == arr[0];
+
+foreach (arr[i]) {
+  if (i &gt; 0)
+    prefix_sum[i] == prefix_sum[i-1] + arr[i];
+}
+
+prefix_sum[9] == 100;
+}
+
+function void post_randomize();
+int total = 0;
+
+$display(&quot;Generated array:&quot;);
+foreach (arr[i]) begin
+  $write(&quot;%0d &quot;, arr[i]);
+  total += arr[i];
+end
+$display(&quot;
+Total sum = %0d&quot;, total);
+endfunction
+
+endclass
+
+module top;
+
+initial begin
+dv_seq_item item;
+
+item = new();
+
+repeat (5) begin
+  if (item.randomize()) begin
+    $display(&quot;Randomization SUCCESS&quot;);
+  end else begin
+    $display(&quot;Randomization FAILED&quot;);
+  end
+  $display(&quot;--------------------------&quot;);
+end
+
+#10 $finish;
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="abstract class  26">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              abstract class #26
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm11')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm11">virtual class parent;
+pure virtual function void display();
+endclass
+
+class child extends parent;
+virtual function void display();
+$display(&quot;Abstract class is written&quot;);
+endfunction
+endclass
+
+module top;
+initial begin
+child c = new();
+c.display();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="uvm heartbeat code  8">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              UVM HEARTBEAT CODE #8
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm12')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm12">`include &quot;uvm_macros.svh&quot;
+import uvm_pkg::*;
+
+class my_comp extends uvm_component;
+`uvm_component_utils(my_comp)
+
+event activity_e;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+task run_phase(uvm_phase phase);
+phase.raise_objection(this);
+
+repeat (5) begin
+  #10;
+  -&gt; activity_e; 
+  `uvm_info(&quot;COMP&quot;, &quot;Activity generated&quot;, UVM_LOW)
+end
+
+phase.drop_objection(this);
+endtask
+endclass
+
+class my_test extends uvm_test;
+`uvm_component_utils(my_test)
+
+my_comp comp;
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+comp = my_comp::type_id::create(&quot;comp&quot;, this);
+endfunction
+
+task run_phase(uvm_phase phase);
+phase.raise_objection(this);
+
+fork
+  begin
+    forever begin
+      fork
+        begin
+          @(comp.activity_e);
+          `uvm_info(&quot;HEARTBEAT&quot;, &quot;Activity detected&quot;, UVM_LOW)
+        end
+
+        begin
+          #20;
+          `uvm_error(&quot;HEARTBEAT&quot;, &quot;Timeout: No activity detected!&quot;)
+        end
+      join_any
+      disable fork; 
+    end
+  end
+join_none
+
+#200;
+phase.drop_objection(this);
+endtask
+
+endclass
+
+module top;
+initial begin
+run_test(&quot;my_test&quot;);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="uvm tlm put port getport example  5">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              uvm tlm put port getport example #5
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm13')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm13">`include &quot;uvm_macros.svh&quot;
+import uvm_pkg::*;
+
+class producer extends uvm_component;
+uvm_put_port#(int) tlm_put;
+
+`uvm_component_utils(producer)
+
+function new(string name = &quot;producer&quot;, uvm_component parent = null);
+super.new(name, parent);
+tlm_put = new(&quot;tlm_put&quot;, this);
+endfunction
+
+task run_phase(uvm_phase phase);
+int value = 10;
+super.run_phase(phase);
+
+`uvm_info(get_type_name(), $sformatf(&quot;Send value = %0h&quot;, value), UVM_NONE);
+tlm_put.put(value);
+tlm_put.try_put(20);
+tlm_put.can_put();
+endtask
+endclass
+
+class consumer extends uvm_component;
+uvm_put_imp #(int, consumer) tlm_imp;
+
+`uvm_component_utils(consumer)
+
+function new(string name = &quot;consumer&quot;, uvm_component parent = null);
+super.new(name, parent);
+tlm_imp = new(&quot;tlm_imp&quot;, this);
+endfunction
+
+virtual task put(int val);
+#10;
+`uvm_info(get_type_name(), $sformatf(&quot;Received value = %0h&quot;, val), UVM_NONE);
+endtask
+
+virtual function bit try_put(int val);
+`uvm_info(get_type_name(), $sformatf(&quot;Received try_put value = %0h&quot;, val), UVM_NONE);
+return 1;
+endfunction
+
+virtual function bit can_put();
+`uvm_info(get_type_name(), &quot;inside can_put&quot;, UVM_NONE);
+return 1;
+endfunction
+endclass
+
+class env extends uvm_env;
+producer pro;
+consumer con;
+`uvm_component_utils(env)
+
+function new(string name = &quot;env&quot;, uvm_component parent = null);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+pro = producer::type_id::create(&quot;pro&quot;, this);
+con = consumer::type_id::create(&quot;con&quot;, this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+super.connect_phase(phase);
+pro.tlm_put.connect(con.tlm_imp);
+endfunction
+endclass
+
+class test extends uvm_test;
+env env_o;
+`uvm_component_utils(test)
+
+function new(string name = &quot;test&quot;, uvm_component parent = null);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+env_o = env::type_id::create(&quot;env_o&quot;, this);
+endfunction
+
+task run_phase(uvm_phase phase);
+phase.raise_objection(this);
+#50;
+phase.drop_objection(this);
+endtask
+endclass
+
+module tb_top;
+initial begin
+run_test(&quot;test&quot;);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="clock generation 60  duty cycle  4">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              clock generation 60% duty cycle #4
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm14')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-uvm14">module top;
+bit clk=0;
+always #5 clk = ~ clk;
+always
+begin
+#6 clk = 1;
+$display(&quot;Time = %0t : clk = %0b (HIGH)&quot;, $time, clk);
+
+    #4 clk = 0;
+  $display(&quot;Time = %0t : clk = %0b (LOW)&quot;, $time, clk);
+
+end
+initial
+begin
+#100 $finish;
+end
+initial
+begin
+$dumpfile(&quot;dump.vcd&quot;);
+$dumpvars(0,top);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW UVM_COMPONENTS FILES ABOVE THIS LINE -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="folder-card" id="folder-con">
+      <div class="folder-header" onclick="toggleFolder('folder-con')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">SV_CONSTRAINTS</span>
+        <span class="folder-count">26 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <li class="file-item" data-name="randmode constraint mode and distribution constraint mode">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              randmode constraint_mode and distribution constraint_mode
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con1">class packet;
+
+rand int a;
+rand int b;
+
+constraint c1 { a &lt; 50; }
+
+constraint c2 {
+b dist { 1 := 1, 2 := 5, 3 := 10 };
+}
+
+endclass
+
+module top;
+initial begin
+packet p = new();
+
+p.c1.constraint_mode(0);
+
+p.b.rand_mode(0);
+
+repeat(5) begin
+  p.randomize();
+  $display(&quot;a=%0d b=%0d&quot;, p.a, p.b);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="mobile number constraint">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              mobile number constraint
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con2">class mobile_num;
+
+rand bit [3:0] digits[10];
+
+constraint valid_mobile {
+foreach (digits[i]) digits[i] inside {[0:9]};
+
+digits[0] inside {[6:9]};
+}
+
+function void display();
+$write(&quot;Mobile Number = &quot;);
+foreach (digits[i])
+$write(&quot;%0d&quot;, digits[i]);
+$display(&quot;&quot;);
+endfunction
+
+endclass
+
+module top;
+
+initial begin
+mobile_num m = new();
+
+repeat(10) begin
+  m.randomize();
+  m.display();
+end
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="single systemverilog file that demonstrates almost all constraint keywords">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              single SystemVerilog file that demonstrates almost all constraint keywords
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con3">class constraint_demo;
+
+// -------------------------------
+// Variables
+// -------------------------------
+rand bit [3:0] a;
+rand bit [3:0] b;
+rand bit [7:0] addr;
+rand bit [7:0] data[];
+
+rand bit [2:0] x;
+rand bit [2:0] y;
+
+randc bit [3:0] cyc; // cyclic randomization
+
+// -------------------------------
+// 1. Basic constraint
+// -------------------------------
+constraint c_basic {
+a &gt; 2;
+b &lt; 10;
+}
+
+// -------------------------------
+// 2. inside keyword
+// -------------------------------
+constraint c_inside {
+a inside {[3:7]};
+}
+
+// -------------------------------
+// 3. dist keyword (distribution)
+// -------------------------------
+constraint c_dist {
+b dist {2 := 5, 4 := 10, 6 := 1};
+}
+
+// -------------------------------
+// 4. if-else constraint
+// -------------------------------
+constraint c_if {
+if (a &gt; 5)
+b == 1;
+else
+b == 2;
+}
+
+// -------------------------------
+// 5. implication -&gt;
+// -------------------------------
+constraint c_implication {
+(a == 3) -&gt; (b == 7);
+}
+
+// -------------------------------
+// 6. foreach (array constraint)
+// -------------------------------
+constraint c_foreach {
+data.size() == 5;
+foreach (data[i]) {
+data[i] inside {[10:20]};
+}
+}
+
+// -------------------------------
+// 7. solve before
+// -------------------------------
+constraint c_solve {
+solve x before y;
+x &lt; y;
+}
+
+// -------------------------------
+// 8. soft constraint
+// -------------------------------
+constraint c_soft {
+soft a == 5;
+}
+
+// -------------------------------
+// 9. unique constraint
+// -------------------------------
+constraint c_unique {
+unique {a, b, x};
+}
+
+// -------------------------------
+// 10. sum() with
+// -------------------------------
+constraint c_sum {
+data.sum() with (int&#x27;(item)) &lt; 100;
+}
+
+// -------------------------------
+// 11. relational operators
+// -------------------------------
+constraint c_rel {
+addr &gt;= 10;
+addr &lt;= 200;
+addr != 50;
+}
+
+// -------------------------------
+// 12. pre_randomize
+// -------------------------------
+function void pre_randomize();
+$display(&quot;Before randomization&quot;);
+endfunction
+
+// -------------------------------
+// 13. post_randomize
+// -------------------------------
+function void post_randomize();
+$display(&quot;After randomization&quot;);
+$display(&quot;a=%0d b=%0d x=%0d y=%0d addr=%0d cyc=%0d&quot;, a, b, x, y, addr, cyc);
+$display(&quot;data=%p&quot;, data);
+endfunction
+
+endclass
+
+// -------------------------------
+// TOP MODULE
+// -------------------------------
+module top;
+
+initial begin
+constraint_demo obj = new();
+
+// -------------------------------
+// Normal randomization
+// -------------------------------
+repeat (3) begin
+  obj.randomize();
+  #10;
+end
+
+// -------------------------------
+// Inline constraint
+// -------------------------------
+obj.randomize() with {
+  a == 9;
+  x &lt; 2;
+};
+
+$display(&quot;After inline constraint: a=%0d x=%0d&quot;, obj.a, obj.x);
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="300 elements 0 can be consecutive and remaining non consecutive  41">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              300 elements 0 can be consecutive and remaining non consecutive #41
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con4')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con4">class test;
+rand bit [2:0] a[];
+constraint c_data{
+a.size()==300;}
+constraint d{
+foreach(a[i]){
+a[i] inside {[0:4]};}
+}
+constraint C_data1{a.sum() with (int&#x27;(item==0))&gt;=40;
+a.sum() with (int&#x27;(item==1))&gt;=40;
+a.sum() with (int&#x27;(item==2))&gt;=40;
+a.sum() with (int&#x27;(item==3))&gt;=40;
+a.sum() with (int&#x27;(item==4))&gt;=40;
+}
+constraint e{foreach(a[i]){
+
+if(a[i])
+  if(i&lt;a.size()-1)
+  a[i+1]!=a[i];
+}
+}
+
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(&quot;%p&quot;,t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="1 to 500 numbers constraint in matrix constraint  40">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              1 to 500 numbers constraint in matrix constraint #40
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con5')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con5">class test;
+rand int a[23][23];
+constraint c_data{
+foreach(a[i,j])
+a[i][j]==23*i+j+1;
+}
+function void post_randomize();
+$display(&quot;-------------------------------------------------------------------------------------------------------------------&quot;);
+for(int i=0;i&lt;23;i++)begin
+for(int j=0;j&lt;23;j++)begin
+$write(&quot;%5d&quot;,a[i][j]);
+end
+$display(&quot; &quot;);
+end
+$display(&quot;-------------------------------------------------------------------------------------------------------------------&quot;);
+endfunction
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="ahb wrap boundary  37">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              AHB wrap boundary #37
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con6')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con6">class ahb_wrap;
+
+rand bit [31:0] start_addr;
+rand bit [2:0] hsize;
+rand int burst_len;
+
+int beat_bytes;
+int boundary_size;
+int base_addr;
+bit [31:0] addr;
+int wrap_end;
+
+constraint c_burst {
+burst_len inside {4,8,16};
+}
+
+constraint c_data{ start_addr inside {[0:50]};}
+
+constraint c_align {
+start_addr % (2**hsize) == 0;
+}
+
+function void post_randomize();
+
+beat_bytes   = 2**hsize;
+boundary_size = beat_bytes * burst_len;
+
+base_addr = (start_addr / boundary_size) * boundary_size;
+
+$display(&quot;
+----------------------------------------&quot;);
+$display(&quot;Start Addr  = %0h&quot;, start_addr);
+$display(&quot;HSIZE       = %0d (%0d bytes)&quot;, hsize, beat_bytes);
+$display(&quot;Burst Len   = WRAP%0d&quot;, burst_len);
+$display(&quot;Boundary    = %0d bytes&quot;, boundary_size);
+$display(&quot;Base Addr   = %0h&quot;, base_addr);
+$display(&quot;----------------------------------------&quot;);
+
+addr = start_addr;
+
+for (int i = 0; i &lt; burst_len; i++) begin
+  $display(&quot;Beat %0d going on  Address = %0h&quot;, i, addr);
+
+  addr = addr + beat_bytes;
+
+  if (addr &gt;= (base_addr + boundary_size)) begin
+    addr = base_addr + (addr - (base_addr + boundary_size));
+  end
+end
+wrap_end = base_addr + boundary_size - 1;
+
+$display(&quot;Wrap End addr= %0h&quot;, wrap_end);
+endfunction
+
+endclass
+
+module top;
+
+ahb_wrap t;
+
+initial begin
+t = new();
+repeat(10)
+begin
+t.randomize();
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="1kb 2kb boundary constraint  36">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              1KB 2KB boundary constraint #36
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con7')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con7">class test;
+rand bit [31:0] awaddr;
+rand bit [2:0] awsize;
+rand bit [7:0] awlen;
+rand bit [15:0] burst_size;
+int offset,boundary;
+
+constraint c_data{awaddr[11:0]+burst_size &lt; 1024;}
+constraint c_data2{ burst_size==(2**awsize)*(awlen+1);}
+
+function void post_randomize();
+offset=awaddr%1024;
+boundary=offset+burst_size-1;
+endfunction
+endclass
+
+test t;
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(&quot;awaddr=%d,awsize=%d,awlen=%d,burst_size=%d&quot;,t.awaddr,t.awsize,t.awlen,t.burst_size);
+$display(&quot;Boundary check i.e.offset=%1d,boundary=%1d&quot;,t.offset,t.boundary);
+
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="prime number at prime locations and remaining locations random numbers">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              prime number at prime locations and remaining locations random numbers
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con8')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con8">class abc;
+randc bit[4:0] a[20];
+
+function void post_randomize();
+int count=0;
+for(int i=1;i&lt;20;i++)begin
+for(int j=1;j&lt;=i;j++)begin
+if(i%j==0)
+count++;
+end
+if(count==2)
+a[i]=i;
+count=0;
+end
+endfunction
+endclass
+
+module tb;
+abc k;
+initial begin
+k=new();
+k.randomize();
+$display(&quot;%0p&quot;,k.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="prime number generation constraint code  34">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              prime number generation constraint code #34
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con9')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con9">class test;
+rand int a;
+constraint c_data{a inside {[1:30]};prime(a)==1;}
+
+function prime(int d);
+if(d==2)
+return 1;
+for(int i=2;i&lt;d;i++)
+begin
+if(d%i==0)
+return 0;
+end
+return 1;
+endfunction
+endclass
+
+test t;
+
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(&quot;The Generated prime numbers are:%d&quot;,t.a);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="only 3 elements repeat remaining are random values  31">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              only 3 elements repeat remaining are random values #31
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con10')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con10">class test;
+
+rand int a[10];
+rand int b;
+
+constraint c {
+a.sum() with (int&#x27;(item == b)) == 3;
+}
+
+constraint d{ b inside {[1:9]};foreach(a[i]){
+a[i] inside {[1:10]}};}
+constraint f{foreach(a[i]){
+foreach(a[j]){
+if(i!=j)
+if(a[i]!=b &amp;&amp; a[j]!=b)
+a[i]!=a[j];
+}
+}
+}
+endclass
+
+module tb;
+test t;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(&quot;a=%0p b=%0d&quot;,t.a,t.b);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="10 element array with one element is higher  28">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              10 element array with one element is higher #28
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con11')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con11">class test;
+rand bit [3:0] a[10];int i;
+rand bit [7:0] max_val;
+int item;
+constraint c_data{a[i] inside {[0:10]};
+a.sum() with (int&#x27;(item == max_val)) == 1;
+max_val inside {[0:10]};
+
+               }
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(&quot;%p&quot;,t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="palindrome with mid value is higher  25">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              palindrome with mid value is higher #25
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con12')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con12">class parent;
+rand bit[5:0] a[9];
+bit [5:0] b;
+rand bit[5:0] c;
+
+constraint c_1{foreach(a[i]){
+a[i] inside {[1:20]};
+a[i]==a[9-1-i];
+}
+}
+constraint c_2{c inside{[1:10]};}
+
+function void post_randomize();
+           b=a.max()[0];
+             $display(&quot;b=%0d  c=%0d&quot;,b,c);
+           foreach(a[i])begin
+             if(i==9/2)
+               a[i]=b+c;
+           end
+endfunction
+           
+endclass
+
+module tb;
+  parent p;
+  initial begin
+    p=new();
+    p.randomize();
+    $display(p.a);
+  end
+  endmodule
+  
+  filename:total 32 bit 10 bit are 1&#x27;s and no more than3cn1&#x27;s #24
+
+class abc;
+rand bit[31:0] a;
+constraint c1{$countones(a)==10;}
+constraint c2 {
+foreach (a[i]) {
+if (i == 0)
+a[i] == 1;
+else if (i == 31)
+a[i] == 1;
+else if (i &lt; 30)
+(a[i] == 1) -&gt; !(a[i]==1 &amp;&amp; a[i+1] == 1 &amp;&amp; a[i+2] == 1);
+}
+}
+endclass
+module test;
+abc t;
+initial begin
+t=new();
+t.randomize();
+$display(&quot;%b&quot;,t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="0 to 9 elements and their sum is 45  23">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              0 to 9 elements and their sum is 45 #23
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con13')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con13">class test;
+rand bit[6:0] a[];
+constraint c_data1{a.size() inside {[0:9]};}
+constraint c_data2{unique{a};}
+constraint c_data3{a.sum with (int&#x27;(item)) == 45;}
+endclass
+test t;
+module top;
+initial begin
+t = new();
+repeat(10) begin
+if (t.randomize()) begin
+$write(&quot;Array in Decimal: &quot;);
+foreach (t.a[i]) begin
+$write(&quot;%0d &quot;, t.a[i]);
+
+  end
+  $display(&quot;&quot;); 
+  
+end
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="even indices even num odd indices odd num sum 200  22">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              even indices even num odd indices odd num sum=200 #22
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con14')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con14">class test;
+rand int a[];
+int dynamic_primes[$];
+
+function bit is_prime(int d);
+if(d &lt; 2) return 0;
+for(int i = 2; i * i &lt;= d; i++) begin
+if(d % i == 0) return 0;
+end
+return 1;
+endfunction
+
+function void pre_randomize();
+dynamic_primes.delete();
+for(int i=2;i&lt;=200;i++)begin
+if (is_prime(i)) dynamic_primes.push_back(i);
+end
+endfunction
+
+constraint c_size { a.size() == 10; }
+
+constraint c_data {
+foreach(a[i]) {
+if (i % 2 == 0) {
+a[i] % 2 == 0;
+a[i] &gt;= 0;
+} else {
+a[i] inside {dynamic_primes};
+}
+}
+}
+
+constraint c_unique { unique {a}; }
+constraint c_sum { a.sum() == 200; }
+constraint c_bounds {
+foreach(a[i])
+a[i] inside {[0:200]};
+}
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="axi boundary not to cross 4096  21">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              axi boundary not to cross 4096 #21
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con15')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con15">class test;
+rand bit [2:0] axsize;
+rand bit [3:0] axlen;
+rand bit[31:0] axaddr;
+
+constraint c_data {
+(axaddr % 4096) + ((1 &lt;&lt; axsize) * (axlen + 1)) &lt;= 4096;
+}
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(&quot;offset=%0d burst=%0d total=%0d&quot;,t.axaddr % 4096,(1 &lt;&lt; t.axsize) * (t.axlen + 1),(t.axaddr % 4096) + ((1 &lt;&lt; t.axsize) * (t.axlen + 1)));
+end
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="odd even number generation without constraint  20">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              odd even number generation without constraint #20
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con16')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con16">class test;
+int num;
+
+function void gen_even();
+num = $urandom_range(0, 100);
+num[0] = 0;
+endfunction
+
+function void gen_odd();
+num = $urandom_range(0, 100);
+num[0] = 1;
+endfunction
+endclass
+
+module top;
+initial begin
+test t = new();
+repeat(10)
+begin
+t.gen_even();
+$display(&quot;Even = %0d&quot;, t.num);
+
+t.gen_odd();
+$display(&quot;Odd = %0d&quot;, t.num);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="12112211122211112222 constraint  18">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              12112211122211112222 constraint #18
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con17')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con17">class test;
+
+rand int a[];
+int idx;
+
+constraint c_size {
+a.size() == 20;
+}
+
+function void post_randomize();
+idx = 0;
+
+for (int grp = 1; idx &lt; a.size(); grp++) begin
+  
+  for (int i = 0; i &lt; grp &amp;&amp; idx &lt; a.size(); i++)
+    a[idx++] = 1;
+
+  for (int i = 0; i &lt; grp &amp;&amp; idx &lt; a.size(); i++)
+    a[idx++] = 2;
+end
+endfunction
+
+endclass
+
+module top;
+test t;
+
+initial begin
+t = new();
+t.randomize();
+$display(&quot;Pattern = %p&quot;, t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="12345 54321 constraint  17">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              12345 54321 constraint #17
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con18')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con18">class test;
+rand int a[];
+constraint c_data{a.size() inside {[0:10]};
+foreach(a[i])
+if(i&lt;5)
+a[i]==i+1;
+else
+a[i]==10-i;
+}
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(t.a);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="index no element no then return matched value  16">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              index no=element no then return matched value #16
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con19')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con19">class test;
+rand bit[2:0] a[10];
+
+function void post_randomize();
+foreach(a[i])begin
+if(i==a[i])
+$display(&quot;match found at index:i=%0d,a[i]=%0d&quot;,i,a[i]);
+else
+$display(&quot;match not found at index:i=%0d,a[i]=%0d&quot;,i,a[i]);
+
+    end
+endfunction
+endclass
+
+module top;
+test t;
+
+initial begin
+t = new();
+t.randomize();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="matrix 3x3 to print 123 456 789  14">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Matrix 3x3 to print 123 456 789 #14
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con20')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con20">class test;
+rand bit[3:0] a[3][3];
+constraint c_data{foreach(a[i,j]){
+a[i][j] ==(3*i)+j+1;}
+}
+
+function void post_randomize();
+$display(&quot;----------------------------------------------&quot;);
+for(int i=0;i&lt;3;i++)begin
+for(int j=0;j&lt;3;j++)begin
+$write(&quot;%3d&quot;,a[i][j]);
+end
+$display(&quot; &quot;);
+end
+$display(&quot;----------------------------------------------&quot;);
+endfunction
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="inline constraint with soft keyword  13">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Inline constraint with soft keyword #13
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con21')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con21">class test;
+rand int a;int i;
+constraint c_data{ soft a inside {[0:10]};
+if(i&gt;0)
+a[i]==i+1;
+else
+a[i]==0;
+
+               }
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize() with {a==40;};
+$display(t.a);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="11010000 pattern  9">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              11010000 pattern #9
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con22')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con22">class data_gen;
+parameter bit [3:0] PATTERN = 4&#x27;b1101;
+rand bit [7:0] data;
+
+constraint c_pattern {
+data == (PATTERN &lt;&lt; ($bits(data) - $bits(PATTERN)));
+}
+endclass
+data_gen t;
+module top;
+initial
+begin
+t=new();
+repeat(10)begin
+t.randomize();
+$display(&quot;%b&quot;,t.data);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="0 2 4 6 8 8 6 4 2 0 pattern constraint  7">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              0 2 4 6 8 8 6 4 2 0 pattern constraint #7
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con23')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con23">class test;
+rand byte a[20];int i;
+constraint c_data{foreach(a[i])
+if(i&lt;(a.size/2))
+a[i]==i*2;
+else
+a[i]==a[a.size()-1-i];
+}
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(t.a);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="arm strong number code  6">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              arm strong number code #6
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con24')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con24">class test;
+rand int arm;
+constraint c_data{arm inside {153,370,371,407};}
+function void post_randomize();
+int sum,temp,r;
+temp=arm;
+for(int i=0;i&lt;3;i++) begin
+r=arm%10;
+sum=(r**3)+sum;
+arm=arm/10;
+end
+if(temp==sum)
+$display(&quot;arm strong number=%d&quot;,temp);
+else
+$display(&quot;Not arm strong number=%d&quot;,temp);
+endfunction
+endclass
+test t;
+module top;
+initial
+begin
+repeat(4) begin
+t=new();
+
+  t.randomize();
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="accessing data from a memory by part select  2">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              accessing data from a memory by part select #2
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con25')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con25">lass test;
+rand bit [7:0] addr;
+bit [31:0] data;
+static int n=0;
+
+constraint c_data {addr inside {[25:50]};}
+
+function void post_randomize();
+data[8*n +: 8]=addr;
+n++;
+
+endfunction
+
+endclass
+
+test t;
+
+module top;
+initial
+begin
+t=new();
+
+   for(int i=0;i&lt;4;i++)begin
+   t.randomize();
+     $display(&quot;Writing data[%0d] = %b to addr = %b&quot;,
+              i, t.data[8*i +: 8], t.addr);
+     
+ end
+   $display(&quot;%b&quot;,t.data);
+ end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="axi 4kb boundary constraint  1">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              Axi 4kb boundary constraint #1
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-con26')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-con26">class test;
+rand bit [31:0] awaddr;
+rand bit [2:0] awsize;
+rand bit [7:0] awlen;
+rand bit [15:0] burst_size;
+int offset,boundary;
+
+constraint c_data{awaddr[11:0]+burst_size &lt; 4096;}
+constraint c_data2{ burst_size==(2**awsize)*(awlen+1);}
+
+function void post_randomize();
+offset=awaddr%4096;
+boundary=offset+burst_size-1;
+endfunction
+endclass
+
+test t;
+module top;
+initial
+begin
+t=new();
+repeat(10)
+begin
+t.randomize();
+$display(&quot;
+awaddr=%d,awsize=%d,awlen=%d,burst_size=%d&quot;,t.awaddr,t.awsize,t.awlen,t.burst_size);
+$display(&quot;Boundary check i.e.offset=%1d,boundary=%1d&quot;,t.offset,t.boundary);
+end
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW SV_CONSTRAINTS FILES ABOVE THIS LINE -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="folder-card" id="folder-asr">
+      <div class="folder-header" onclick="toggleFolder('folder-asr')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">ASSERTIONS</span>
+        <span class="folder-count">6 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <li class="file-item" data-name="glitch detection assertion">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              glitch detection assertion
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr1">property glitch_detection;
+realtime first_change;
+@(signal) // Change in signal value (posedge and negedge)
+(1, first_change = $realtime) |=&gt; (($realtime - first_change) &gt;=
+duration); // It saves current time and also check the delay from previous
+edge
+endproperty
+ap_glitch_p: assert property(glitch_detection);</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="gdma gpio c test cases and pll assertions  50">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              GDMA GPIO C TEST CASES AND PLL ASSERTIONS #50
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr2">// ============================================================
+// GPIO + GDMA C-like test cases (modeled in SV for simulation)
+// PLL Assertions
+// ============================================================
+
+module soc_test;
+
+// ---------------- GPIO REG MODEL ----------------
+reg [7:0] GPIO_DATA;
+reg [7:0] GPIO_DIR; // 1 = output, 0 = input
+
+// ---------------- GDMA REG MODEL ----------------
+reg [31:0] SRC_ADDR, DST_ADDR;
+reg [7:0] MEM [0:255]; // simple memory
+reg [7:0] SIZE;
+
+// ---------------- PLL SIGNALS ----------------
+reg ref_clk, pll_clk, rst_n, lock;
+
+// ============================================================
+// 🔷 GPIO TEST CASES
+// ============================================================
+task gpio_output_test;
+begin
+GPIO_DIR = 8&#x27;hFF; // all output
+GPIO_DATA = 8&#x27;hA5; // write pattern
+#10;
+$display(&quot;GPIO OUTPUT TEST: DATA = %h&quot;, GPIO_DATA);
+end
+endtask
+
+task gpio_input_test;
+begin
+GPIO_DIR = 8&#x27;h00; // all input
+GPIO_DATA = 8&#x27;h3C; // simulate external input
+#10;
+$display(&quot;GPIO INPUT TEST: DATA = %h&quot;, GPIO_DATA);
+end
+endtask
+
+// ============================================================
+// 🔷 GDMA TEST CASES
+// ============================================================
+task gdma_mem_to_mem;
+int i;
+begin
+SRC_ADDR = 0;
+DST_ADDR = 100;
+SIZE = 10;
+
+  // Initialize source memory
+  for (i = 0; i &lt; SIZE; i++)
+    MEM[SRC_ADDR + i] = i;
+
+  // DMA transfer
+  for (i = 0; i &lt; SIZE; i++)
+    MEM[DST_ADDR + i] = MEM[SRC_ADDR + i];
+
+  // Check
+  for (i = 0; i &lt; SIZE; i++) begin
+    if (MEM[DST_ADDR + i] != MEM[SRC_ADDR + i])
+      $error(&quot;GDMA FAIL at %0d&quot;, i);
+  end
+
+  $display(&quot;GDMA MEM-&gt;MEM TEST PASSED&quot;);
+end
+endtask
+
+// ============================================================
+// 🔷 PLL CLOCK GENERATION
+// ============================================================
+initial begin
+ref_clk = 0;
+forever #5 ref_clk = ~ref_clk; // 100MHz
+end
+
+initial begin
+pll_clk = 0;
+forever #2.5 pll_clk = ~pll_clk; // 200MHz (example)
+end
+
+// ============================================================
+// 🔷 PLL ASSERTIONS
+// ============================================================
+
+// 1. Lock should be asserted after reset release
+property pll_lock_after_reset;
+@(posedge ref_clk)
+disable iff (!rst_n)
+rst_n |-&gt; ##[1:10] lock;
+endproperty
+
+assert property(pll_lock_after_reset)
+else $error(&quot;PLL did not lock in time&quot;);
+
+// 2. PLL clock should toggle when locked
+property pll_clk_toggle;
+@(posedge ref_clk)
+lock |-&gt; !$stable(pll_clk);
+endproperty
+
+assert property(pll_clk_toggle)
+else $error(&quot;PLL clock not toggling&quot;);
+
+// 3. Frequency check (pll faster than ref)
+property pll_freq_check;
+@(posedge ref_clk)
+lock |-&gt; (pll_clk !== ref_clk);
+endproperty
+
+assert property(pll_freq_check)
+else $error(&quot;PLL frequency issue&quot;);
+
+// ============================================================
+// 🔷 TEST EXECUTION
+// ============================================================
+initial begin
+rst_n = 0;
+lock = 0;
+
+#20 rst_n = 1;
+#30 lock = 1;
+
+gpio_output_test();
+gpio_input_test();
+gdma_mem_to_mem();
+
+#100 $finish;
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="all assertion keyword examples  43">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ALL ASSERTION KEYWORD EXAMPLES #43
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr3">module sva_all_keywords;
+
+bit clk;
+bit rst_n;
+bit a, b, c, d;
+bit req, gnt;
+
+// Clock generation
+always #5 clk = ~clk;
+
+// Reset
+initial begin
+clk = 0;
+rst_n = 0;
+#12 rst_n = 1;
+end
+
+// Stimulus
+initial begin
+a=0; b=0; c=0; d=0; req=0; gnt=0;
+
+#20 a=1;
+#10 b=1;
+#10 c=1;
+#10 d=1;
+
+#10 req=1;
+#10 gnt=1;
+
+#50 $finish;
+end
+
+// -------------------------------
+// 1. SEQUENCE
+// -------------------------------
+sequence seq_ab;
+a ##1 b; // b occurs 1 cycle after a
+endsequence
+
+// -------------------------------
+// 2. PROPERTY
+// -------------------------------
+property p_ab;
+@(posedge clk) seq_ab;
+endproperty
+
+// -------------------------------
+// 3. ASSERT PROPERTY
+// -------------------------------
+assert property(p_ab)
+else $error(&quot;Assertion p_ab failed&quot;);
+
+// -------------------------------
+// 4. COVER PROPERTY
+// -------------------------------
+cover property (@(posedge clk) a ##1 b);
+
+// -------------------------------
+// 5. ASSUME PROPERTY (formal)
+// -------------------------------
+assume property (@(posedge clk) req |-&gt; gnt);
+
+// -------------------------------
+// 6. OVERLAPPING IMPLICATION |-&gt;
+// -------------------------------
+assert property (@(posedge clk) a |-&gt; b)
+else $error(&quot;Overlapping implication failed&quot;);
+
+// -------------------------------
+// 7. NON-OVERLAPPING IMPLICATION |=&gt;
+// -------------------------------
+assert property (@(posedge clk) a |=&gt; b)
+else $error(&quot;Non-overlapping implication failed&quot;);
+
+// -------------------------------
+// 8. DELAY ##
+// -------------------------------
+assert property (@(posedge clk) a ##2 c);
+
+// -------------------------------
+// 9. $rose, $fell, $stable
+// -------------------------------
+assert property (@(posedge clk) $rose(a) |-&gt; b);
+assert property (@(posedge clk) $fell(b) |-&gt; c);
+assert property (@(posedge clk) $stable(c) |-&gt; d);
+
+// -------------------------------
+// 10. disable iff (reset condition)
+// -------------------------------
+assert property (@(posedge clk) disable iff (!rst_n)
+a |-&gt; b);
+
+// -------------------------------
+// 11. throughout
+// -------------------------------
+assert property (@(posedge clk)
+a |-&gt; b throughout c);
+
+// -------------------------------
+// 12. within
+// -------------------------------
+sequence seq1;
+a ##1 b;
+endsequence
+
+sequence seq2;
+c ##[1:3] d;
+endsequence
+
+assert property (@(posedge clk) seq1 within seq2);
+
+// -------------------------------
+// 13. intersect
+// -------------------------------
+assert property (@(posedge clk)
+(a ##1 b) intersect (c ##1 d));
+
+// -------------------------------
+// 14. repetition operators
+// -------------------------------
+// consecutive repetition
+assert property (@(posedge clk) a[*3]);
+
+// goto repetition
+assert property (@(posedge clk) a[-&gt;2]);
+
+// non-consecutive repetition
+assert property (@(posedge clk) a[=2]);
+
+// -------------------------------
+// 15. first_match
+// -------------------------------
+assert property (@(posedge clk)
+first_match(a ##[1:5] b));
+
+// -------------------------------
+// 16. if-else inside property
+// -------------------------------
+property p_ifelse;
+@(posedge clk)
+if (a)
+b |-&gt; c;
+else
+d |-&gt; a;
+endproperty
+
+assert property (p_ifelse);
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="all assertion keyword examples  43">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ALL ASSERTION KEYWORD EXAMPLES #43
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr4')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr4">module sva_all_keywords;
+
+bit clk;
+bit rst_n;
+bit a, b, c, d;
+bit req, gnt;
+
+// Clock generation
+always #5 clk = ~clk;
+
+// Reset
+initial begin
+clk = 0;
+rst_n = 0;
+#12 rst_n = 1;
+end
+
+// Stimulus
+initial begin
+a=0; b=0; c=0; d=0; req=0; gnt=0;
+
+#20 a=1;
+#10 b=1;
+#10 c=1;
+#10 d=1;
+
+#10 req=1;
+#10 gnt=1;
+
+#50 $finish;
+end
+
+// -------------------------------
+// 1. SEQUENCE
+// -------------------------------
+sequence seq_ab;
+a ##1 b; // b occurs 1 cycle after a
+endsequence
+
+// -------------------------------
+// 2. PROPERTY
+// -------------------------------
+property p_ab;
+@(posedge clk) seq_ab;
+endproperty
+
+// -------------------------------
+// 3. ASSERT PROPERTY
+// -------------------------------
+assert property(p_ab)
+else $error(&quot;Assertion p_ab failed&quot;);
+
+// -------------------------------
+// 4. COVER PROPERTY
+// -------------------------------
+cover property (@(posedge clk) a ##1 b);
+
+// -------------------------------
+// 5. ASSUME PROPERTY (formal)
+// -------------------------------
+assume property (@(posedge clk) req |-&gt; gnt);
+
+// -------------------------------
+// 6. OVERLAPPING IMPLICATION |-&gt;
+// -------------------------------
+assert property (@(posedge clk) a |-&gt; b)
+else $error(&quot;Overlapping implication failed&quot;);
+
+// -------------------------------
+// 7. NON-OVERLAPPING IMPLICATION |=&gt;
+// -------------------------------
+assert property (@(posedge clk) a |=&gt; b)
+else $error(&quot;Non-overlapping implication failed&quot;);
+
+// -------------------------------
+// 8. DELAY ##
+// -------------------------------
+assert property (@(posedge clk) a ##2 c);
+
+// -------------------------------
+// 9. $rose, $fell, $stable
+// -------------------------------
+assert property (@(posedge clk) $rose(a) |-&gt; b);
+assert property (@(posedge clk) $fell(b) |-&gt; c);
+assert property (@(posedge clk) $stable(c) |-&gt; d);
+
+// -------------------------------
+// 10. disable iff (reset condition)
+// -------------------------------
+assert property (@(posedge clk) disable iff (!rst_n)
+a |-&gt; b);
+
+// -------------------------------
+// 11. throughout
+// -------------------------------
+assert property (@(posedge clk)
+a |-&gt; b throughout c);
+
+// -------------------------------
+// 12. within
+// -------------------------------
+sequence seq1;
+a ##1 b;
+endsequence
+
+sequence seq2;
+c ##[1:3] d;
+endsequence
+
+assert property (@(posedge clk) seq1 within seq2);
+
+// -------------------------------
+// 13. intersect
+// -------------------------------
+assert property (@(posedge clk)
+(a ##1 b) intersect (c ##1 d));
+
+// -------------------------------
+// 14. repetition operators
+// -------------------------------
+// consecutive repetition
+assert property (@(posedge clk) a[*3]);
+
+// goto repetition
+assert property (@(posedge clk) a[-&gt;2]);
+
+// non-consecutive repetition
+assert property (@(posedge clk) a[=2]);
+
+// -------------------------------
+// 15. first_match
+// -------------------------------
+assert property (@(posedge clk)
+first_match(a ##[1:5] b));
+
+// -------------------------------
+// 16. if-else inside property
+// -------------------------------
+property p_ifelse;
+@(posedge clk)
+if (a)
+b |-&gt; c;
+else
+d |-&gt; a;
+endproperty
+
+assert property (p_ifelse);
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="assertion using strong keyword  39">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              assertion using strong keyword #39
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr5')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr5">module tb;
+
+bit clk;
+bit reset;
+bit req;
+bit gnt;
+
+always #5 clk = ~clk;
+
+property p_strong_req_gnt;
+@(posedge clk)
+disable iff (reset)
+req |-&gt; strong(##[1:3] gnt);
+endproperty
+
+assert property (p_strong_req_gnt)
+$display(&quot;PASS at %0t&quot;, $time);
+else
+$error(&quot;FAIL: gnt did not come in time at %0t&quot;, $time);
+
+initial begin
+clk = 0;
+reset = 1;
+req = 0;
+gnt = 0;
+
+#10 reset = 0;
+
+#10 req = 1;
+#10 req = 0;
+#10 gnt = 1;   
+#10 gnt = 0;
+
+#20 req = 1;
+#10 req = 0;
+
+#50 $finish;
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="assertion for apb write cycle  32">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              assertion for apb write cycle #32
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-asr6')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-asr6">// import uvm_pkg::*;
+// `include &quot;uvm_macros.svh&quot;
+
+module top;
+bit pclk,pwrite,psel,penable,pready;
+bit [7:0] pwdata,paddr;
+
+default clocking @(posedge pclk); endclocking
+initial forever #10 pclk=!pclk;
+
+property p1;
+
+@(posedge pclk) $rose (pwrite &amp;&amp; psel) |-&gt; ($stable(paddr &amp;&amp; pwdata)[*2]) ##1 $rose (penable &amp;&amp; pready) ##1 $fell (pwrite &amp;&amp; psel &amp;&amp; penable &amp;&amp; pready);
+endproperty
+
+assert property (p1) $display (&quot;Assertion passed&quot;,$time);
+initial begin
+$dumpfile (&quot;hello.vcd&quot;);
+$dumpvars (0,top);
+end
+
+initial begin
+repeat(100) begin
+repeat(1) @(posedge pclk) #1;
+if (!randomize(pwrite,psel,penable,pready) with
+{pwrite dist {1&#x27;b1:=1,1&#x27;b0:=1};
+psel dist { 1&#x27;b1:=1,1&#x27;b0:=1};
+penable dist { 1&#x27;b1:=1,1&#x27;b0:=1};
+pready dist { 1&#x27;b1:=1,1&#x27;b0:=1};
+}) //uvm_error(&quot;MYERR&quot;, &quot;This is a randomize error&quot;); repeat (2) @ (posedge pclk) #1; // if (!randomize(paddr,pwdata)) //uvm_error(&quot;MYERR&quot;, &quot;This is a randomize error&quot;);
+end
+$stop;
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW ASSERTIONS FILES ABOVE THIS LINE -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="folder-card" id="folder-ctc">
+      <div class="folder-header" onclick="toggleFolder('folder-ctc')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">C_TESTCASES</span>
+        <span class="folder-count">3 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <li class="file-item" data-name="gpio ctest case">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              gpio ctest case
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-ctc1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-ctc1">🔷 Assumptions (Typical SoC)
+#define GPIO_BASE 0x40000000
+#define GPIO_DATA ((volatile unsigned int)(GPIO_BASE + 0x00))
+#define GPIO_DIR ((volatile unsigned int)(GPIO_BASE + 0x04))
+
+#define GDMA_BASE 0x50000000
+#define GDMA_SRC ((volatile unsigned int)(GDMA_BASE + 0x00))
+#define GDMA_DST ((volatile unsigned int)(GDMA_BASE + 0x04))
+#define GDMA_SIZE ((volatile unsigned int)(GDMA_BASE + 0x08))
+#define GDMA_CTRL ((volatile unsigned int)(GDMA_BASE + 0x0C))
+#define GDMA_STATUS ((volatile unsigned int)(GDMA_BASE + 0x10))
+🔷 1. GPIO WRITE TEST
+void gpio_write_test()
+{
+GPIO_DIR = 0xFF; // all pins output
+GPIO_DATA = 0xA5; // write pattern
+
+if (GPIO_DATA == 0xA5)
+    printf(&quot;GPIO WRITE PASS
+&quot;);
+else
+    printf(&quot;GPIO WRITE FAIL
+&quot;);
+}
+🔷 2. GPIO READ TEST
+void gpio_read_test()
+{
+GPIO_DIR = 0x00; // all pins input
+
+unsigned int val = GPIO_DATA;
+
+printf(&quot;GPIO READ VALUE = 0x%X
+&quot;, val);
+
+// Basic check (depends on external stimulus)
+if (val != 0)
+    printf(&quot;GPIO READ PASS
+&quot;);
+else
+    printf(&quot;GPIO READ CHECK
+&quot;);
+}
+🔷 3. GPIO TOGGLE TEST
+void gpio_toggle_test()
+{
+GPIO_DIR = 0xFF;
+
+for (int i = 0; i &lt; 5; i++) {
+    GPIO_DATA = 0xFF;
+    delay();
+
+    GPIO_DATA = 0x00;
+    delay();
+}
+
+printf(&quot;GPIO TOGGLE DONE
+&quot;);
+}
+🔷 4. GDMA WRITE (CONFIG) TEST
+void gdma_config_test(unsigned int src, unsigned int dst, unsigned int size)
+{
+GDMA_SRC = src;
+GDMA_DST = dst;
+GDMA_SIZE = size;
+
+if (GDMA_SRC == src &amp;&amp; GDMA_DST == dst &amp;&amp; GDMA_SIZE == size)
+    printf(&quot;GDMA CONFIG PASS
+&quot;);
+else
+    printf(&quot;GDMA CONFIG FAIL
+&quot;);
+}
+🔷 5. GDMA MEM→MEM TRANSFER TEST
+void gdma_memcpy_test()
+{
+unsigned int src = (unsigned int)0x80000000;
+unsigned int dst = (unsigned int)0x80001000;
+
+int size = 10;
+
+// Initialize source
+for (int i = 0; i &lt; size; i++)
+    src[i] = i + 1;
+
+// Configure GDMA
+GDMA_SRC  = (unsigned int)src;
+GDMA_DST  = (unsigned int)dst;
+GDMA_SIZE = size;
+GDMA_CTRL = 1;   // start transfer
+
+// Wait for completion
+while (!(GDMA_STATUS &amp; 0x1));
+
+// Verify
+for (int i = 0; i &lt; size; i++) {
+    if (dst[i] != src[i]) {
+        printf(&quot;GDMA FAIL at %d
+&quot;, i);
+        return;
+    }
+}
+
+printf(&quot;GDMA MEMCPY PASS
+&quot;);
+}
+🔷 6. GDMA STATUS CHECK TEST
+void gdma_status_test()
+{
+if (GDMA_STATUS &amp; 0x1)
+printf(&quot;GDMA COMPLETE
+&quot;);
+else
+printf(&quot;GDMA NOT COMPLETE
+&quot;);
+}
+🔷 Simple Delay Function
+void delay()
+{
+for (volatile int i = 0; i &lt; 100000; i++);
+}</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="gdma gpio qspi pll project soc level all information  49">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              GDMA GPIO QSPI PLL PROJECT SOC LEVEL ALL INFORMATION #49
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-ctc2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-ctc2">Here are crisp, interview-ready briefs for your projects. Use these as 30–60 sec answers and expand with examples when asked 👍
+
+🔷 1. QSPI IP – SoC Level
+👉 Overview
+
+Worked on verifying QSPI IP integrated in an SoC for high-speed flash access.
+
+👉 Architecture
+CPU → AXI/AHB → QSPI Controller → External Flash
+Supports single/dual/quad modes
+Includes FIFO, control registers, state machine
+👉 Key Features Verified
+Command, address, dummy cycles
+Read/Write operations
+XIP (Execute-In-Place) mode
+Mode switching (SPI ↔ QSPI)
+Interrupts &amp; status handling
+👉 Test Scenarios
+Normal read/write
+Boundary conditions (page/sector)
+Invalid commands
+Back-to-back transfers
+Power-up / reset behavior
+👉 Challenges
+Timing alignment in quad mode
+Debugging protocol-level mismatches
+🔷 2. GDMA (General DMA)
+👉 Overview
+
+Verified DMA controller for memory-to-memory and peripheral transfers.
+
+👉 Functionality
+Transfers data without CPU involvement
+Supports multiple channels
+Burst transfers (AHB/AXI)
+👉 Key Features
+Source/Destination address config
+Transfer size &amp; burst type
+Interrupt generation
+Linked-list descriptors (if applicable)
+👉 Test Scenarios
+Memory → Memory
+Peripheral → Memory
+Large transfers (stress)
+Error cases (invalid address)
+Channel priority arbitration
+👉 Challenges
+Data integrity checking
+Handling concurrent channels
+🔷 3. GPIO (General Purpose IO)
+👉 Overview
+
+Worked on GPIO IP verification for configurable IO pins.
+
+👉 Features
+Input / Output modes
+Direction control
+Interrupt generation
+Pull-up / pull-down configuration
+👉 Test Scenarios
+Input read / Output write
+Interrupt triggering (edge/level)
+Direction switching
+Reset behavior
+Multiple pin operations
+👉 Challenges
+Synchronization of input signals
+Interrupt verification
+🔷 4. PLL (Phase Locked Loop)
+👉 Overview
+
+Verified PLL configuration and clock generation at SoC level.
+
+👉 Functionality
+Generates high-frequency clock from reference
+Controlled via registers (divider, multiplier)
+👉 Test Scenarios
+Frequency configuration
+Lock/unlock detection
+Reset &amp; reconfiguration
+Clock switching
+👉 Key Checks
+Lock time
+Stability of output clock
+Correct divider/multiplier behavior
+👉 Challenges
+Clock stability verification
+Handling dynamic reconfiguration
+🔥 Strong Interview Summary (One Shot)
+
+👉
+“I worked on QSPI, GDMA, GPIO, and PLL IPs at SoC level, focusing on protocol validation, data integrity, interrupt handling, and corner-case scenarios using UVM-based verification.”
+
+🔥 Pro Tip (Very Important)
+
+When interviewer asks:
+👉 Always add:
+
+“I wrote sequences, drivers, monitors, and scoreboards”
+“I debugged failures using waveforms and logs”
+“I achieved functional coverage”</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="qspi project in single file  29">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              qspi project in single file #29
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-ctc3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-ctc3">/============================================================
+// QSPI UVM SOC LEVEL COMPLETE EXAMPLE (SINGLE FILE)
+//============================================================
+
+// `include &quot;uvm_macros.svh&quot;
+// import uvm_pkg::*;
+
+//============================================================
+// INTERFACE
+//============================================================
+interface qspi_if(input bit clk);
+logic cs_n;
+logic sclk;
+logic [3:0] io;
+endinterface
+
+//============================================================
+// SEQUENCE ITEM
+//============================================================
+class qspi_seq_item extends uvm_sequence_item;
+rand bit [7:0] cmd;
+rand bit [23:0] addr;
+rand bit [7:0] data[];
+rand int length;
+
+`uvm_object_utils(qspi_seq_item)
+
+function new(string name=&quot;qspi_seq_item&quot;);
+super.new(name);
+endfunction
+
+constraint c_len { length inside {[1:16]}; data.size() == length; }
+endclass
+
+//============================================================
+// SEQUENCE
+//============================================================
+class qspi_sequence extends uvm_sequence #(qspi_seq_item);
+`uvm_object_utils(qspi_sequence)
+
+function new(string name=&quot;qspi_sequence&quot;);
+super.new(name);
+endfunction
+
+task body();
+qspi_seq_item req;
+repeat(5) begin
+req = qspi_seq_item::type_id::create(&quot;req&quot;);
+start_item(req);
+assert(req.randomize() with { cmd == 8&#x27;h03; });
+finish_item(req);
+end
+endtask
+endclass
+
+//============================================================
+// DRIVER
+//============================================================
+class qspi_driver extends uvm_driver #(qspi_seq_item);
+virtual qspi_if vif;
+
+`uvm_component_utils(qspi_driver)
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+uvm_config_db #(virtual qspi_if)::get(this,&quot;*&quot;,&quot;vif&quot;,vif);
+endfunction
+
+task run_phase(uvm_phase phase);
+forever begin
+seq_item_port.get_next_item(req);
+drive(req);
+seq_item_port.item_done();
+end
+endtask
+
+task drive(qspi_seq_item req);
+
+vif.cs_n = 1;
+vif.sclk = 0;
+vif.io = 0;
+
+vif.cs_n &lt;= 0;
+send_byte(req.cmd);
+send_byte(req.addr[23:16]);
+send_byte(req.addr[15:8]);
+send_byte(req.addr[7:0]);
+foreach(req.data[i]) send_byte(req.data[i]);
+vif.cs_n &lt;= 1;
+endtask
+
+task send_byte(bit [7:0] data);
+for(int i=7;i&gt;=0;i--) begin
+// Drive data on falling edge
+@(negedge vif.clk);
+vif.io[0] &lt;= data[i];
+
+// Toggle serial clock properly
+vif.sclk &lt;= 0;
+@(posedge vif.clk);
+vif.sclk &lt;= 1;
+end
+endtask
+
+endclass
+
+//============================================================
+// MONITOR
+//============================================================
+class qspi_monitor extends uvm_monitor;
+virtual qspi_if vif;
+uvm_analysis_port #(qspi_seq_item) ap;
+qspi_seq_item t;
+
+`uvm_component_utils(qspi_monitor)
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+ap = new(&quot;ap&quot;, this);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+uvm_config_db #(virtual qspi_if)::get(this,&quot;*&quot;,&quot;vif&quot;,vif);
+endfunction
+
+task run_phase(uvm_phase phase);
+forever begin
+@(negedge vif.cs_n);
+t = qspi_seq_item::type_id::create(&quot;t&quot;);
+t.cmd = recv_byte();
+t.addr[23:16] = recv_byte();
+t.addr[15:8] = recv_byte();
+t.addr[7:0] = recv_byte();
+ap.write(t);
+@(posedge vif.cs_n);
+end
+endtask
+
+function bit [7:0] recv_byte();
+bit [7:0] data;
+for(int i=7;i&gt;=0;i--) begin
+// @(posedge vif.clk);
+data[i] = vif.io[0];
+end
+return data;
+endfunction
+endclass
+
+//============================================================
+// AGENT
+//============================================================
+class qspi_agent extends uvm_agent;
+qspi_driver drv;
+qspi_monitor mon;
+uvm_sequencer #(qspi_seq_item) seqr;
+
+`uvm_component_utils(qspi_agent)
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+drv = qspi_driver::type_id::create(&quot;drv&quot;, this);
+mon = qspi_monitor::type_id::create(&quot;mon&quot;, this);
+seqr = uvm_sequencer#(qspi_seq_item)::type_id::create(&quot;seqr&quot;, this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+drv.seq_item_port.connect(seqr.seq_item_export);
+endfunction
+endclass
+
+//============================================================
+// SCOREBOARD
+//============================================================
+class qspi_scoreboard extends uvm_scoreboard;
+uvm_analysis_imp #(qspi_seq_item, qspi_scoreboard) imp;
+
+`uvm_component_utils(qspi_scoreboard)
+
+function new(string name, uvm_component parent);
+super.new(name, parent);
+imp = new(&quot;imp&quot;, this);
+endfunction
+
+function void write(qspi_seq_item t);
+`uvm_info(&quot;SCB&quot;, $sformatf(&quot;CMD=%0h ADDR=%0h&quot;, t.cmd, t.addr), UVM_LOW)
+endfunction
+endclass
+
+//============================================================
+// ENVIRONMENT
+//============================================================
+class qspi_env extends uvm_env;
+qspi_agent agent;
+qspi_scoreboard scb;
+
+`uvm_component_utils(qspi_env)
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+agent = qspi_agent::type_id::create(&quot;agent&quot;, this);
+scb = qspi_scoreboard::type_id::create(&quot;scb&quot;, this);
+endfunction
+
+function void connect_phase(uvm_phase phase);
+agent.mon.ap.connect(scb.imp);
+endfunction
+endclass
+
+//============================================================
+// TEST
+//============================================================
+class qspi_test extends uvm_test;
+qspi_env env;
+
+`uvm_component_utils(qspi_test)
+function new(string name, uvm_component parent);
+super.new(name, parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+env = qspi_env::type_id::create(&quot;env&quot;, this);
+endfunction
+
+task run_phase(uvm_phase phase);
+qspi_sequence seq;
+phase.raise_objection(this);
+seq = qspi_sequence::type_id::create(&quot;seq&quot;);
+seq.start(env.agent.seqr);
+phase.drop_objection(this);
+endtask
+endclass
+
+//============================================================
+// TOP MODULE
+//============================================================
+module top;
+bit clk;
+always #5 clk = ~clk;
+
+qspi_if vif(clk);
+
+initial begin
+uvm_config_db#(virtual qspi_if)::set(null, &quot;*&quot;, &quot;vif&quot;, vif);
+run_test(&quot;qspi_test&quot;);
+end
+
+initial
+begin
+$dumpfile(&quot;dump.vcd&quot;);
+$dumpvars();
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW C_TESTCASES FILES ABOVE THIS LINE -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="folder-card" id="folder-svc">
+      <div class="folder-header" onclick="toggleFolder('folder-svc')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">SV_CONCEPTS</span>
+        <span class="folder-count">8 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <li class="file-item" data-name="functional coverage  42">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              functional coverage #42
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc1">module top;
+bit [7:0] data;
+
+covergroup cg;
+coverpoint data { bins val[] = {[0:10]}; }
+endgroup
+
+cg cg_inst = new();
+
+initial begin
+for (int i = 0; i &lt;= 10; i++) begin
+data = i;
+cg_inst.sample();
+$display(&quot;Time=%0t, data=%0d&quot;, $time, data);
+end
+
+$display(&quot;Final Coverage = %0.2f%%&quot;, cg_inst.get_coverage());
+end
+
+endmodule
+
+Run.do:
+vsim +access+r;
+run -all;
+acdb save;
+acdb report -db fcover.acdb -txt -o cov.txt;
+cat cov.txt;
+exit</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="driver generator connection via mailbox  38">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              driver generator connection via mailbox #38
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc2">class transaction;
+rand bit [3:0] id;
+rand bit [7:0] addr;
+
+function void display(string tag);
+$display(&quot;[%s] ID=%0d ADDR=%0h&quot;, tag, id, addr);
+endfunction
+endclass
+
+class generator;
+mailbox #(transaction) gen2drv;
+int num_tx = 5;
+
+function new(mailbox #(transaction) gen2drv);
+this.gen2drv = gen2drv;
+endfunction
+
+task run();
+transaction tx;
+repeat(num_tx) begin
+tx = new();
+assert(tx.randomize());
+tx.display(&quot;GEN&quot;);
+gen2drv.put(tx);
+#10;
+end
+endtask
+endclass
+
+class driver;
+mailbox #(transaction) gen2drv;
+
+function new(mailbox #(transaction) gen2drv);
+this.gen2drv = gen2drv;
+endfunction
+
+task run();
+transaction tx;
+forever begin
+gen2drv.get(tx);
+tx.display(&quot;DRV&quot;);
+#10;
+end
+endtask
+endclass
+
+module top;
+
+mailbox #(transaction) mbx;
+generator gen;
+driver drv;
+
+initial begin
+mbx = new();
+
+gen = new(mbx);
+drv = new(mbx);
+
+fork
+  gen.run();
+  drv.run();
+join_any
+
+#100 $finish;
+end
+
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="xor of ab and cd and both xor interview question  19">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              xor of ab and cd and both xor interview question #19
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc3">class test;
+rand int a;
+rand int b;
+rand int x,y,c;
+constraint c_data{a inside{[0:10]};b inside {[0:10]};y inside{[0:10]};x inside{[0:10]};c inside{[0:15]};
+c==((a^b)^(x^y));
+
+               }
+endclass
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(&quot;a=%0d,b=%0d,x=%0d,y=%0d,c=%0d&quot;,t.a,t.b,t.x,t.y,t.c);
+$display(&quot;Check = %0d&quot;, (t.a ^ t.b) ^ (t.x ^ t.y));
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="inter and intra assignment delays  15">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              inter and intra assignment delays #15
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc4')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc4">module top;
+int a,b,c,d;
+
+initial
+begin
+a=5;b=10;c=15;d=20;
+
+  #5 a=b;
+  #10 c=d;
+$display(&quot;INTER: time=%0t a=%0d b=%0d c=%0d d=%0d&quot;, $time,a,b,c,d);
+end
+initial
+begin
+a=#5 b;
+c=#10 d;
+$display(&quot;INTRA: time=%0t a=%0d b=%0d c=%0d d=%0d&quot;, $time,a,b,c,d);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="a b c d which is greater use only if else  12">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              A B C D Which is Greater Use only If Else #12
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc5')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc5">module top;
+int a=10,b=5,c=3,d=9;
+initial
+begin
+if(a&gt;b)
+$display(&quot;a is greater than b&quot;);
+else
+if(a&gt;c)
+$display(&quot;a is greater than c&quot;);
+else
+if(a&gt;d)
+$display(&quot;a is greater than d&quot;);
+if(b&gt;a)
+$display(&quot;b is greater than a&quot;);
+else
+if(b&gt;c)
+$display(&quot;b is greater than c&quot;);
+else
+if(b&gt;d)
+$display(&quot;b is greater than d&quot;);
+if(c&gt;a)
+$display(&quot;c is greater than a&quot;);
+else
+if(c&gt;b)
+$display(&quot;c is greater than b&quot;);
+else
+if(c&gt;d)
+$display(&quot;c is greater than d&quot;);
+if(d&gt;a)
+$display(&quot;d is greater than a&quot;);
+else
+if(d&gt;b)
+$display(&quot;d is greater than b&quot;);
+else
+if(d&gt;c)
+$display(&quot;d is greater than c&quot;);
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="system verilog dpi concept  11">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              system verilog DPI Concept #11
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc6')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc6">TB:module dpi_tb;
+
+export &quot;DPI-C&quot; function sv_method;
+import &quot;DPI-C&quot; context function void c_method();
+
+initial
+begin
+$display(&quot;Before calling C Method&quot;);
+c_method();
+$display(&quot;After calling C Method&quot;);
+end
+
+function void sv_method();
+$display(&quot; [SV-Prog] Hello World...!&quot;);
+endfunction
+endmodule
+
+MY_DPI.CPP:
+#include &lt;stdio.h&gt;
+#include
+#include &lt;svdpi.h&gt;
+
+using namespace std;
+
+extern &quot;C&quot; void sv_method();
+
+extern &quot;C&quot; void c_method() {
+
+printf(&quot; [C-Prog] Hello World...!
+&quot;);
+sv_method();
+}
+
+TMP:
+SystemVerilog DPI
+
+SystemVerilog DPI (Direct Programming Interface) is an interface which can be used to interface SystemVerilog with foreign languages. These Foreign languages can be C, C++, SystemC as well as others.
+DPI allows the user to easily call functions of other launguage from SystemVerilog and to export SystemVerilog functions, so that they can be called in other launguages.
+
+Advantage of DPI is, it allows to make use of the code exists in other launguages.
+
+DPI Import and export methods
+
+Import Method
+The methods (functions/tasks) implemented in Foreign language can be called from SystemVerilog and such methods are called Import methods.
+
+Export methods
+The methods implemented in SystemVerilog can be called from Foreign language such methods are called Export methods.
+
+It is allowed to transfer the data between two launguages through arguments passing and return.
+
+DPI Declaration
+
+Import Declaration
+import “DPI-C” function int calc_parity (input int a);
+
+Export Declaration
+export “DPI-C” my_cfunction = function myfunction;
+
+Hello world...
+https://www.edaplayground.com/x/2x48
+
+https://www.edaplayground.com/x/42bu</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="sv mailbox semaphores events codes  10">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              sv mailbox semaphores events codes #10
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc7')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc7">class test;
+rand byte a[];
+constraint c_data{a.size() inside {[0:10]};
+foreach(a[i])
+if(i &lt; (a.size()/2))
+a[i]==i*2;
+else
+a[i]==a[a.size()-1-i];
+}
+endclass
+
+test t;
+module top;
+initial
+begin
+t=new();
+t.randomize();
+$display(t.a);
+end
+endmodule
+
+module top;
+event e;
+
+initial begin
+fork
+begin
+$display(&quot;Before Event Triggered&quot;);
+#10
+-&gt; e;
+$display(&quot; Event Triggered&quot;);
+$display(&quot;Before Event sampled&quot;);
+end
+begin
+#2
+@(e);
+$display(&quot; Evenet sampled&quot;);
+end
+join
+
+end
+endmodule
+
+module top;
+mailbox mbx;
+int temp;
+initial
+begin
+mbx=new(3);
+#10
+mbx.put(2);
+$display(&quot;Put is happened and remaining processes are&quot;,mbx.num);
+#5
+mbx.put(1);
+$display(&quot;Put is happened and remaining processes are&quot;,mbx.num);
+#5
+mbx.get(temp);
+$display(&quot;get is happened and remaining processes are&quot;,mbx.num);
+#5
+mbx.get(temp);
+$display(&quot;get is happened and remaining processes are&quot;,mbx.num);
+end
+endmodule
+
+module top;
+semaphore sem;
+int temp;
+initial
+begin
+sem=new(3);
+#10
+sem.get(3);
+$display(&quot;got key&quot;);
+#5
+sem.put(3);
+$display(&quot;Put key&quot;);
+#5
+sem.put(1);
+$display(&quot;Put key&quot;);
+#5
+sem.put(1);
+$display(&quot;Put key&quot;);
+end
+endmodule
+
+class parent;
+virtual function void print();
+$display(&quot;Bengaluru&quot;);
+endfunction
+endclass
+
+class child extends parent();
+function void print();
+$display(&quot;Hyderabad&quot;);
+endfunction
+endclass
+
+module top;
+initial
+begin
+parent p;
+child c=new();
+p=c;
+p.print();
+end
+endmodule
+
+class parent;
+int addr;
+int data;
+function void display();
+$display(&quot;chipsolve&quot;);
+endfunction
+endclass
+
+class child extends parent;
+function display();
+super.display();
+endfunction
+endclass
+
+module top;
+initial
+begin
+child c=new();
+c.display();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+
+          <li class="file-item" data-name="polymorphism code examole  3">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              polymorphism code examole #3
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-svc8')">COPY</button>
+              </div>
+              <div class="code-scroll">
+                <pre id="code-svc8">class parent;
+virtual function void print();
+$display(&quot;Chipsolve&quot;);
+endfunction
+endclass
+class child extends parent;
+function void print();
+$display(&quot;Avecas&quot;);
+endfunction
+endclass
+
+module top;
+initial
+begin
+parent p;
+child c=new();
+p=c;
+if ($cast(c, p))
+begin
+$display(&quot;Cast successful&quot;);
+end
+else
+begin
+$display(&quot;Cast failed&quot;);
+end
+p.print();
+end
+endmodule</pre>
+              </div>
+            </div>
+          </li>
+          <!-- ✅ ADD NEW SV_CONCEPTS FILES ABOVE THIS LINE -->
         </ul>
       </div>
     </div>
 
   </div>
+
 </section>
 
 <div class="divider"></div>
