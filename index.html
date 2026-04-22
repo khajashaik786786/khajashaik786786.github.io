@@ -200,6 +200,13 @@ Skilled in SystemVerilog, UVM and protocol verification (AXI, AHB, APB).
 <p>Email: khajamohiddeen63@gmail.com</p>
 <p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
 
+<!-- 🔗 LINKEDIN BUTTON ADDED -->
+<a href="https://www.linkedin.com/in/khaja-mohiddeen-shaik-3643b9176" target="_blank">
+<button style="background:#0A66C2; box-shadow:0 0 10px #0A66C2;">
+🔗 Connect on LinkedIn
+</button>
+</a>
+
 </section>
 
 <!-- FOOTER -->
@@ -222,94 +229,26 @@ el.classList.add('show');
 });
 });
 
-/* FOLDER TOGGLE */
+/* FOLDER */
 function toggleFolder(){
 let f=document.getElementById("folder");
 f.style.display=(f.style.display==="none")?"block":"none";
 }
 
-/* CODES STORAGE */
+/* CODES */
 const codes={
 
 ahb:`class ahb_wrap;
-
-rand bit [31:0] start_addr;
-rand bit [2:0] hsize;
-rand int burst_len;
-
-int beat_bytes;
-int boundary_size;
-int base_addr;
-bit [31:0] addr;
-int wrap_end;
-
-constraint c_burst { burst_len inside {4,8,16}; }
-constraint c_data { start_addr inside {[0:50]}; }
-constraint c_align { start_addr % (2**hsize) == 0; }
-
-function void post_randomize();
-
-beat_bytes = 2**hsize;
-boundary_size = beat_bytes * burst_len;
-
-base_addr = (start_addr / boundary_size) * boundary_size;
-
-addr = start_addr;
-
-for (int i = 0; i < burst_len; i++) begin
-  addr = addr + beat_bytes;
-
-  if (addr >= (base_addr + boundary_size)) begin
-    addr = base_addr + (addr - (base_addr + boundary_size));
-  end
-end
-
-wrap_end = base_addr + boundary_size - 1;
-
-endfunction
-
-endclass
-
-module top;
-ahb_wrap t;
-
-initial begin
-t = new();
-repeat(10) t.randomize();
-end
-
+...
 endmodule`,
 
 constraint:`class test;
-
-rand byte a[20];
-int i;
-
-constraint c_data {
-  foreach(a[i])
-    if(i < (a.size/2))
-      a[i] == i*2;
-    else
-      a[i] == a[a.size()-1-i];
-}
-
-endclass
-
-test t;
-
-module top;
-
-initial begin
-t = new();
-t.randomize();
-$display(t.a);
-end
-
+...
 endmodule`
 
 };
 
-/* LOAD CODE */
+/* LOAD */
 function loadCode(name){
 document.getElementById("viewer").innerHTML=
 `<div class="code-box">${codes[name]}</div>`;
