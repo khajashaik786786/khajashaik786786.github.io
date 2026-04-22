@@ -78,12 +78,6 @@ section {
   border-radius:12px;
   border:1px solid green;
   box-shadow:0 0 10px green;
-  transition:0.3s;
-}
-
-.card:hover {
-  transform:translateY(-8px);
-  box-shadow:0 0 25px orange;
 }
 
 /* SKILLS */
@@ -92,7 +86,8 @@ section {
 
 /* BUTTON */
 button {
-  padding:10px 20px;
+  padding:10px 15px;
+  margin:5px;
   background:green;
   border:none;
   color:white;
@@ -100,17 +95,6 @@ button {
   cursor:pointer;
 }
 button:hover { background:orange; }
-
-/* INPUT */
-input,textarea {
-  width:90%;
-  max-width:400px;
-  margin:10px auto;
-  display:block;
-  padding:10px;
-  border-radius:5px;
-  border:none;
-}
 
 /* CODE VIEWER */
 .code-box {
@@ -122,6 +106,7 @@ input,textarea {
   overflow-x:auto;
   white-space:pre;
   border:1px solid #30363d;
+  margin-top:20px;
 }
 
 /* FOOTER */
@@ -151,67 +136,18 @@ footer { text-align:center; padding:20px; }
 <section id="about" class="fade">
 <h2>About Me</h2>
 <p>
-Design Verification Engineer experienced in QSPI, GDMA, GPIO, PLL and MIPI DSI.
-Skilled in SystemVerilog, UVM and protocol verification (AXI, AHB, APB).
+Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI DSI.
 </p>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects" class="fade">
-<h2>Projects</h2>
-<div class="cards">
-
-<div class="card">
-<h3>MIPI DSI</h3>
-<p>Verified pixel routing to display VIP.</p>
-</div>
-
-<div class="card">
-<h3>QSPI</h3>
-<p>Validated boot and DMA transfers.</p>
-</div>
-
-<div class="card">
-<h3>GDMA</h3>
-<p>Developed C testcases for transfers.</p>
-</div>
-
-<div class="card">
-<h3>GPIO</h3>
-<p>Verified IO functionality.</p>
-</div>
-
-<div class="card">
-<h3>PLL</h3>
-<p>Validated clock generation.</p>
-</div>
-
-</div>
-</section>
-
-<!-- SKILLS -->
-<section id="skills" class="fade">
-<h2>Skills</h2>
-
-<p>SystemVerilog / UVM</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
-
-<p>Protocols (AXI, AHB, APB, MIPI)</p>
-<div class="bar"><div class="fill" style="width:85%"></div></div>
-
-<p>C Testcase Development</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
-
 </section>
 
 <!-- CODING HUB -->
 <section id="docs" class="fade">
 <h2>💻 Coding Hub</h2>
 
-<button onclick="showAHB()">AHB Wrap Boundary Calculation</button>
+<button onclick="loadCode('ahb')">AHB Wrap Boundary</button>
+<button onclick="loadCode('constraint')">24688642 Constraint</button>
 
-<div id="viewer" style="margin-top:20px;"></div>
-
+<div id="viewer"></div>
 </section>
 
 <!-- CONTACT -->
@@ -226,16 +162,17 @@ Skilled in SystemVerilog, UVM and protocol verification (AXI, AHB, APB).
 </form>
 
 <p>Email: khajamohiddeen63@gmail.com</p>
-<p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
-
 </section>
 
 <!-- FOOTER -->
 <footer>
-<p>© <span id="year"></span> The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
+<p>© <span id="year"></span> The DV Hub | Khaja Mohiddeen</p>
 </footer>
 
 <script>
+
+/* AUTO YEAR */
+document.getElementById("year").innerText = new Date().getFullYear();
 
 /* SCROLL */
 const elements = document.querySelectorAll('.fade');
@@ -247,15 +184,10 @@ window.addEventListener('scroll', () => {
   });
 });
 
-/* YEAR */
-document.getElementById("year").innerText = new Date().getFullYear();
+/* ALL CODES STORAGE */
+const codes = {
 
-/* SHOW AHB CODE */
-function showAHB(){
-document.getElementById("viewer").innerHTML = `
-<div class="code-box">
-
-class ahb_wrap;
+ahb: `class ahb_wrap;
 
 rand bit [31:0] start_addr;
 rand bit [2:0] hsize;
@@ -273,7 +205,7 @@ constraint c_align { start_addr % (2**hsize) == 0; }
 
 function void post_randomize();
 
-beat_bytes   = 2**hsize;
+beat_bytes = 2**hsize;
 boundary_size = beat_bytes * burst_len;
 
 base_addr = (start_addr / boundary_size) * boundary_size;
@@ -302,9 +234,41 @@ t = new();
 repeat(10) t.randomize();
 end
 
-endmodule
+endmodule`,
 
-</div>`;
+constraint: `class test;
+
+rand byte a[20];
+int i;
+
+constraint c_data {
+  foreach(a[i])
+    if(i < (a.size/2))
+      a[i] == i*2;
+    else
+      a[i] == a[a.size()-1-i];
+}
+
+endclass
+
+test t;
+
+module top;
+
+initial begin
+t = new();
+t.randomize();
+$display(t.a);
+end
+
+endmodule`
+
+};
+
+/* LOAD FUNCTION */
+function loadCode(name){
+  document.getElementById("viewer").innerHTML =
+  `<div class="code-box">${codes[name]}</div>`;
 }
 
 </script>
