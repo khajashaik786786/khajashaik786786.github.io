@@ -7,115 +7,116 @@
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box;}
 
-body {
-  font-family:'Segoe UI',sans-serif;
-  color:white;
-  overflow-x:hidden;
+body{
+font-family:'Segoe UI',sans-serif;
+color:white;
+overflow-x:hidden;
 }
 
 /* BACKGROUND */
-body::before {
-  content:"";
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:
-  linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
-  url("IMG_20260422_001226.jpg");
-  background-size:cover;
-  background-position:center;
-  z-index:-1;
+body::before{
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:
+linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),
+url("IMG_20260422_001226.jpg");
+background-size:cover;
+background-position:center;
+z-index:-1;
 }
 
 /* NAV */
-nav {
-  width:100%;
-  background:linear-gradient(90deg,orange,white,green);
-  padding:12px;
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  position:sticky;
-  top:0;
+nav{
+width:100%;
+background:linear-gradient(90deg,orange,white,green);
+padding:12px;
+display:flex;
+justify-content:center;
+gap:20px;
+position:sticky;
+top:0;
 }
 
-nav a {
-  color:black;
-  font-weight:bold;
-  text-decoration:none;
+nav a{
+color:black;
+font-weight:bold;
+text-decoration:none;
 }
 
 /* SECTION */
-section {
-  max-width:1100px;
-  margin:auto;
-  padding:70px 20px;
-  text-align:center;
+section{
+max-width:1100px;
+margin:auto;
+padding:70px 20px;
+text-align:center;
 }
 
 /* HERO */
-.hero h1 { font-size:2.2rem; text-shadow:0 0 15px lime; }
-.hero h2 { color:orange; }
+.hero h1{font-size:2.2rem;text-shadow:0 0 15px lime;}
+.hero h2{color:orange;}
 
 /* ANIMATION */
-.fade { opacity:0; transform:translateY(30px); transition:1s; }
-.show { opacity:1; transform:translateY(0); }
+.fade{opacity:0;transform:translateY(30px);transition:1s;}
+.show{opacity:1;transform:translateY(0);}
 
 /* CARDS */
-.cards {
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
+.cards{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:20px;
 }
 
-.card {
-  background:rgba(0,0,0,0.85);
-  padding:20px;
-  width:260px;
-  border-radius:12px;
-  border:1px solid green;
-  box-shadow:0 0 10px green;
+.card{
+background:rgba(0,0,0,0.85);
+padding:20px;
+width:260px;
+border-radius:12px;
+border:1px solid green;
+box-shadow:0 0 10px green;
 }
 
 /* SKILLS */
-.bar { background:#333; border-radius:10px; }
-.fill { background:green; height:10px; }
+.bar{background:#333;border-radius:10px;}
+.fill{background:green;height:10px;}
 
 /* BUTTON */
-button {
-  padding:10px 15px;
-  margin:5px;
-  background:green;
-  border:none;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
+button{
+padding:10px 15px;
+margin:5px;
+background:green;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
-button:hover { background:orange; }
+button:hover{background:orange;}
 
-/* CODE VIEWER */
-.code-box {
-  background:#161b22;
-  color:#c9d1d9;
-  padding:20px;
-  border-radius:10px;
-  text-align:left;
-  overflow-x:auto;
-  white-space:pre;
-  border:1px solid #30363d;
-  margin-top:20px;
+/* CODE BOX */
+.code-box{
+background:#161b22;
+color:#c9d1d9;
+padding:20px;
+border-radius:10px;
+text-align:left;
+overflow-x:auto;
+white-space:pre;
+border:1px solid #30363d;
+margin-top:20px;
 }
 
 /* FOOTER */
-footer { text-align:center; padding:20px; }
+footer{text-align:center;padding:20px;}
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <nav>
 <a href="#home">Home</a>
 <a href="#about">About</a>
@@ -136,18 +137,53 @@ footer { text-align:center; padding:20px; }
 <section id="about" class="fade">
 <h2>About Me</h2>
 <p>
-Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI DSI.
+Design Verification Engineer experienced in QSPI, GDMA, GPIO, PLL and MIPI DSI.
+Skilled in SystemVerilog, UVM and protocol verification (AXI, AHB, APB).
 </p>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="fade">
+<h2>Projects</h2>
+<div class="cards">
+
+<div class="card"><h3>MIPI DSI</h3><p>Verified pixel routing to display VIP.</p></div>
+<div class="card"><h3>QSPI</h3><p>Validated boot and DMA transfers.</p></div>
+<div class="card"><h3>GDMA</h3><p>Developed C testcases.</p></div>
+<div class="card"><h3>GPIO</h3><p>Verified IO functionality.</p></div>
+<div class="card"><h3>PLL</h3><p>Validated clock generation.</p></div>
+
+</div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="fade">
+<h2>Skills</h2>
+
+<p>SystemVerilog / UVM</p>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
+
+<p>Protocols (AXI, AHB, APB, MIPI)</p>
+<div class="bar"><div class="fill" style="width:85%"></div></div>
+
+<p>C Testcase Development</p>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
+
 </section>
 
 <!-- CODING HUB -->
 <section id="docs" class="fade">
 <h2>💻 Coding Hub</h2>
 
+<button onclick="toggleFolder()">📁 Open Codes Folder</button>
+
+<div id="folder" style="display:none; margin-top:20px;">
 <button onclick="loadCode('ahb')">AHB Wrap Boundary</button>
 <button onclick="loadCode('constraint')">24688642 Constraint</button>
+</div>
 
 <div id="viewer"></div>
+
 </section>
 
 <!-- CONTACT -->
@@ -162,32 +198,40 @@ Design Verification Engineer with experience in QSPI, GDMA, GPIO, PLL and MIPI D
 </form>
 
 <p>Email: khajamohiddeen63@gmail.com</p>
+<p>LinkedIn: KHAJAMOHIDDEEN SHAIK</p>
+
 </section>
 
 <!-- FOOTER -->
 <footer>
-<p>© <span id="year"></span> The DV Hub | Khaja Mohiddeen</p>
+<p>© <span id="year"></span> The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
 </footer>
 
 <script>
 
-/* AUTO YEAR */
+/* YEAR */
 document.getElementById("year").innerText = new Date().getFullYear();
 
 /* SCROLL */
-const elements = document.querySelectorAll('.fade');
-window.addEventListener('scroll', () => {
-  elements.forEach(el => {
-    if(el.getBoundingClientRect().top < window.innerHeight - 100){
-      el.classList.add('show');
-    }
-  });
+const elements=document.querySelectorAll('.fade');
+window.addEventListener('scroll',()=>{
+elements.forEach(el=>{
+if(el.getBoundingClientRect().top < window.innerHeight-100){
+el.classList.add('show');
+}
+});
 });
 
-/* ALL CODES STORAGE */
-const codes = {
+/* FOLDER TOGGLE */
+function toggleFolder(){
+let f=document.getElementById("folder");
+f.style.display=(f.style.display==="none")?"block":"none";
+}
 
-ahb: `class ahb_wrap;
+/* CODES STORAGE */
+const codes={
+
+ahb:`class ahb_wrap;
 
 rand bit [31:0] start_addr;
 rand bit [2:0] hsize;
@@ -236,7 +280,7 @@ end
 
 endmodule`,
 
-constraint: `class test;
+constraint:`class test;
 
 rand byte a[20];
 int i;
@@ -265,10 +309,10 @@ endmodule`
 
 };
 
-/* LOAD FUNCTION */
+/* LOAD CODE */
 function loadCode(name){
-  document.getElementById("viewer").innerHTML =
-  `<div class="code-box">${codes[name]}</div>`;
+document.getElementById("viewer").innerHTML=
+`<div class="code-box">${codes[name]}</div>`;
 }
 
 </script>
