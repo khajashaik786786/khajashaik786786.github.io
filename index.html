@@ -7,253 +7,275 @@
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
 
-body{
-font-family:'Segoe UI',sans-serif;
-color:white;
-overflow-x:hidden;
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BODY */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  line-height: 1.6;
 }
 
 /* BACKGROUND */
-body::before{
-content:"";
-position:fixed;
-width:100%;
-height:100%;
-background:
-linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),
-url("IMG_20260422_001226.jpg");
-background-size:cover;
-background-position:center;
-z-index:-1;
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+    url("IMG_20260422_001226.jpg");
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
 }
 
-/* NAV */
-nav{
-width:100%;
-background:linear-gradient(90deg,orange,white,green);
-padding:12px;
-display:flex;
-justify-content:center;
-gap:20px;
-position:sticky;
-top:0;
-flex-wrap:wrap; /* mobile fix */
+/* NAVBAR */
+nav {
+  width: 100%;
+  background: linear-gradient(90deg, orange, white, green);
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-nav a{
-color:black;
-font-weight:bold;
-text-decoration:none;
+nav a {
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 100px 15px 60px;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  text-shadow: 0 0 10px lime;
+}
+
+.hero h2 {
+  font-size: 1.2rem;
+  color: orange;
+}
+
+.tagline {
+  color: lightgreen;
+  margin-top: 10px;
 }
 
 /* SECTION */
-section{
-max-width:1100px;
-margin:auto;
-padding:80px 20px;
-text-align:center;
+section {
+  max-width: 1100px;
+  margin: auto;
+  padding: 60px 15px;
+  text-align: center;
 }
-
-/* HERO FIX */
-.hero{
-margin-top:70px;
-}
-
-.hero h1{
-font-size:2.2rem;
-text-shadow:0 0 15px lime;
-margin-top:10px;
-}
-
-.hero h2{color:orange;}
-
-/* ANIMATION */
-.fade{opacity:0;transform:translateY(30px);transition:1s;}
-.show{opacity:1;transform:translateY(0);}
 
 /* CARDS */
-.cards{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:20px;
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
 
-.card{
-background:rgba(0,0,0,0.85);
-padding:20px;
-width:260px;
-border-radius:12px;
-border:1px solid green;
-box-shadow:0 0 10px green;
+.card {
+  background: rgba(0,0,0,0.85);
+  border-radius: 12px;
+  border: 1px solid green;
+  padding: 20px;
+  width: 260px;
 }
 
 /* SKILLS */
-.bar{background:#333;border-radius:10px;}
-.fill{background:green;height:10px;}
+.skill {
+  margin: 20px 0;
+}
+
+.bar {
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fill {
+  background: green;
+  height: 10px;
+}
+
+/* CODE BLOCK FIX (IMPORTANT) */
+.code-box {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  text-align: left;
+  overflow-x: auto;   /* scroll instead of overlap */
+}
+
+pre {
+  white-space: pre-wrap;   /* wrap text */
+  word-wrap: break-word;
+  font-size: 12px;
+}
 
 /* BUTTON */
-button{
-padding:10px 15px;
-margin:8px;
-background:green;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
+button {
+  padding: 10px 20px;
+  background: green;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
-button:hover{background:orange;}
 
-/* CODE BOX */
-.code-box{
-background:#161b22;
-color:#c9d1d9;
-padding:20px;
-border-radius:10px;
-text-align:left;
-overflow-x:auto;
-white-space:pre-wrap;
-border:1px solid #30363d;
-margin-top:20px;
+/* CONTACT */
+input, textarea {
+  width: 90%;
+  max-width: 400px;
+  margin: 10px auto;
+  display: block;
+  padding: 10px;
 }
 
 /* FOOTER */
-footer{text-align:center;padding:20px;}
+footer {
+  text-align: center;
+  padding: 20px;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <nav>
 <a href="#home">Home</a>
 <a href="#about">About</a>
 <a href="#projects">Projects</a>
 <a href="#skills">Skills</a>
-<a href="#docs">Coding Hub</a>
+<a href="#coding">Coding Hub</a>
 <a href="#contact">Contact</a>
 </nav>
 
 <!-- HERO -->
-<section class="hero fade" id="home">
+<section class="hero" id="home">
 <h1>THE DV HUB</h1>
 <h2>Shaik Khaja Mohiddeen</h2>
-<p>🚀 From Coding to Silicon</p>
+<p class="tagline">🚀 From Coding to Silicon</p>
 </section>
 
 <!-- ABOUT -->
-<section id="about" class="fade">
+<section id="about">
 <h2>About Me</h2>
 <p>
-Design Verification Engineer experienced in QSPI, GDMA, GPIO, PLL and MIPI DSI.
-Skilled in SystemVerilog, UVM and AXI/AHB/APB protocols.
+Design Verification Engineer experienced in QSPI, GDMA, GPIO, PLL, and MIPI DSI.
+Skilled in SystemVerilog, UVM, AXI/AHB/APB protocols.
 </p>
 </section>
 
 <!-- PROJECTS -->
-<section id="projects" class="fade">
+<section id="projects">
 <h2>Projects</h2>
+
 <div class="cards">
-<div class="card"><h3>MIPI DSI</h3><p>Pixel routing verification to display VIP.</p></div>
-<div class="card"><h3>QSPI</h3><p>Boot & DMA validation.</p></div>
-<div class="card"><h3>GDMA</h3><p>C testcases for memory transfer.</p></div>
-<div class="card"><h3>GPIO</h3><p>IO verification.</p></div>
-<div class="card"><h3>PLL</h3><p>Clock stability checks.</p></div>
+<div class="card">MIPI DSI - Pixel routing verification</div>
+<div class="card">QSPI - Boot & DMA validation</div>
+<div class="card">GDMA - C testcases</div>
+<div class="card">GPIO - IO verification</div>
+<div class="card">PLL - Clock validation</div>
 </div>
+
 </section>
 
 <!-- SKILLS -->
-<section id="skills" class="fade">
+<section id="skills">
 <h2>Skills</h2>
 
-<p>SystemVerilog / UVM</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
+<div class="skill">SystemVerilog / UVM
+<div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
-<p>Protocols</p>
-<div class="bar"><div class="fill" style="width:85%"></div></div>
-
-<p>C Testcases</p>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
+<div class="skill">Protocols
+<div class="bar"><div class="fill" style="width:85%"></div></div></div>
 
 </section>
 
 <!-- CODING HUB -->
-<section id="docs" class="fade">
-<h2>💻 Coding Hub</h2>
+<section id="coding">
+<h2>Coding Hub</h2>
 
-<button onclick="toggleFolder()">📁 Open Codes</button>
+<h3>AHB WRAP BOUNDARY</h3>
+<div class="code-box">
+<pre>
+class ahb_wrap;
+rand bit [31:0] start_addr;
+rand bit [2:0] hsize;
+rand int burst_len;
 
-<div id="folder" style="display:none;">
-<button onclick="loadCode('ahb')">AHB Wrap</button>
-<button onclick="loadCode('constraint')">24688642 Constraint</button>
+constraint c_burst { burst_len inside {4,8,16}; }
+
+endclass
+</pre>
 </div>
 
-<div id="viewer"></div>
+<h3>24688642 Constraint</h3>
+<div class="code-box">
+<pre>
+class test;
+rand byte a[20];
+
+constraint c_data {
+foreach(a[i])
+if(i<(a.size/2))
+a[i]==i*2;
+else
+a[i]==a[a.size()-1-i];
+}
+endclass
+</pre>
+</div>
 
 </section>
 
 <!-- CONTACT -->
-<section id="contact" class="fade">
+<section id="contact">
 <h2>Contact</h2>
 
 <form action="https://formspree.io/f/xvzdwkrb" method="POST">
 <input type="text" name="name" placeholder="Name" required>
 <input type="email" name="email" placeholder="Email" required>
-<textarea name="message" placeholder="Message" required></textarea>
+<textarea name="message" placeholder="Message"></textarea>
 <button type="submit">Send</button>
 </form>
 
-<a href="mailto:khajamohiddeen63@gmail.com">
-<button>📧 Email Me</button>
-</a>
+<br>
 
 <a href="https://www.linkedin.com/in/khaja-mohiddeen-shaik-3643b9176" target="_blank">
-<button style="background:#0A66C2;">🔗 LinkedIn</button>
+<button>Connect on LinkedIn</button>
 </a>
 
 </section>
 
+<!-- FOOTER -->
 <footer>
 <p>© 2026 The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
 </footer>
-
-<script>
-
-/* SCROLL */
-const elements=document.querySelectorAll('.fade');
-window.addEventListener('scroll',()=>{
-elements.forEach(el=>{
-if(el.getBoundingClientRect().top < window.innerHeight-100){
-el.classList.add('show');
-}
-});
-});
-
-/* TOGGLE */
-function toggleFolder(){
-let f=document.getElementById("folder");
-f.style.display=(f.style.display==="none")?"block":"none";
-}
-
-/* CODES */
-const codes={
-
-ahb:`class ahb_wrap;
-... full code here ...`,
-
-constraint:`class test;
-... full code here ...`
-
-};
-
-/* LOAD */
-function loadCode(name){
-document.getElementById("viewer").innerHTML =
-`<div class="code-box">${codes[name]}</div>`;
-}
-
-</script>
 
 </body>
 </html>
