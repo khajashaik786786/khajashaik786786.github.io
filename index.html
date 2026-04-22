@@ -3,291 +3,1572 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
 
-body{
-font-family:'Segoe UI',sans-serif;
-color:white;
-line-height:1.6;
-position:relative;
-z-index:1;
+/* ── RESET & BASE ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --green: #00ff88;
+  --orange: #ff8c00;
+  --cyan: #00e5ff;
+  --bg: #060a0f;
+  --surface: rgba(0,255,136,0.04);
+  --border: rgba(0,255,136,0.15);
+  --text: #c8d8c8;
+  --glow-g: 0 0 20px rgba(0,255,136,0.4);
+  --glow-o: 0 0 20px rgba(255,140,0,0.4);
 }
 
-/* ✅ FIXED BACKGROUND */
-body::before{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:
-linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),
-url("./IMG_20260422_001226.jpg");
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
-z-index:-1;
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
 }
 
-/* NAV */
-nav{
-background:linear-gradient(90deg,orange,white,green);
-padding:12px;
-display:flex;
-justify-content:center;
-gap:15px;
-flex-wrap:wrap;
-position:sticky;
-top:0;
-z-index:1000;
+/* ── ANIMATED GRID BACKGROUND ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+  pointer-events: none;
 }
 
-nav a{
-color:black;
-font-weight:bold;
-text-decoration:none;
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(0,255,136,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(0,229,255,0.05) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 80%, rgba(255,140,0,0.04) 0%, transparent 50%);
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* SECTION */
-section{
-max-width:1100px;
-margin:auto;
-padding:70px 15px;
-text-align:center;
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 60px;
+  background: rgba(6,10,15,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
 }
 
-/* HERO */
-.hero{margin-top:70px;}
-.hero h1{font-size:2rem;text-shadow:0 0 10px lime;}
-.hero h2{color:orange;}
-
-/* CARDS */
-.cards{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:20px;
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--green);
+  letter-spacing: 2px;
+  text-shadow: var(--glow-g);
 }
 
-.card{
-background:rgba(0,0,0,0.85);
-padding:20px;
-border-radius:10px;
-width:260px;
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
 }
 
-/* FOLDER UI */
-.folder{
-border:1px solid rgba(255,255,255,0.1);
-transition:0.3s;
+.nav-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+  position: relative;
+  padding-bottom: 2px;
 }
 
-.folder:hover{
-transform:translateY(-5px);
-box-shadow:0 0 15px rgba(0,255,0,0.4);
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 1px;
+  background: var(--green);
+  transition: width 0.3s;
 }
 
-/* BUTTON */
-.btn{
-background:green;
-padding:10px 15px;
-margin:5px;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-.btn:hover{background:orange;}
+.nav-links a:hover { color: var(--green); }
+.nav-links a:hover::after { width: 100%; }
 
-/* SEARCH */
-#search{
-padding:10px;
-width:90%;
-max-width:400px;
-margin:15px;
-border-radius:6px;
-border:none;
+/* ── WRAPPER ── */
+.wrapper { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+#home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 80px;
+  position: relative;
 }
 
-/* CODE BOX */
-.code-box{
-display:none;
-background:#0d1117;
-padding:15px;
-border-radius:10px;
-text-align:left;
-overflow-x:auto;
-margin-top:10px;
+.hero-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--green);
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s forwards;
 }
-pre{white-space:pre-wrap;font-size:12px;}
 
-/* FOOTER */
-footer{text-align:center;padding:20px;}
+.hero-name {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.4s forwards;
+}
+
+.hero-name span { color: var(--green); text-shadow: var(--glow-g); }
+
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.9rem, 2vw, 1.4rem);
+  color: var(--orange);
+  letter-spacing: 4px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.6s forwards;
+}
+
+.hero-desc {
+  max-width: 520px;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.8s forwards;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s 1s forwards;
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--green);
+  transform: translateX(-101%);
+  transition: transform 0.3s;
+  z-index: -1;
+}
+
+.btn-primary:hover { color: var(--bg); box-shadow: var(--glow-g); }
+.btn-primary:hover::before { transform: translateX(0); }
+
+.btn-secondary {
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.btn-secondary:hover { background: var(--orange); color: var(--bg); box-shadow: var(--glow-o); }
+
+/* Hero decoration */
+.hero-decoration {
+  position: absolute;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  height: 320px;
+  opacity: 0;
+  animation: fadeIn 1s 1.2s forwards;
+}
+
+.hex-ring {
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 20s linear infinite;
+  position: relative;
+}
+
+.hex-ring::before {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 1px dashed rgba(0,229,255,0.15);
+  border-radius: 50%;
+  animation: spin 10s linear infinite reverse;
+}
+
+.hex-ring::after {
+  content: "";
+  position: absolute;
+  width: 55%;
+  height: 55%;
+  border: 1px solid rgba(255,140,0,0.2);
+  border-radius: 50%;
+  animation: spin 15s linear infinite;
+}
+
+.hex-inner {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  color: var(--green);
+  text-align: center;
+  line-height: 2;
+  animation: spin 20s linear infinite reverse;
+}
+
+/* ── SECTION BASE ── */
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 40px;
+}
+
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--green);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 50px;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px; left: 0;
+  width: 50px; height: 2px;
+  background: var(--green);
+  box-shadow: var(--glow-g);
+}
+
+/* ── ABOUT ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.about-text p {
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.about-text strong { color: var(--green); }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.stat-box:hover { border-color: var(--green); box-shadow: var(--glow-g); }
+
+.stat-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--green);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* ── SKILLS ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--green);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s;
+}
+
+.skill-card:hover { border-color: var(--green); transform: translateY(-4px); }
+.skill-card:hover::before { transform: scaleY(1); }
+
+.skill-icon { font-size: 1.8rem; margin-bottom: 12px; }
+
+.skill-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border: 1px solid rgba(0,255,136,0.3);
+  color: var(--green);
+  letter-spacing: 0.5px;
+}
+
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 28px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,255,136,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.project-card:hover { border-color: var(--green); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow-g); }
+
+.project-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.project-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.project-desc { font-size: 0.9rem; color: var(--text); margin-bottom: 16px; }
+
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.ptag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.2);
+  color: var(--cyan);
+}
+
+/* ── CODING HUB ── */
+.coding-hub { position: relative; }
+
+.hub-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--green);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+#search {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#search:focus { border-color: var(--green); box-shadow: var(--glow-g); }
+#search::placeholder { color: rgba(200,216,200,0.3); }
+
+/* Folder cards */
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.folder-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.folder-card:hover { border-color: var(--green); }
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: rgba(0,255,136,0.04);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.folder-header:hover { background: rgba(0,255,136,0.08); }
+
+.folder-icon { font-size: 1.1rem; }
+
+.folder-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  color: #fff;
+  flex: 1;
+  letter-spacing: 1px;
+}
+
+.folder-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green);
+  background: rgba(0,255,136,0.1);
+  padding: 2px 8px;
+  border: 1px solid rgba(0,255,136,0.2);
+}
+
+.folder-arrow {
+  font-size: 0.7rem;
+  color: var(--green);
+  transition: transform 0.3s;
+}
+
+.folder-card.open .folder-arrow { transform: rotate(90deg); }
+
+.folder-body { display: none; padding: 0; }
+.folder-card.open .folder-body { display: block; }
+
+/* File list */
+.file-list { list-style: none; }
+
+.file-item {
+  border-bottom: 1px solid rgba(0,255,136,0.06);
+}
+
+.file-item:last-child { border-bottom: none; }
+
+.file-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.file-toggle:hover { background: rgba(0,255,136,0.05); color: var(--green); }
+
+.file-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+/* Code panel */
+.code-panel { display: none; }
+.file-item.open .code-panel { display: block; }
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: #0d1117;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-lang {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--orange);
+  letter-spacing: 1px;
+}
+
+.copy-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.copy-btn:hover { background: var(--green); color: var(--bg); }
+.copy-btn.copied { background: var(--green); color: var(--bg); }
+
+.code-scroll {
+  background: #0d1117;
+  padding: 20px;
+  overflow-x: auto;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.code-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+.code-scroll::-webkit-scrollbar-track { background: #0d1117; }
+.code-scroll::-webkit-scrollbar-thumb { background: var(--green); }
+
+pre {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: #abb2bf;
+  white-space: pre;
+  line-height: 1.8;
+}
+
+/* Syntax highlight colors (manual) */
+.kw { color: #c678dd; }
+.cm { color: #5c6370; font-style: italic; }
+.tp { color: #e5c07b; }
+.st { color: #98c379; }
+.nm { color: #61afef; }
+.op { color: #56b6c2; }
+
+/* ── CONTACT ── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.contact-info p {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.contact-links { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  text-decoration: none;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.contact-link:hover { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.04); }
+.contact-link-icon { color: var(--green); }
+
+.contact-form { display: flex; flex-direction: column; gap: 14px; }
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green);
+  letter-spacing: 2px;
+}
+
+.form-input, .form-textarea {
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: none;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--green);
+  box-shadow: var(--glow-g);
+}
+
+.form-textarea { min-height: 120px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 30px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(200,216,200,0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo {
+  font-family: 'Orbitron', monospace;
+  color: var(--green);
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.blink { animation: pulse 1.5s ease-in-out infinite; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green); }
+
+/* ── DIVIDER ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 auto;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  #home { padding: 0 24px; }
+  .hero-decoration { display: none; }
+  .section { padding: 70px 24px; }
+  .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  nav { padding: 0 20px; }
+  .nav-links { gap: 16px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
+<!-- ── NAV ── -->
 <nav>
-<a href="#home">Home</a>
-<a href="#about">About</a>
-<a href="#projects">Projects</a>
-<a href="#skills">Skills</a>
-<a href="#coding">Coding Hub</a>
-<a href="#contact">Contact</a>
+  <div class="nav-logo">DV_HUB</div>
+  <ul class="nav-links">
+    <li><a href="#home">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#skills">SKILLS</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#coding">CODING</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
 </nav>
 
-<!-- HERO -->
-<section id="home" class="hero">
-<h1>THE DV HUB</h1>
-<h2>Shaik Khaja Mohiddeen</h2>
-<p>🚀 From Coding to Silicon</p>
-</section>
+<div class="wrapper">
 
-<!-- ABOUT -->
-<section id="about">
-<h2>About Me</h2>
-<p>Design Verification Engineer skilled in QSPI, GDMA, GPIO, PLL, MIPI DSI and protocols (AXI/AHB/APB).</p>
-</section>
+<!-- ── HERO ── -->
+<section id="home" style="padding:0 80px; min-height:100vh; display:flex; flex-direction:column; justify-content:center; position:relative;">
 
-<!-- PROJECTS -->
-<section id="projects">
-<h2>Projects</h2>
-<div class="cards">
-<div class="card">MIPI DSI - Display VIP verification</div>
-<div class="card">QSPI - Boot & DMA</div>
-<div class="card">GDMA - C testcases</div>
-<div class="card">GPIO - IO verification</div>
-<div class="card">PLL - Clock validation</div>
-</div>
-</section>
+  <div class="hero-tag">// DESIGN VERIFICATION ENGINEER</div>
 
-<!-- SKILLS -->
-<section id="skills">
-<h2>Skills</h2>
-<p>SystemVerilog / UVM</p>
-<p>Protocols (AXI, AHB, APB, MIPI)</p>
-<p>C Testcase Development</p>
-</section>
+  <h1 class="hero-name">
+    SHAIK KHAJA<br><span>MOHIDDEEN</span>
+  </h1>
 
-<!-- CODING HUB -->
-<section id="coding">
-<h2>💻 Coding Hub</h2>
+  <p class="hero-title">THE DV HUB</p>
 
-<input type="text" id="search" placeholder="Search codes..." onkeyup="searchCodes()">
+  <p class="hero-desc">
+    Specializing in RTL verification, protocol compliance, and coverage-driven validation.
+    From silicon bring-up to UVM testbench architecture — building the bridge between design and silicon.
+  </p>
 
-<div class="cards">
+  <div class="hero-btns">
+    <a href="#projects" class="btn-primary">VIEW PROJECTS</a>
+    <a href="#contact" class="btn-secondary">GET IN TOUCH</a>
+  </div>
 
-<!-- AHB -->
-<div class="card folder">
-<h3>📂 AHB</h3>
-<button class="btn code-btn" onclick="toggleCode('ahb')">AHB Wrap</button>
-
-<div id="ahb" class="code-box">
-<pre id="ahb_code">
-class ahb_wrap;
-
-rand bit [31:0] start_addr;
-rand bit [2:0] hsize;
-rand int burst_len;
-
-constraint c_burst { burst_len inside {4,8,16}; }
-
-endclass
-</pre>
-<button class="btn" onclick="copyCode('ahb_code')">📋 Copy</button>
-</div>
-</div>
-
-<!-- CONSTRAINT -->
-<div class="card folder">
-<h3>📂 Constraints</h3>
-<button class="btn code-btn" onclick="toggleCode('constraint')">24688642 Constraint</button>
-
-<div id="constraint" class="code-box">
-<pre id="constraint_code">
-class test;
-
-rand byte a[20];
-
-constraint c_data {
-foreach(a[i])
-if(i<(a.size/2))
-a[i]==i*2;
-else
-a[i]==a[a.size()-1-i];
-}
-
-endclass
-</pre>
-<button class="btn" onclick="copyCode('constraint_code')">📋 Copy</button>
-</div>
-</div>
-
-</div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-<h2>Contact</h2>
-
-<form action="https://formspree.io/f/xvzdwkrb" method="POST">
-<input type="text" name="name" placeholder="Name" required>
-<input type="email" name="email" placeholder="Email" required>
-<textarea name="message" placeholder="Message"></textarea>
-<button class="btn" type="submit">Send</button>
-</form>
-
-<br>
-
-<a href="https://www.linkedin.com/in/khaja-mohiddeen-shaik-3643b9176" target="_blank">
-<button class="btn">Connect on LinkedIn</button>
-</a>
+  <!-- Decorative ring -->
+  <div class="hero-decoration">
+    <div class="hex-ring">
+      <div class="hex-inner">
+        SV<br>UVM<br>AXI<br>MIPI<br>DV
+      </div>
+    </div>
+  </div>
 
 </section>
 
-<!-- FOOTER -->
+<div class="divider"></div>
+
+<!-- ── ABOUT ── -->
+<section id="about" class="section">
+  <div class="section-label">// 01. ABOUT</div>
+  <h2 class="section-title">Who I Am</h2>
+
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I'm a <strong>Design Verification Engineer</strong> with hands-on experience verifying complex SoC IPs including
+        QSPI, GDMA, GPIO, PLL, and MIPI DSI. I work across the full DV lifecycle — from testplan creation
+        to coverage closure.
+      </p>
+      <p>
+        My expertise lies in building <strong>UVM-based testbenches</strong>, writing directed and constrained-random
+        tests, and validating protocol compliance for <strong>AXI, AHB, and APB</strong> bus fabrics.
+      </p>
+      <p>
+        Beyond simulation, I write <strong>C-based baremetal testcases</strong> for firmware-level IP validation
+        and collaborate closely with RTL and firmware teams to triage and resolve design bugs.
+      </p>
+      <p>
+        <strong>The DV Hub</strong> is my personal space to document learnings, share reusable code, and
+        contribute to the verification community.
+      </p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-num">5+</div>
+        <div class="stat-label">IP BLOCKS VERIFIED</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">COVERAGE CLOSURE</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">PROTOCOLS MASTERED</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">UVM</div>
+        <div class="stat-label">METHODOLOGY</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SKILLS ── -->
+<section id="skills" class="section">
+  <div class="section-label">// 02. SKILLS</div>
+  <h2 class="section-title">Technical Stack</h2>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-icon">🔬</div>
+      <div class="skill-name">VERIFICATION LANGUAGES</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Industry-standard HDL and HVL used for testbench development and RTL validation.</p>
+      <div class="skill-tags">
+        <span class="tag">SystemVerilog</span>
+        <span class="tag">Verilog</span>
+        <span class="tag">C / C++</span>
+        <span class="tag">TCL</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🏗️</div>
+      <div class="skill-name">UVM METHODOLOGY</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Complete UVM testbench architecture including agents, scoreboards, and coverage collectors.</p>
+      <div class="skill-tags">
+        <span class="tag">UVM Agents</span>
+        <span class="tag">Scoreboard</span>
+        <span class="tag">Coverage</span>
+        <span class="tag">Sequences</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🔗</div>
+      <div class="skill-name">BUS PROTOCOLS</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Deep understanding of AMBA and serial protocols, including burst types and handshaking.</p>
+      <div class="skill-tags">
+        <span class="tag">AXI</span>
+        <span class="tag">AHB</span>
+        <span class="tag">APB</span>
+        <span class="tag">MIPI DSI</span>
+        <span class="tag">SPI</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🛠️</div>
+      <div class="skill-name">EDA TOOLS</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Simulation, debug, and waveform analysis using industry-leading EDA platforms.</p>
+      <div class="skill-tags">
+        <span class="tag">Questa</span>
+        <span class="tag">VCS</span>
+        <span class="tag">Verdi</span>
+        <span class="tag">DVE</span>
+        <span class="tag">Xcelium</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">📊</div>
+      <div class="skill-name">COVERAGE & DEBUG</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Functional and code coverage closure, assertion-based verification, and regression management.</p>
+      <div class="skill-tags">
+        <span class="tag">Functional Cov</span>
+        <span class="tag">Code Cov</span>
+        <span class="tag">SVA</span>
+        <span class="tag">Regression</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">⚡</div>
+      <div class="skill-name">IP EXPERTISE</div>
+      <p style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">Hands-on verification of peripheral and high-speed IPs across multiple SoC projects.</p>
+      <div class="skill-tags">
+        <span class="tag">QSPI</span>
+        <span class="tag">GDMA</span>
+        <span class="tag">GPIO</span>
+        <span class="tag">PLL</span>
+        <span class="tag">MIPI DSI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── PROJECTS ── -->
+<section id="projects" class="section">
+  <div class="section-label">// 03. PROJECTS</div>
+  <h2 class="section-title">Verification Projects</h2>
+
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_01</div>
+      <div class="project-title">MIPI DSI — Display VIP Verification</div>
+      <p class="project-desc">End-to-end verification of MIPI DSI transmitter/receiver IP using a UVM-based VIP. Covered high-speed and LP modes, virtual channel arbitration, and DCS command validation.</p>
+      <div class="project-tags">
+        <span class="ptag">UVM</span>
+        <span class="ptag">MIPI DSI</span>
+        <span class="ptag">VIP</span>
+        <span class="ptag">SystemVerilog</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_02</div>
+      <div class="project-title">QSPI — Boot & DMA Mode Validation</div>
+      <p class="project-desc">Verification of Quad SPI controller covering single/dual/quad I/O modes, XIP boot sequences, DMA handshake, and interrupt-driven transfers with full coverage closure.</p>
+      <div class="project-tags">
+        <span class="ptag">QSPI</span>
+        <span class="ptag">DMA</span>
+        <span class="ptag">AHB</span>
+        <span class="ptag">C Tests</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_03</div>
+      <div class="project-title">GDMA — Generic DMA C Testcases</div>
+      <p class="project-desc">Developed baremetal C testcases for GDMA IP verification covering single-block, multi-block, linked-list, and scatter-gather transfer modes on AXI bus.</p>
+      <div class="project-tags">
+        <span class="ptag">GDMA</span>
+        <span class="ptag">C Baremetal</span>
+        <span class="ptag">AXI</span>
+        <span class="ptag">Firmware</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_04</div>
+      <div class="project-title">GPIO — IO & Interrupt Verification</div>
+      <p class="project-desc">Functional and IO verification of GPIO controller including direction control, pull-up/pull-down logic, interrupt edge/level detection, and APB register access testing.</p>
+      <div class="project-tags">
+        <span class="ptag">GPIO</span>
+        <span class="ptag">APB</span>
+        <span class="ptag">Interrupts</span>
+        <span class="ptag">SVA</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_05</div>
+      <div class="project-title">PLL — Clock Validation & Characterization</div>
+      <p class="project-desc">Clock validation for PLL IP covering lock-time measurement, frequency accuracy, jitter analysis, spread-spectrum mode, and dynamic frequency switching sequences.</p>
+      <div class="project-tags">
+        <span class="ptag">PLL</span>
+        <span class="ptag">Clocking</span>
+        <span class="ptag">Jitter</span>
+        <span class="ptag">APB</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">PROJECT_06</div>
+      <div class="project-title">AHB Interconnect — Bus Matrix Testing</div>
+      <p class="project-desc">Verified AHB bus matrix arbitration, burst transfers, wait-state insertion, split/retry responses, and multi-master conflict resolution using constrained-random sequences.</p>
+      <div class="project-tags">
+        <span class="ptag">AHB</span>
+        <span class="ptag">Bus Matrix</span>
+        <span class="ptag">Constraints</span>
+        <span class="ptag">UVM</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── CODING HUB ── -->
+<section id="coding" class="section coding-hub">
+  <div class="section-label">// 04. CODING HUB</div>
+  <h2 class="section-title">Code Repository</h2>
+
+  <div class="hub-controls">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="search files..." oninput="filterFiles(this.value)">
+    </div>
+    <span style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:rgba(200,216,200,0.4);">
+      <span class="blink">●</span> LIVE
+    </span>
+  </div>
+
+  <div class="folder-grid">
+
+    <!-- ── FOLDER: AHB ── -->
+    <div class="folder-card" id="folder-ahb">
+      <div class="folder-header" onclick="toggleFolder('folder-ahb')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">AHB_PROTOCOLS</span>
+        <span class="folder-count">2 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <!-- File 1 -->
+          <li class="file-item" data-name="ahb wrap burst">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ahb_wrap_burst.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-ahb1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-ahb1"><span class="cm">// AHB Wrap Burst Transaction Class
+// Covers WRAP4, WRAP8, WRAP16 burst types</span>
+
+<span class="kw">class</span> <span class="tp">ahb_wrap_burst</span>;
+
+  <span class="kw">rand</span> <span class="tp">bit</span> [31:0] start_addr;
+  <span class="kw">rand</span> <span class="tp">bit</span> [2:0]  hsize;    <span class="cm">// 0=byte, 1=half, 2=word</span>
+  <span class="kw">rand</span> <span class="tp">bit</span> [2:0]  hburst;   <span class="cm">// WRAP4/8/16</span>
+  <span class="kw">rand</span> <span class="tp">int</span>        burst_len;
+
+  <span class="cm">// Constrain to wrap burst types only</span>
+  <span class="kw">constraint</span> <span class="nm">c_burst_type</span> {
+    hburst <span class="op">inside</span> {3'b010, 3'b100, 3'b110}; <span class="cm">// WRAP4/8/16</span>
+  }
+
+  <span class="kw">constraint</span> <span class="nm">c_len</span> {
+    burst_len <span class="op">inside</span> {4, 8, 16};
+    hburst == 3'b010 -> burst_len == 4;
+    hburst == 3'b100 -> burst_len == 8;
+    hburst == 3'b110 -> burst_len == 16;
+  }
+
+  <span class="cm">// Address must be aligned to transfer size</span>
+  <span class="kw">constraint</span> <span class="nm">c_align</span> {
+    (start_addr & ((1 << hsize) - 1)) == 0;
+  }
+
+  <span class="kw">function void</span> <span class="nm">display</span>();
+    $display("[AHB_WRAP] addr=0x%0h size=%0d len=%0d burst=0x%0b",
+             start_addr, hsize, burst_len, hburst);
+  <span class="kw">endfunction</span>
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+          <!-- File 2 -->
+          <li class="file-item" data-name="ahb sequence base">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              ahb_base_seq.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG / UVM</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-ahb2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-ahb2"><span class="cm">// AHB UVM Base Sequence
+// Drives INCR and WRAP bursts via sequencer</span>
+
+<span class="kw">class</span> <span class="tp">ahb_base_seq</span> <span class="kw">extends</span> <span class="tp">uvm_sequence</span> #(<span class="tp">ahb_seq_item</span>);
+  `uvm_object_utils(<span class="tp">ahb_base_seq</span>)
+
+  <span class="kw">function new</span>(<span class="tp">string</span> name = <span class="st">"ahb_base_seq"</span>);
+    <span class="kw">super</span>.new(name);
+  <span class="kw">endfunction</span>
+
+  <span class="kw">task</span> <span class="nm">body</span>();
+    <span class="tp">ahb_seq_item</span> req;
+
+    <span class="kw">repeat</span>(10) <span class="kw">begin</span>
+      req = <span class="tp">ahb_seq_item</span>::<span class="nm">type_id</span>::<span class="nm">create</span>(<span class="st">"req"</span>);
+      <span class="nm">start_item</span>(req);
+      <span class="kw">if</span>(!req.<span class="nm">randomize</span>() <span class="kw">with</span> {
+        hburst <span class="op">inside</span> {WRAP4, INCR4, INCR8};
+        hsize  == 2'b10; <span class="cm">// Word transfers</span>
+      })
+        `uvm_error(<span class="nm">get_name</span>(), <span class="st">"Randomization failed"</span>)
+      <span class="nm">finish_item</span>(req);
+    <span class="kw">end</span>
+  <span class="kw">endtask</span>
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── FOLDER: CONSTRAINTS ── -->
+    <div class="folder-card" id="folder-constraints">
+      <div class="folder-header" onclick="toggleFolder('folder-constraints')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">SV_CONSTRAINTS</span>
+        <span class="folder-count">3 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <!-- File 1 -->
+          <li class="file-item" data-name="24688642 constraint array pattern">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              array_24688642.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-c1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-c1"><span class="cm">// Constraint: Array Pattern 2-4-6-8-8-6-4-2
+// First half: even sequence ascending
+// Second half: mirror of first half</span>
+
+<span class="kw">class</span> <span class="tp">array_pattern</span>;
+
+  <span class="kw">rand byte</span> a[20];
+
+  <span class="kw">constraint</span> <span class="nm">c_mirror_pattern</span> {
+    <span class="kw">foreach</span>(a[i]) {
+      <span class="kw">if</span>(i < (a.size() / 2))
+        a[i] == (i + 1) * 2;        <span class="cm">// 2,4,6,8,10...</span>
+      <span class="kw">else</span>
+        a[i] == a[a.size() - 1 - i]; <span class="cm">// mirror</span>
+    }
+  }
+
+  <span class="kw">function void</span> <span class="nm">print_array</span>();
+    $write(<span class="st">"Pattern: "</span>);
+    <span class="kw">foreach</span>(a[i]) $write(<span class="st">"%0d "</span>, a[i]);
+    $display();
+  <span class="kw">endfunction</span>
+
+<span class="kw">endclass</span>
+
+<span class="cm">// Testbench usage:
+// array_pattern obj = new();
+// obj.randomize();
+// obj.print_array();</span></pre>
+              </div>
+            </div>
+          </li>
+
+          <!-- File 2 -->
+          <li class="file-item" data-name="weighted distribution constraint rand">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              weighted_dist.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-c2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-c2"><span class="cm">// Weighted Distribution Constraint
+// Useful for biasing stimulus toward corner cases</span>
+
+<span class="kw">class</span> <span class="tp">ahb_data_gen</span>;
+
+  <span class="kw">rand</span> <span class="tp">bit</span> [31:0] data;
+  <span class="kw">rand</span> <span class="tp">bit</span> [7:0]  addr_offset;
+
+  <span class="cm">// 60% normal, 30% max, 10% zero</span>
+  <span class="kw">constraint</span> <span class="nm">c_data_dist</span> {
+    data <span class="op">dist</span> {
+      [32'h0000_0001 : 32'hFFFE_FFFE] := 60,
+      32'hFFFF_FFFF                   := 30,
+      32'h0000_0000                   := 10
+    };
+  }
+
+  <span class="cm">// Address aligned to 4-byte boundary</span>
+  <span class="kw">constraint</span> <span class="nm">c_addr_align</span> {
+    addr_offset[1:0] == 2'b00;
+    addr_offset <span class="op">inside</span> {[8'h00 : 8'hFC]};
+  }
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+          <!-- File 3 -->
+          <li class="file-item" data-name="unique constraint no repeat solve before">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              unique_no_repeat.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-c3')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-c3"><span class="cm">// Unique Constraint — No Repeated Addresses
+// Ensures all generated addresses are distinct</span>
+
+<span class="kw">class</span> <span class="tp">unique_addr_gen</span>;
+
+  <span class="kw">rand</span> <span class="tp">bit</span> [7:0] addr[8];
+  <span class="kw">rand</span> <span class="tp">bit</span> [2:0] priority_level;
+
+  <span class="cm">// All 8 addresses must be unique</span>
+  <span class="kw">constraint</span> <span class="nm">c_unique_addr</span> {
+    <span class="kw">unique</span> { addr };
+  }
+
+  <span class="cm">// Addresses in ascending order</span>
+  <span class="kw">constraint</span> <span class="nm">c_ascending</span> {
+    <span class="kw">foreach</span>(addr[i])
+      <span class="kw">if</span>(i > 0) addr[i] > addr[i-1];
+  }
+
+  <span class="cm">// Resolve priority before address</span>
+  <span class="kw">constraint</span> <span class="nm">c_solve_order</span> {
+    <span class="kw">solve</span> priority_level <span class="kw">before</span> addr;
+  }
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── FOLDER: UVM COMPONENTS ── -->
+    <div class="folder-card" id="folder-uvm">
+      <div class="folder-header" onclick="toggleFolder('folder-uvm')">
+        <span class="folder-icon">📁</span>
+        <span class="folder-name">UVM_COMPONENTS</span>
+        <span class="folder-count">2 FILES</span>
+        <span class="folder-arrow">▶</span>
+      </div>
+      <div class="folder-body">
+        <ul class="file-list">
+
+          <!-- File 1 -->
+          <li class="file-item" data-name="scoreboard uvm checker">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              scoreboard.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">UVM / SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm1')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-uvm1"><span class="cm">// Generic UVM Scoreboard
+// Compares expected vs actual transactions</span>
+
+<span class="kw">class</span> <span class="tp">ahb_scoreboard</span> <span class="kw">extends</span> <span class="tp">uvm_scoreboard</span>;
+  `uvm_component_utils(<span class="tp">ahb_scoreboard</span>)
+
+  <span class="tp">uvm_analysis_imp</span> #(<span class="tp">ahb_seq_item</span>, <span class="tp">ahb_scoreboard</span>)
+    exp_port, act_port;
+
+  <span class="tp">ahb_seq_item</span> exp_queue[$], act_queue[$];
+  <span class="tp">int</span> pass_cnt, fail_cnt;
+
+  <span class="kw">function new</span>(<span class="tp">string</span> name, <span class="tp">uvm_component</span> parent);
+    <span class="kw">super</span>.new(name, parent);
+  <span class="kw">endfunction</span>
+
+  <span class="kw">function void</span> <span class="nm">write_exp</span>(<span class="tp">ahb_seq_item</span> t);
+    exp_queue.push_back(t);
+  <span class="kw">endfunction</span>
+
+  <span class="kw">function void</span> <span class="nm">write_act</span>(<span class="tp">ahb_seq_item</span> t);
+    act_queue.push_back(t);
+    <span class="nm">check_transaction</span>();
+  <span class="kw">endfunction</span>
+
+  <span class="kw">function void</span> <span class="nm">check_transaction</span>();
+    <span class="tp">ahb_seq_item</span> exp, act;
+    <span class="kw">if</span>(exp_queue.size() == 0) <span class="kw">return</span>;
+    exp = exp_queue.pop_front();
+    act = act_queue.pop_front();
+    <span class="kw">if</span>(exp.data === act.data) begin
+      pass_cnt++;
+      `uvm_info(<span class="nm">get_name</span>(), <span class="st">"PASS: data match"</span>, UVM_LOW)
+    <span class="kw">end else begin</span>
+      fail_cnt++;
+      `uvm_error(<span class="nm">get_name</span>(), $sformatf(
+        <span class="st">"FAIL: exp=0x%0h act=0x%0h"</span>, exp.data, act.data))
+    <span class="kw">end</span>
+  <span class="kw">endfunction</span>
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+          <!-- File 2 -->
+          <li class="file-item" data-name="coverage collector functional covergroup">
+            <div class="file-toggle" onclick="toggleFile(this.parentElement)">
+              <span class="file-dot"></span>
+              coverage_collector.sv
+            </div>
+            <div class="code-panel">
+              <div class="code-header">
+                <span class="code-lang">SYSTEMVERILOG</span>
+                <button class="copy-btn" onclick="copyCode(this, 'code-uvm2')">COPY</button>
+              </div>
+              <div class="code-scroll">
+<pre id="code-uvm2"><span class="cm">// Functional Coverage Collector
+// Tracks AHB burst types and transfer sizes</span>
+
+<span class="kw">class</span> <span class="tp">ahb_coverage</span> <span class="kw">extends</span> <span class="tp">uvm_subscriber</span> #(<span class="tp">ahb_seq_item</span>);
+  `uvm_component_utils(<span class="tp">ahb_coverage</span>)
+
+  <span class="tp">ahb_seq_item</span> trans;
+
+  <span class="kw">covergroup</span> <span class="nm">ahb_cg</span>;
+
+    <span class="nm">cp_burst</span>: <span class="kw">coverpoint</span> trans.hburst {
+      bins single  = {3'b000};
+      bins incr    = {3'b001};
+      bins wrap4   = {3'b010};
+      bins incr4   = {3'b011};
+      bins wrap8   = {3'b100};
+      bins incr8   = {3'b101};
+      bins wrap16  = {3'b110};
+      bins incr16  = {3'b111};
+    }
+
+    <span class="nm">cp_size</span>: <span class="kw">coverpoint</span> trans.hsize {
+      bins byte_sz = {3'b000};
+      bins half_sz = {3'b001};
+      bins word_sz = {3'b010};
+    }
+
+    <span class="nm">cx_burst_size</span>: <span class="kw">cross</span> cp_burst, cp_size;
+
+  <span class="kw">endgroup</span>
+
+  <span class="kw">function new</span>(<span class="tp">string</span> name, <span class="tp">uvm_component</span> parent);
+    <span class="kw">super</span>.new(name, parent);
+    ahb_cg = <span class="kw">new</span>();
+  <span class="kw">endfunction</span>
+
+  <span class="kw">function void</span> <span class="nm">write</span>(<span class="tp">ahb_seq_item</span> t);
+    trans = t;
+    ahb_cg.sample();
+  <span class="kw">endfunction</span>
+
+<span class="kw">endclass</span></pre>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── CONTACT ── -->
+<section id="contact" class="section">
+  <div class="section-label">// 05. CONTACT</div>
+  <h2 class="section-title">Get In Touch</h2>
+
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p>
+        Open to collaboration, verification discussions, and opportunities in the DV space.
+        Whether it's a technical question or a project inquiry — feel free to reach out.
+      </p>
+
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/khaja-mohiddeen-shaik-3643b9176" target="_blank" class="contact-link">
+          <span class="contact-link-icon">🔗</span>
+          LinkedIn — khaja-mohiddeen-shaik
+        </a>
+        <a href="mailto:your@email.com" class="contact-link">
+          <span class="contact-link-icon">✉</span>
+          Email — Drop a message
+        </a>
+      </div>
+    </div>
+
+    <form class="contact-form" action="https://formspree.io/f/xvzdwkrb" method="POST">
+      <div class="form-field">
+        <label class="form-label">NAME</label>
+        <input class="form-input" type="text" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label">EMAIL</label>
+        <input class="form-input" type="email" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label">MESSAGE</label>
+        <textarea class="form-textarea" name="message" placeholder="Your message..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary" style="align-self:flex-start; border:none; cursor:pointer;">SEND MESSAGE</button>
+    </form>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
 <footer>
-<p>© 2026 The DV Hub | Khaja Mohiddeen. All rights reserved.</p>
-
-<p style="margin-top:10px;font-size:12px;opacity:0.7;">
-⚠️ This is for learning purpose only. Do not modify anything.
-</p>
+  <div class="footer-logo">THE DV HUB</div>
+  <div>© 2026 Shaik Khaja Mohiddeen. All rights reserved.</div>
+  <div style="text-align:right;">Built for the DV community</div>
 </footer>
+
+</div><!-- end wrapper -->
 
 <script>
 
-/* TOGGLE */
-function toggleCode(id){
-let box=document.getElementById(id);
-box.style.display=(box.style.display==="block")?"none":"block";
+/* ── FOLDER TOGGLE ── */
+function toggleFolder(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
 }
 
-/* COPY */
-function copyCode(id){
-let text=document.getElementById(id).innerText;
-navigator.clipboard.writeText(text);
-alert("Copied!");
+/* ── FILE TOGGLE ── */
+function toggleFile(item) {
+  const wasOpen = item.classList.contains('open');
+  // Close all in same folder
+  item.closest('.file-list').querySelectorAll('.file-item').forEach(el => el.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
 }
 
-/* SEARCH */
-function searchCodes(){
-let input=document.getElementById("search").value.toLowerCase();
-let btns=document.querySelectorAll(".code-btn");
+/* ── COPY CODE ── */
+function copyCode(btn, id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ COPIED';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'COPY';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
 
-btns.forEach(btn=>{
-btn.style.display = btn.innerText.toLowerCase().includes(input)
-? "inline-block" : "none";
+/* ── SEARCH / FILTER ── */
+function filterFiles(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.file-item').forEach(item => {
+    const name = item.dataset.name || '';
+    item.style.display = name.includes(q) ? '' : 'none';
+  });
+
+  // Auto-open folders that have matches
+  document.querySelectorAll('.folder-card').forEach(card => {
+    const hasVisible = [...card.querySelectorAll('.file-item')]
+      .some(fi => fi.style.display !== 'none');
+    if (q && hasVisible) card.classList.add('open');
+    else if (!q) {/* keep as is */}
+  });
+}
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.skill-card, .project-card, .stat-box, .folder-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
 });
-}
 
 </script>
-
 </body>
 </html>
