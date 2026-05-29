@@ -5,6 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The DV Hub | Shaik Khaja Mohiddeen</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+  /* ── QUICK LINKS BAR ── */
+.quick-links-bar {
+  background: rgba(0,255,136,0.03);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  position: sticky;
+  top: 60px;
+  z-index: 999;
+  backdrop-filter: blur(12px);
+}
+.quick-link-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 5px 14px;
+  background: transparent;
+  border: 1px solid rgba(0,255,136,0.25);
+  color: var(--green);
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  transition: all 0.25s;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.quick-link-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--green);
+  transform: translateX(-101%);
+  transition: transform 0.25s;
+  z-index: -1;
+}
+.quick-link-btn:hover { color: var(--bg); border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.3); }
+.quick-link-btn:hover::before { transform: translateX(0); }
+.quick-links-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(200,216,200,0.3);
+  letter-spacing: 3px;
+  margin-right: 4px;
+}
+@media (max-width: 768px) { .quick-links-bar { padding: 8px 16px; top: 60px; } }
 <style>
 
 /* ── RESET & BASE ── */
@@ -109,6 +156,18 @@ nav {
 .nav-links a:hover { color: var(--green); }
 .nav-links a:hover::after { width: 100%; }
 
+  <!-- ── QUICK LINKS BAR ── -->
+<div class="quick-links-bar">
+  <span class="quick-links-label">// EXPLORE</span>
+  <a href="https://khajashaik786786.github.io/amba/" target="_blank" class="quick-link-btn">AMBA</a>
+  <a href="https://khajashaik786786.github.io/pcie/" target="_blank" class="quick-link-btn">PCIe</a>
+  <a href="https://khajashaik786786.github.io/vlsiprotocols/" target="_blank" class="quick-link-btn">VLSI PROTOCOLS</a>
+  <a href="https://khajashaik786786.github.io/res/" target="_blank" class="quick-link-btn">RESOURCES</a>
+  <a href="https://khajashaik786786.github.io/ctestcase/" target="_blank" class="quick-link-btn">C TESTCASES</a>
+  <a href="https://khajashaik786786.github.io/jtag/" target="_blank" class="quick-link-btn">JTAG</a>
+  <a href="https://khajashaik786786.github.io/ral/" target="_blank" class="quick-link-btn">RAL</a>
+  <a href="https://khajashaik786786.github.io/sva/" target="_blank" class="quick-link-btn">SVA</a>
+</div>
 /* ── WRAPPER ── */
 .wrapper { position: relative; z-index: 1; }
 
